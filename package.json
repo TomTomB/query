@@ -2,7 +2,9 @@
   "name": "todi",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "commit": "pnpm dlx git-cz"
+  },
   "private": true,
   "dependencies": {},
   "devDependencies": {
