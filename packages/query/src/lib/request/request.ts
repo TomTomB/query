@@ -1,4 +1,4 @@
-import { Params, RequestError } from './request.types';
+import { UnfilteredParams, RequestError } from './request.types';
 import { buildQueryString, isFetchResponse } from './request.util';
 
 export const request = async <
@@ -7,7 +7,7 @@ export const request = async <
 >(options: {
   url: string;
   init?: RequestInit;
-  params?: Params;
+  params?: UnfilteredParams;
 }) => {
   try {
     let url = options.url;

@@ -30,7 +30,12 @@ describe('request', () => {
     const response = await request<TestResponse>({
       url: TEST_URL + 'posts/1',
       init: { method: 'GET' },
-      params: { foo: 'bar', isTrue: true, number: 1 },
+      params: {
+        foo: 'bar',
+        isTrue: true,
+        number: 1,
+        array: [1, undefined, 'string', false, null],
+      },
     });
 
     expect(response).toEqual(responseData);
