@@ -1,6 +1,9 @@
+import { QueryState } from '../query-state';
+
 export interface QueryBaseArguments {
   isPaginated?: boolean;
   queryParams?: Record<string, unknown>;
+  pathParams?: Record<string, unknown>;
 }
 
 export interface InitializeQueryConfig {
@@ -29,7 +32,7 @@ export interface RunQueryConfig<
 
 export type RouteFn<Arguments extends QueryBaseArguments | unknown> =
   Arguments extends QueryBaseArguments
-    ? (args: Arguments['queryParams']) => string
+    ? (args: Arguments['pathParams']) => string
     : string;
 
 export interface ExecuteConfig<Arguments extends QueryBaseArguments | unknown> {
@@ -40,3 +43,27 @@ export interface ExecuteConfig<Arguments extends QueryBaseArguments | unknown> {
 export type ExecuteConfigWithoutArgs = Omit<ExecuteConfig<unknown>, 'args'>;
 
 export type ExecuteOptions = Record<string, unknown>;
+
+export interface Query {
+  create: <
+    Response = unknown,
+    Arguments extends QueryBaseArguments | unknown = unknown,
+    ErrorResponse = unknown
+  >(
+    config: RunQueryConfig<Arguments>
+  ) => ReturnType<CreateQuery<Response, Arguments, ErrorResponse>>;
+}
+
+export type CreateQuery<
+  Response = unknown,
+  Arguments extends QueryBaseArguments | unknown = unknown,
+  ErrorResponse = unknown
+> = (
+  config: RunQueryConfig<Arguments>,
+  queryState: QueryState,
+  queryOptions: InitializeQueryConfig
+) => {
+  execute: Arguments extends QueryBaseArguments
+    ? (config: ExecuteConfig<Arguments>) => void
+    : (config?: ExecuteConfigWithoutArgs) => void;
+};

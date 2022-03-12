@@ -9,7 +9,7 @@ interface TestResponse {
 const TEST_URL = 'https://jsonplaceholder.typicode.com/';
 
 describe('request', () => {
-  it('should work', async () => {
+  it('should return a specified object', async () => {
     const responseData = { foo: 'bar', bar: 'baz' };
 
     fetchMock.mockResponseOnce(JSON.stringify(responseData));
@@ -22,7 +22,7 @@ describe('request', () => {
     expect(response).toEqual(responseData);
   });
 
-  it('should work', async () => {
+  it('should return a specified object with usage of params', async () => {
     const responseData = { foo: 'bar', bar: 'baz' };
 
     fetchMock.mockResponseOnce(JSON.stringify(responseData));
@@ -41,22 +41,24 @@ describe('request', () => {
     expect(response).toEqual(responseData);
   });
 
-  it('should work', async () => {
+  it('should throw an error with code 0', async () => {
     fetchMock.mockRejectOnce(new Error('This is an error'));
 
-    const response = await request({
-      url: TEST_URL + 'foo/bar',
-      init: { method: 'GET' },
-    });
-
-    expect(response).toEqual({
-      code: 0,
-      detail: null,
-      message: 'Unknown error',
-    });
+    try {
+      await request({
+        url: TEST_URL + 'foo/bar',
+        init: { method: 'GET' },
+      });
+    } catch (error) {
+      expect(error).toEqual({
+        code: 0,
+        detail: null,
+        message: 'Unknown error',
+      });
+    }
   });
 
-  it('should work', async () => {
+  it('should throw an error with code 404', async () => {
     const resp = {
       ok: false,
       status: 404,
@@ -66,15 +68,17 @@ describe('request', () => {
 
     fetchMock.mockRejectOnce(() => Promise.reject(resp));
 
-    const response = await request({
-      url: TEST_URL + 'foo/bar',
-      init: { method: 'GET' },
-    });
-
-    expect(response).toEqual({
-      code: resp.status,
-      detail: null,
-      message: resp.statusText,
-    });
+    try {
+      await request({
+        url: TEST_URL + 'foo/bar',
+        init: { method: 'GET' },
+      });
+    } catch (error) {
+      expect(error).toEqual({
+        code: resp.status,
+        detail: null,
+        message: resp.statusText,
+      });
+    }
   });
 });

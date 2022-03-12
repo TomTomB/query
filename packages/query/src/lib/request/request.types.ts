@@ -4,18 +4,25 @@ export interface RequestError<Detail = unknown> {
   detail?: Detail;
 }
 
+export type ParamPrimitive = string | number | boolean | null | undefined;
+
 export type Params = Record<
   string | number | symbol,
-  string | number | boolean | ParamArray
+  ParamPrimitive | ParamArray
 >;
 
-export type ParamArray = Array<string | number | boolean>;
+export type ParamArray = Array<ParamPrimitive>;
+
+export type UnfilteredParamPrimitive =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined;
 
 export type UnfilteredParams = Record<
   string | number | symbol,
-  string | number | boolean | null | undefined | UnfilteredParamArray
+  UnfilteredParamPrimitive | UnfilteredParamArray
 >;
 
-export type UnfilteredParamArray = Array<
-  string | number | boolean | undefined | null
->;
+export type UnfilteredParamArray = Array<UnfilteredParamPrimitive>;

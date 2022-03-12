@@ -14,7 +14,10 @@ export const request = async <
 
     if (options.params) {
       const params = buildQueryString(options.params);
-      url = `${url}?${params}`;
+
+      if (params) {
+        url = `${url}?${params}`;
+      }
     }
 
     const response = await fetch(url, options.init);
@@ -28,13 +31,13 @@ export const request = async <
     return data;
   } catch (error) {
     if (isFetchResponse(error)) {
-      return {
+      throw {
         code: error.status,
         message: error.statusText,
         detail: await error.json(),
       } as RequestError<ErrorResponse>;
     }
 
-    return { code: 0, message: 'Unknown error', detail: null } as RequestError;
+    throw { code: 0, message: 'Unknown error', detail: null } as RequestError;
   }
 };

@@ -3,6 +3,7 @@ import {
   Params,
   RequestError,
   ParamArray,
+  UnfilteredParamPrimitive,
 } from './request.types';
 
 export const isRequestError = (error: unknown): error is RequestError => {
@@ -10,26 +11,19 @@ export const isRequestError = (error: unknown): error is RequestError => {
 };
 
 export const buildQueryString = (params: UnfilteredParams) => {
-  const filteredParams: Params = Object.entries(params)
-    .map(([key, value]) => {
-      if (!Array.isArray(value)) {
-        return [key, value];
-      }
+  const validParams = filterInvalidParams(params);
 
-      return [key, value.filter((v) => v !== undefined && v !== null)];
-    })
-    .filter(([, value]) => value !== undefined && value !== null)
-    .reduce((acc, [key, value]) => ({ ...acc, [key as string]: value }), {});
-
-  return Object.keys(filteredParams)
+  const queryString = Object.keys(validParams)
     .map((key) =>
-      Array.isArray(filteredParams[key])
-        ? buildQueryArrayString(key, filteredParams[key] as ParamArray)
+      Array.isArray(validParams[key])
+        ? buildQueryArrayString(key, validParams[key] as ParamArray)
         : `${key}=${encodeURIComponent(
-            filteredParams[key] as string | number | boolean
+            validParams[key] as string | number | boolean
           )}`
     )
     .join('&');
+
+  return queryString || null;
 };
 
 export const buildQueryArrayString = (key: string, array: ParamArray) => {
@@ -53,3 +47,34 @@ export const isFetchResponse = (response: unknown): response is Response =>
   'statusText' in response &&
   'json' in response &&
   typeof (response as Response)['json'] === 'function';
+
+export const filterInvalidParams = (params: UnfilteredParams) => {
+  const filteredParams: Params = Object.entries(params)
+    .map(([key, value]) => {
+      if (!Array.isArray(value)) {
+        return [key, value];
+      }
+
+      return [key, value.filter((v) => isParamValid(v))];
+    })
+    .filter(([, value]) => isParamValid(value as UnfilteredParamPrimitive))
+    .reduce((acc, [key, value]) => ({ ...acc, [key as string]: value }), {});
+
+  return filteredParams;
+};
+
+export const isParamValid = (primitive: UnfilteredParamPrimitive) => {
+  if (primitive === undefined || primitive === null || primitive === '') {
+    return false;
+  }
+
+  if (typeof primitive === 'string' && primitive.trim() === '') {
+    return false;
+  }
+
+  if (typeof primitive === 'number' && isNaN(primitive)) {
+    return false;
+  }
+
+  return true;
+};

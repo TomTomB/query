@@ -1,29 +1,10 @@
 /* eslint-disable */
 import { QueryState } from '../query-state';
-import {
-  ExecuteConfig,
-  ExecuteConfigWithoutArgs,
-  InitializeQueryConfig,
-  QueryBaseArguments,
-  RunQueryConfig,
-} from './query.types';
+import { CreateQuery, InitializeQueryConfig, Query } from './query.types';
 import { executeConfigIsWithArgs } from './query.util';
 
-const createQuery = <
-  Response = unknown,
-  Arguments extends QueryBaseArguments | unknown = unknown,
-  ErrorResponse = unknown
->(
-  config: RunQueryConfig<Arguments>,
-  queryState: QueryState,
-  queryOptions: InitializeQueryConfig
-): {
-  execute: Arguments extends QueryBaseArguments
-    ? (config: ExecuteConfig<Arguments>) => void
-    : (config?: ExecuteConfigWithoutArgs) => void;
-} => {
+const createQuery: CreateQuery = (config, queryState, queryOptions) => {
   return {
-    // @ts-ignore
     execute: (config) => {
       if (executeConfigIsWithArgs(config)) {
       }
@@ -33,7 +14,7 @@ const createQuery = <
   };
 };
 
-export const initializeQuery = (config: InitializeQueryConfig) => {
+export const initializeQuery = (config: InitializeQueryConfig): Query => {
   const QUERY_STATE = new QueryState();
 
   const QUERY_OPTIONS = {
@@ -41,17 +22,7 @@ export const initializeQuery = (config: InitializeQueryConfig) => {
   };
 
   return {
-    create: <
-      Response = unknown,
-      Arguments extends QueryBaseArguments | unknown = unknown,
-      ErrorResponse = unknown
-    >(
-      config: RunQueryConfig<Arguments>
-    ) =>
-      createQuery<Response, Arguments, ErrorResponse>(
-        config,
-        QUERY_STATE,
-        QUERY_OPTIONS
-      ),
+    // @ts-ignore
+    create: (config) => createQuery(config, QUERY_STATE, QUERY_OPTIONS),
   };
 };
