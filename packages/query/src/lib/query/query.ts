@@ -1,15 +1,23 @@
 /* eslint-disable */
 import { QueryState } from '../query-state';
+import { request } from '../request';
 import { CreateQuery, InitializeQueryConfig, Query } from './query.types';
 import { executeConfigIsWithArgs } from './query.util';
 
 const createQuery: CreateQuery = (config, queryState, queryOptions) => {
   return {
-    execute: (config) => {
-      if (executeConfigIsWithArgs(config)) {
+    execute: (execCfg) => {
+      if (
+        executeConfigIsWithArgs(execCfg) &&
+        typeof config.route === 'function'
+      ) {
+        return request({
+          url: (config as any).route(execCfg.args.pathParams),
+          params: execCfg.args.queryParams,
+        });
       }
 
-      return;
+      return request({ url: config.route });
     },
   };
 };

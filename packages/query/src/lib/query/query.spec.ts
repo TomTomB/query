@@ -16,25 +16,31 @@ describe('query', () => {
     expect(initializeQuery({ baseRoute: API_BASE })).toBeTruthy();
   });
 
-  it('should work', () => {
+  it('should work', async () => {
     interface GetPostArgs {
       pathParams: { id: number };
     }
 
-    const getPost = query.create<unknown, GetPostArgs>({
+    fetchMock.mockResponseOnce(JSON.stringify({ foo: 'bar' }));
+
+    const getPost = query.create<{ foo: string }, GetPostArgs>({
       method: 'GET',
       route: (d) => `/posts/${d.id}`,
     });
 
-    expect(getPost.execute({ args: { pathParams: { id: 1 } } })).toBeFalsy();
+    expect(await getPost.execute({ args: { pathParams: { id: 1 } } })).toEqual({
+      foo: 'bar',
+    });
   });
 
-  it('should work', () => {
-    const getPost = query.create({
+  it('should work', async () => {
+    fetchMock.mockResponseOnce(JSON.stringify({ foo: 'bar' }));
+
+    const getPost = query.create<{ foo: string }>({
       method: 'GET',
       route: 'posts',
     });
 
-    expect(getPost.execute()).toBeFalsy();
+    expect(await getPost.execute()).toEqual({ foo: 'bar' });
   });
 });
