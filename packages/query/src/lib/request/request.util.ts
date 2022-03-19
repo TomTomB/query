@@ -10,6 +10,43 @@ export const isRequestError = (error: unknown): error is RequestError => {
   return error instanceof Object && 'code' in error && 'message' in error;
 };
 
+export const buildRoute = (options: {
+  base: string;
+  route: ((args: Record<string, unknown>) => string) | string;
+  pathParams?: Record<string, unknown>;
+  queryParams?: UnfilteredParams;
+}) => {
+  if (options.base.endsWith('/')) {
+    throw new Error('Base route must not end with a slash');
+  }
+
+  let route: string | null = null;
+
+  if (typeof options.route === 'function') {
+    if (!options.pathParams) {
+      throw new Error('Path params are required for route function');
+    }
+
+    route = options.route(options.pathParams);
+  } else {
+    route = options.route;
+  }
+
+  if (!route.startsWith('/')) {
+    throw new Error('Route must start with a slash');
+  }
+
+  if (options.queryParams) {
+    const queryString = buildQueryString(options.queryParams);
+
+    if (queryString) {
+      route = `${route}?${queryString}`;
+    }
+  }
+
+  return `${options.base}${route}`;
+};
+
 export const buildQueryString = (params: UnfilteredParams) => {
   const validParams = filterInvalidParams(params);
 

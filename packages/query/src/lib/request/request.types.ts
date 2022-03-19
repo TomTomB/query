@@ -2,6 +2,7 @@ export interface RequestError<Detail = unknown> {
   code: number;
   message: string;
   detail?: Detail;
+  raw: unknown;
 }
 
 export type ParamPrimitive = string | number | boolean | null | undefined;

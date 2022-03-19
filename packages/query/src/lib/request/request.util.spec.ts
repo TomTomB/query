@@ -1,6 +1,7 @@
 import {
   buildQueryArrayString,
   buildQueryString,
+  buildRoute,
   filterInvalidParams,
   isFetchResponse,
   isParamValid,
@@ -125,6 +126,75 @@ describe('request util', () => {
       expect(isParamValid(123)).toBe(true);
       expect(isParamValid(true)).toBe(true);
       expect(isParamValid(false)).toBe(true);
+    });
+  });
+
+  describe('buildRoute', () => {
+    it('should work without params', () => {
+      expect(
+        buildRoute({
+          base: 'https://example.com',
+          route: '/foo',
+        })
+      ).toBe('https://example.com/foo');
+    });
+
+    it('should work with path params', () => {
+      expect(
+        buildRoute({
+          base: 'https://example.com',
+          route: (args) => '/foo/' + args.id,
+          pathParams: { id: 1 },
+        })
+      ).toBe('https://example.com/foo/1');
+    });
+
+    it('should work with query params', () => {
+      expect(
+        buildRoute({
+          base: 'https://example.com',
+          route: '/foo',
+          queryParams: { id: 1 },
+        })
+      ).toBe('https://example.com/foo?id=1');
+    });
+
+    it('should work with query and path params', () => {
+      expect(
+        buildRoute({
+          base: 'https://example.com',
+          route: (args) => '/foo/' + args.id,
+          pathParams: { id: 1 },
+          queryParams: { filter: true },
+        })
+      ).toBe('https://example.com/foo/1?filter=true');
+    });
+
+    it('should fail with a route function without provided path params', () => {
+      expect(() => {
+        buildRoute({
+          base: 'https://example.com',
+          route: (args) => '/foo/' + args.id,
+        });
+      }).toThrowError('Path params are required for route function');
+    });
+
+    it('should fail with  base route ending with a slash', () => {
+      expect(() => {
+        buildRoute({
+          base: 'https://example.com/',
+          route: '/foo',
+        });
+      }).toThrowError('Base route must not end with a slash');
+    });
+
+    it('should fail with route missing a slash at the start', () => {
+      expect(() => {
+        buildRoute({
+          base: 'https://example.com',
+          route: 'foo',
+        });
+      }).toThrowError('Route must start with a slash');
     });
   });
 });

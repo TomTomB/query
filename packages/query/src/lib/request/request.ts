@@ -1,26 +1,15 @@
-import { UnfilteredParams, RequestError } from './request.types';
-import { buildQueryString, isFetchResponse } from './request.util';
+import { RequestError } from './request.types';
+import { isFetchResponse } from './request.util';
 
 export const request = async <
   SuccessResponse = unknown,
   ErrorResponse = unknown
 >(options: {
-  url: string;
+  route: string;
   init?: RequestInit;
-  params?: UnfilteredParams;
 }) => {
   try {
-    let url = options.url;
-
-    if (options.params) {
-      const params = buildQueryString(options.params);
-
-      if (params) {
-        url = `${url}?${params}`;
-      }
-    }
-
-    const response = await fetch(url, options.init);
+    const response = await fetch(options.route, options.init);
 
     if (!response.ok) {
       throw response;
@@ -35,9 +24,15 @@ export const request = async <
         code: error.status,
         message: error.statusText,
         detail: await error.json(),
+        raw: error,
       } as RequestError<ErrorResponse>;
     }
 
-    throw { code: 0, message: 'Unknown error', detail: null } as RequestError;
+    throw {
+      code: 0,
+      message: 'Unknown error',
+      detail: null,
+      raw: error,
+    } as RequestError;
   }
 };
