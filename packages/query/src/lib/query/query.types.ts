@@ -1,5 +1,6 @@
 import { QueryState } from '../query-state';
-import { UnfilteredParams } from '../request';
+import { RequestError, UnfilteredParams } from '../request';
+import { QueryPromise } from './query.util';
 
 export interface QueryBaseArguments {
   isPaginated?: boolean;
@@ -68,6 +69,10 @@ export type CreateQuery<
   queryOptions: InitializeQueryConfig
 ) => {
   execute: Arguments extends QueryBaseArguments
-    ? (config: ExecuteConfig<Arguments>) => Promise<Response>
-    : (config?: ExecuteConfigWithoutArgs) => Promise<Response>;
+    ? (
+        config: ExecuteConfig<Arguments>
+      ) => QueryPromise<Response, RequestError<ErrorResponse>>
+    : (
+        config?: ExecuteConfigWithoutArgs
+      ) => QueryPromise<Response, RequestError<ErrorResponse>>;
 };

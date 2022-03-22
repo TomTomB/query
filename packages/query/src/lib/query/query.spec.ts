@@ -61,4 +61,31 @@ describe('query', () => {
 
     expect(await getPost.execute()).toEqual({ foo: 'bar' });
   });
+
+  it('should be able to create and exec a call without params', async () => {
+    const resp = {
+      ok: false,
+      status: 404,
+      statusText: 'Not found',
+      json: () => Promise.resolve({ error: 'This is a detail error' }),
+    };
+
+    fetchMock.mockRejectOnce(() => Promise.reject(resp));
+
+    const getPost = query.create<{ foo: string }, unknown, { error: string }>({
+      method: 'GET',
+      route: '/posts',
+    });
+
+    getPost.execute().catch((error) =>
+      expect(error).toEqual({
+        code: resp.status,
+        detail: {
+          error: 'This is a detail error',
+        },
+        message: resp.statusText,
+        raw: resp,
+      })
+    );
+  });
 });

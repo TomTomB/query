@@ -1,7 +1,7 @@
 export interface RequestError<Detail = unknown> {
   code: number;
   message: string;
-  detail?: Detail;
+  detail: Detail;
   raw: unknown;
 }
 

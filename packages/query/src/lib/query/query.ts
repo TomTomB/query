@@ -5,11 +5,26 @@ import {
   isQueryStateSuccessItem,
   QueryState,
 } from '../query-state';
-import { buildRoute, request } from '../request';
-import { CreateQuery, InitializeQueryConfig, Query } from './query.types';
-import { executeConfigIsWithArgs } from './query.util';
+import { buildRoute, request, RequestError } from '../request';
+import {
+  ExecuteConfig,
+  ExecuteConfigWithoutArgs,
+  InitializeQueryConfig,
+  Query,
+  QueryBaseArguments,
+  RunQueryConfig,
+} from './query.types';
+import { executeConfigIsWithArgs, QueryPromise } from './query.util';
 
-const createQuery: CreateQuery = (config, queryState, queryOptions) => {
+const createQuery = <
+  Response = unknown,
+  Arguments extends QueryBaseArguments | unknown = unknown,
+  ErrorResponse = unknown
+>(
+  config: RunQueryConfig<Arguments>,
+  queryState: QueryState,
+  queryOptions: InitializeQueryConfig
+) => {
   return {
     execute: async (execConfig) => {
       const pathParams = executeConfigIsWithArgs(execConfig)
@@ -45,13 +60,32 @@ const createQuery: CreateQuery = (config, queryState, queryOptions) => {
         return existingQuery.data;
       }
 
-      const result = await request({
-        route,
-        init: { method: config.method },
+      const queryPromise = new QueryPromise<
+        Response,
+        RequestError<ErrorResponse>
+      >(async (resolve, reject) => {
+        try {
+          const result = await request<Response, ErrorResponse>({
+            route,
+            init: { method: config.method },
+          });
+
+          resolve(result);
+        } catch (error) {
+          reject(error as RequestError<ErrorResponse>);
+        }
       });
 
-      return result;
+      return queryPromise;
     },
+  } as {
+    execute: Arguments extends QueryBaseArguments
+      ? (
+          config: ExecuteConfig<Arguments>
+        ) => QueryPromise<Response, RequestError<ErrorResponse>>
+      : (
+          config?: ExecuteConfigWithoutArgs
+        ) => QueryPromise<Response, RequestError<ErrorResponse>>;
   };
 };
 
@@ -67,8 +101,6 @@ export const initializeQuery = (config: InitializeQueryConfig): Query => {
   };
 
   return {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     create: (config) => createQuery(config, QUERY_STATE, QUERY_OPTIONS),
   };
 };
