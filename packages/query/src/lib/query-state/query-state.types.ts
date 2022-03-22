@@ -1,7 +1,9 @@
+import { QueryPromise } from '../query/query.util';
+
 export interface QueryStateLoadingItem {
   state: 'loading';
   abortController: AbortController;
-  promise: Promise<unknown>;
+  promise: QueryPromise<unknown, unknown>;
 }
 
 export interface QueryStateSuccessItem {

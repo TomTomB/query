@@ -34,3 +34,19 @@ export const queryStateAlreadyHasKey = (data: unknown) => {
     data
   );
 };
+
+export const queryStateDoesNotContainKey = (data: unknown) => {
+  return new QueryError(
+    '005',
+    'The query state does not contain the provided key',
+    data
+  );
+};
+
+export const queryStatCannotTransform = (data: unknown) => {
+  return new QueryError(
+    '005',
+    'The query state cannot be transformed because it is not loading',
+    data
+  );
+};

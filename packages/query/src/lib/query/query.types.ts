@@ -68,11 +68,17 @@ export type CreateQuery<
   queryState: QueryState,
   queryOptions: InitializeQueryConfig
 ) => {
-  execute: Arguments extends QueryBaseArguments
-    ? (
-        config: ExecuteConfig<Arguments>
-      ) => QueryPromise<Response, RequestError<ErrorResponse>>
-    : (
-        config?: ExecuteConfigWithoutArgs
-      ) => QueryPromise<Response, RequestError<ErrorResponse>>;
+  execute: ExecuteFn<Response, Arguments, ErrorResponse>;
 };
+
+export type ExecuteFn<
+  Response = unknown,
+  Arguments extends QueryBaseArguments | unknown = unknown,
+  ErrorResponse = unknown
+> = Arguments extends QueryBaseArguments
+  ? (
+      config: ExecuteConfig<Arguments>
+    ) => QueryPromise<Response, RequestError<ErrorResponse>>
+  : (
+      config?: ExecuteConfigWithoutArgs
+    ) => QueryPromise<Response, RequestError<ErrorResponse>>;

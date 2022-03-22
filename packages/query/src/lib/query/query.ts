@@ -7,8 +7,7 @@ import {
 } from '../query-state';
 import { buildRoute, request, RequestError } from '../request';
 import {
-  ExecuteConfig,
-  ExecuteConfigWithoutArgs,
+  ExecuteFn,
   InitializeQueryConfig,
   Query,
   QueryBaseArguments,
@@ -60,6 +59,8 @@ const createQuery = <
         return existingQuery.data;
       }
 
+      const abortController = new AbortController();
+
       const queryPromise = new QueryPromise<
         Response,
         RequestError<ErrorResponse>
@@ -67,25 +68,28 @@ const createQuery = <
         try {
           const result = await request<Response, ErrorResponse>({
             route,
-            init: { method: config.method },
+            init: { method: config.method, signal: abortController.signal },
           });
+
+          queryState.transformToSuccessState(route, result, Date.now() + 3600);
 
           resolve(result);
         } catch (error) {
+          queryState.transformToErrorState(route, error);
+
           reject(error as RequestError<ErrorResponse>);
         }
+      });
+
+      queryState.insertLoadingState(route, {
+        promise: queryPromise,
+        abortController,
       });
 
       return queryPromise;
     },
   } as {
-    execute: Arguments extends QueryBaseArguments
-      ? (
-          config: ExecuteConfig<Arguments>
-        ) => QueryPromise<Response, RequestError<ErrorResponse>>
-      : (
-          config?: ExecuteConfigWithoutArgs
-        ) => QueryPromise<Response, RequestError<ErrorResponse>>;
+    execute: ExecuteFn<Response, Arguments, ErrorResponse>;
   };
 };
 

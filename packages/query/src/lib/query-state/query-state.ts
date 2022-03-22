@@ -1,4 +1,8 @@
-import { queryStateAlreadyHasKey } from '../logger';
+import {
+  queryStatCannotTransform,
+  queryStateAlreadyHasKey,
+  queryStateDoesNotContainKey,
+} from '../logger';
 import { QueryStateItem, QueryStateLoadingItem } from './query-state.types';
 
 export class QueryState {
@@ -24,11 +28,46 @@ export class QueryState {
     this.state.clear();
   }
 
-  insertLoadingState(key: string, item: QueryStateLoadingItem) {
+  insertLoadingState(key: string, item: Omit<QueryStateLoadingItem, 'state'>) {
     if (this.has(key)) {
       throw queryStateAlreadyHasKey(key);
     }
 
-    this.set(key, item);
+    this.set(key, { ...item, state: 'loading' });
+  }
+
+  transformToSuccessState(key: string, data: unknown, expiresIn: number) {
+    const item = this.get(key);
+
+    if (!item) {
+      throw queryStateDoesNotContainKey(key);
+    }
+
+    if (item.state !== 'loading') {
+      throw queryStatCannotTransform(item);
+    }
+
+    this.set(key, {
+      state: 'success',
+      expiresIn,
+      data,
+    });
+  }
+
+  transformToErrorState(key: string, error: unknown) {
+    const item = this.get(key);
+
+    if (!item) {
+      throw queryStateDoesNotContainKey(key);
+    }
+
+    if (item.state !== 'loading') {
+      throw queryStatCannotTransform(item);
+    }
+
+    this.set(key, {
+      state: 'error',
+      error,
+    });
   }
 }
