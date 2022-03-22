@@ -1,4 +1,10 @@
-import { QueryState } from '../query-state';
+import { invalidBaseRouteError } from '../logger';
+import {
+  isQueryStateExpired,
+  isQueryStateLoadingItem,
+  isQueryStateSuccessItem,
+  QueryState,
+} from '../query-state';
 import { buildRoute, request } from '../request';
 import { CreateQuery, InitializeQueryConfig, Query } from './query.types';
 import { executeConfigIsWithArgs } from './query.util';
@@ -21,7 +27,23 @@ const createQuery: CreateQuery = (config, queryState, queryOptions) => {
         queryParams,
       });
 
-      // const existingQuery = queryState.get(route);
+      const existingQuery = queryState.get(route);
+
+      if (isQueryStateLoadingItem(existingQuery)) {
+        if (execConfig?.options?.abortPrevious) {
+          existingQuery.abortController.abort();
+        } else {
+          return existingQuery.promise;
+        }
+      }
+
+      if (
+        isQueryStateSuccessItem(existingQuery) &&
+        !isQueryStateExpired(existingQuery) &&
+        !execConfig?.options?.skipCache
+      ) {
+        return existingQuery.data;
+      }
 
       const result = await request({
         route,
@@ -37,7 +59,7 @@ export const initializeQuery = (config: InitializeQueryConfig): Query => {
   const QUERY_STATE = new QueryState();
 
   if (config.baseRoute.endsWith('/')) {
-    throw new Error('baseRoute must not end with a slash');
+    throw invalidBaseRouteError(config.baseRoute);
   }
 
   const QUERY_OPTIONS = {

@@ -1,3 +1,4 @@
+import { invalidBaseRouteError } from '../logger';
 import { initializeQuery } from './query';
 import { Query } from './query.types';
 
@@ -19,7 +20,7 @@ describe('query', () => {
   it('should throw when trying to initialize a new query with a invalid base route', () => {
     expect(() => {
       initializeQuery({ baseRoute: API_BASE + '/' });
-    }).toThrowError('baseRoute must not end with a slash');
+    }).toThrow(invalidBaseRouteError(API_BASE + '/'));
   });
 
   it('should be able to create and exec a call with params', async () => {

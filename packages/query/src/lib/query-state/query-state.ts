@@ -1,11 +1,14 @@
-export class QueryState {
-  private readonly state = new Map<string, unknown>();
+import { queryStateAlreadyHasKey } from '../logger';
+import { QueryStateItem, QueryStateLoadingItem } from './query-state.types';
 
-  get<T>(key: string) {
-    return this.state.get(key) as T | undefined;
+export class QueryState {
+  private readonly state = new Map<string, QueryStateItem>();
+
+  get(key: string) {
+    return this.state.get(key) ?? null;
   }
 
-  set<T>(key: string, value: T) {
+  set(key: string, value: QueryStateItem) {
     this.state.set(key, value);
   }
 
@@ -19,5 +22,13 @@ export class QueryState {
 
   clear() {
     this.state.clear();
+  }
+
+  insertLoadingState(key: string, item: QueryStateLoadingItem) {
+    if (this.has(key)) {
+      throw queryStateAlreadyHasKey(key);
+    }
+
+    this.set(key, item);
   }
 }

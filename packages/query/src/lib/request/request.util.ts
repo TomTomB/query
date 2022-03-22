@@ -1,4 +1,9 @@
 import {
+  invalidBaseRouteError,
+  invalidRouteError,
+  pathParamsMissingInRouteFunctionError,
+} from '../logger';
+import {
   UnfilteredParams,
   Params,
   RequestError,
@@ -17,14 +22,14 @@ export const buildRoute = (options: {
   queryParams?: UnfilteredParams;
 }) => {
   if (options.base.endsWith('/')) {
-    throw new Error('Base route must not end with a slash');
+    throw invalidBaseRouteError(options.base);
   }
 
   let route: string | null = null;
 
   if (typeof options.route === 'function') {
     if (!options.pathParams) {
-      throw new Error('Path params are required for route function');
+      throw pathParamsMissingInRouteFunctionError(options.route({}));
     }
 
     route = options.route(options.pathParams);
@@ -33,7 +38,7 @@ export const buildRoute = (options: {
   }
 
   if (!route.startsWith('/')) {
-    throw new Error('Route must start with a slash');
+    throw invalidRouteError(route);
   }
 
   if (options.queryParams) {

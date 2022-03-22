@@ -43,7 +43,10 @@ export interface ExecuteConfig<Arguments extends QueryBaseArguments | unknown> {
 
 export type ExecuteConfigWithoutArgs = Omit<ExecuteConfig<unknown>, 'args'>;
 
-export type ExecuteOptions = Record<string, unknown>;
+export type ExecuteOptions = {
+  skipCache?: boolean;
+  abortPrevious?: boolean;
+};
 
 export interface Query {
   create: <

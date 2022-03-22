@@ -1,4 +1,9 @@
 import {
+  invalidBaseRouteError,
+  invalidRouteError,
+  pathParamsMissingInRouteFunctionError,
+} from '../logger';
+import {
   buildQueryArrayString,
   buildQueryString,
   buildRoute,
@@ -171,12 +176,15 @@ describe('request util', () => {
     });
 
     it('should fail with a route function without provided path params', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const fn = (args: any) => '/foo/' + args.id;
+
       expect(() => {
         buildRoute({
           base: 'https://example.com',
           route: (args) => '/foo/' + args.id,
         });
-      }).toThrowError('Path params are required for route function');
+      }).toThrow(pathParamsMissingInRouteFunctionError(fn({})));
     });
 
     it('should fail with  base route ending with a slash', () => {
@@ -185,7 +193,7 @@ describe('request util', () => {
           base: 'https://example.com/',
           route: '/foo',
         });
-      }).toThrowError('Base route must not end with a slash');
+      }).toThrow(invalidBaseRouteError('https://example.com/'));
     });
 
     it('should fail with route missing a slash at the start', () => {
@@ -194,7 +202,7 @@ describe('request util', () => {
           base: 'https://example.com',
           route: 'foo',
         });
-      }).toThrowError('Route must start with a slash');
+      }).toThrowError(invalidRouteError('foo'));
     });
   });
 });
