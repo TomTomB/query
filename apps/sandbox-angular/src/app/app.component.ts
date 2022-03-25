@@ -18,6 +18,10 @@ export class AppComponent implements OnInit {
     this.executeGetPost(1);
     this.executeGetPost(1, { abortPrevious: true });
     this.executeGetPost(2);
+
+    setTimeout(() => {
+      this.executeGetPost(2);
+    }, 20000);
   }
 
   executeGetPost(id: number, options?: ExecuteOptions) {
