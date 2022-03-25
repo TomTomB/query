@@ -1,5 +1,5 @@
 export const buildErrorMessage = (code: string, message: string) =>
-  `[@tomtomb/query:${code}] ${message}`;
+  `[@tomtomb\\query:${code}] ${message}`;
 
 export class QueryError extends Error {
   data?: unknown;
