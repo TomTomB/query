@@ -20,7 +20,7 @@ export class QueryPromise<Resolve, Reject> extends Promise<Resolve> {
     super(executor);
   }
 
-  catch<TResult = never>(
+  override catch<TResult = never>(
     onrejected?: ((reason: Reject) => TResult | PromiseLike<TResult>) | null
   ): Promise<Resolve | TResult> {
     return super.catch(onrejected);
