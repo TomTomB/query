@@ -1,5 +1,5 @@
 import {
-  queryStatCannotTransform,
+  queryStateCannotTransform,
   queryStateAlreadyHasKey,
   queryStateDoesNotContainKey,
 } from '../logger';
@@ -44,7 +44,7 @@ export class QueryState {
     }
 
     if (item.state !== 'loading') {
-      throw queryStatCannotTransform(item);
+      throw queryStateCannotTransform(item);
     }
 
     this.set(key, {
@@ -62,7 +62,7 @@ export class QueryState {
     }
 
     if (item.state !== 'loading') {
-      throw queryStatCannotTransform(item);
+      throw queryStateCannotTransform(item);
     }
 
     this.set(key, {

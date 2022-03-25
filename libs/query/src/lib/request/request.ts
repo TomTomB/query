@@ -19,6 +19,15 @@ export const request = async <
 
     return data;
   } catch (error) {
+    if (error instanceof DOMException && error.code === error.ABORT_ERR) {
+      throw {
+        code: -1,
+        message: 'Request aborted',
+        detail: null,
+        raw: error,
+      } as RequestError;
+    }
+
     if (isFetchResponse(error)) {
       throw {
         code: error.status,

@@ -43,7 +43,7 @@ export const queryStateDoesNotContainKey = (data: unknown) => {
   );
 };
 
-export const queryStatCannotTransform = (data: unknown) => {
+export const queryStateCannotTransform = (data: unknown) => {
   return new QueryError(
     '005',
     'The query state cannot be transformed because it is not loading',

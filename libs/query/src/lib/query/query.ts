@@ -5,7 +5,7 @@ import {
   isQueryStateSuccessItem,
   QueryState,
 } from '../query-state';
-import { buildRoute, request, RequestError } from '../request';
+import { buildRoute, isRequestError, request, RequestError } from '../request';
 import {
   ExecuteFn,
   InitializeQueryConfig,
@@ -46,6 +46,7 @@ const createQuery = <
       if (isQueryStateLoadingItem(existingQuery)) {
         if (execConfig?.options?.abortPrevious) {
           existingQuery.abortController.abort();
+          queryState.delete(route);
         } else {
           return existingQuery.promise;
         }
@@ -75,9 +76,15 @@ const createQuery = <
 
           resolve(result);
         } catch (error) {
-          queryState.transformToErrorState(route, error);
+          if (isRequestError(error)) {
+            // This request was aborted. Do nothing
+            if (error.code === -1) {
+              return;
+            }
 
-          reject(error as RequestError<ErrorResponse>);
+            queryState.transformToErrorState(route, error);
+            reject(error as RequestError<ErrorResponse>);
+          }
         }
       });
 
