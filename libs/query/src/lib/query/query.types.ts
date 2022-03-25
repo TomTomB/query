@@ -10,6 +10,9 @@ export interface QueryBaseArguments {
 
 export interface InitializeQueryConfig {
   baseRoute: string;
+  logging?: {
+    queryState?: boolean;
+  };
 }
 
 export interface RunQueryConfig<

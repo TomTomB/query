@@ -8,16 +8,39 @@ import { QueryStateItem, QueryStateLoadingItem } from './query-state.types';
 export class QueryState {
   private readonly state = new Map<string, QueryStateItem>();
 
+  constructor(private _config?: { enableLogging?: boolean }) {}
+
+  private _logState(
+    key: string | null,
+    item: QueryStateItem | null,
+    operation: string
+  ) {
+    if (!this._config?.enableLogging) return;
+
+    const stateAsJson: Record<string, QueryStateItem> = {};
+
+    this.state.forEach((value, key) => {
+      stateAsJson[key] = value;
+    });
+
+    console.log({ operation, key, item });
+    console.log(stateAsJson);
+  }
+
   get(key: string) {
     return this.state.get(key) ?? null;
   }
 
   set(key: string, value: QueryStateItem) {
     this.state.set(key, value);
+
+    this._logState(key, value, 'SET');
   }
 
   delete(key: string) {
     this.state.delete(key);
+
+    this._logState(key, null, 'DELETE');
   }
 
   has(key: string) {
@@ -26,6 +49,8 @@ export class QueryState {
 
   clear() {
     this.state.clear();
+
+    this._logState(null, null, 'CLEAR');
   }
 
   insertLoadingState(key: string, item: Omit<QueryStateLoadingItem, 'state'>) {

@@ -101,7 +101,9 @@ const createQuery = <
 };
 
 export const initializeQuery = (config: InitializeQueryConfig): Query => {
-  const QUERY_STATE = new QueryState();
+  const QUERY_STATE = new QueryState({
+    enableLogging: config.logging?.queryState,
+  });
 
   if (config.baseRoute.endsWith('/')) {
     throw invalidBaseRouteError(config.baseRoute);

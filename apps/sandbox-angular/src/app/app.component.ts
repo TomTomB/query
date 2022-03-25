@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ExecuteOptions } from '@tomtomb/query';
+import { ExecuteOptions, RequestError } from '@tomtomb/query';
 import { getPost } from './query';
 import { Post } from './types';
 
@@ -12,11 +12,12 @@ export class AppComponent implements OnInit {
   title = 'sandbox-angular';
 
   post?: Post;
-  postError?: unknown;
+  postError?: RequestError;
 
   ngOnInit(): void {
     this.executeGetPost(1);
     this.executeGetPost(1, { abortPrevious: true });
+    this.executeGetPost(2);
   }
 
   executeGetPost(id: number, options?: ExecuteOptions) {
@@ -26,6 +27,6 @@ export class AppComponent implements OnInit {
         options,
       })
       .then((p) => (this.post = p))
-      .catch((e) => (this.postError = e));
+      .catch((e) => (this.postError = e)); // FIXME: This should be typed as RequestError<unknown>
   }
 }

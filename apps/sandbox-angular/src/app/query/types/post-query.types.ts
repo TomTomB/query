@@ -2,6 +2,9 @@ export interface GetPostQuery {
   pathParams: {
     id: number;
   };
+}
+
+export interface GetPostsQuery {
   queryParams?: {
     userId?: number;
   };

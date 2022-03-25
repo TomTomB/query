@@ -4,6 +4,7 @@ import {
   CreatePostQuery,
   DeletePostQuery,
   GetPostQuery,
+  GetPostsQuery,
   PatchPostQuery,
   UpdatePostQuery,
 } from './types';
@@ -13,8 +14,8 @@ export const getPost = query.create<Post, GetPostQuery>({
   method: 'GET',
 });
 
-export const getPosts = query.create<Post[]>({
-  route: '/posts',
+export const getPosts = query.create<Post[], GetPostsQuery>({
+  route: () => '/posts', // FIXME: This should be a normal string
   method: 'GET',
 });
 
