@@ -1,0 +1,28 @@
+{
+  "root": "apps/sandbox-angular-e2e",
+  "sourceRoot": "apps/sandbox-angular-e2e/src",
+  "projectType": "application",
+  "targets": {
+    "e2e": {
+      "executor": "@nrwl/cypress:cypress",
+      "options": {
+        "cypressConfig": "apps/sandbox-angular-e2e/cypress.json",
+        "devServerTarget": "sandbox-angular:serve:development"
+      },
+      "configurations": {
+        "production": {
+          "devServerTarget": "sandbox-angular:serve:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/sandbox-angular-e2e/**/*.{js,ts}"]
+      }
+    }
+  },
+  "tags": [],
+  "implicitDependencies": ["sandbox-angular"]
+}

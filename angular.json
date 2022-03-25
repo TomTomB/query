@@ -1,0 +1,8 @@
+{
+  "version": 2,
+  "projects": {
+    "query": "libs/query",
+    "sandbox-angular": "apps/sandbox-angular",
+    "sandbox-angular-e2e": "apps/sandbox-angular-e2e"
+  }
+}

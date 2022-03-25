@@ -15,7 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@tomtomb/query": ["packages/query/src/index.ts"]
+      "@tomtomb/query": ["libs/query/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

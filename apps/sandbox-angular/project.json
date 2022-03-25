@@ -1,0 +1,94 @@
+{
+  "projectType": "application",
+  "root": "apps/sandbox-angular",
+  "sourceRoot": "apps/sandbox-angular/src",
+  "prefix": "tomtomb",
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:browser",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/sandbox-angular",
+        "index": "apps/sandbox-angular/src/index.html",
+        "main": "apps/sandbox-angular/src/main.ts",
+        "polyfills": "apps/sandbox-angular/src/polyfills.ts",
+        "tsConfig": "apps/sandbox-angular/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          "apps/sandbox-angular/src/favicon.ico",
+          "apps/sandbox-angular/src/assets"
+        ],
+        "styles": ["apps/sandbox-angular/src/styles.scss"],
+        "scripts": []
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "fileReplacements": [
+            {
+              "replace": "apps/sandbox-angular/src/environments/environment.ts",
+              "with": "apps/sandbox-angular/src/environments/environment.prod.ts"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "configurations": {
+        "production": {
+          "browserTarget": "sandbox-angular:build:production"
+        },
+        "development": {
+          "browserTarget": "sandbox-angular:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "browserTarget": "sandbox-angular:build"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "apps/sandbox-angular/src/**/*.ts",
+          "apps/sandbox-angular/src/**/*.html"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/sandbox-angular"],
+      "options": {
+        "jestConfig": "apps/sandbox-angular/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
