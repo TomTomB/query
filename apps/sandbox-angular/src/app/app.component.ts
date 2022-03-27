@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ExecuteOptions, RequestError } from '@tomtomb/query';
+import { ExecuteOptions, RequestError } from '@tomtomb/query-core';
 import { getPost } from './query';
 import { Post } from './types';
 
