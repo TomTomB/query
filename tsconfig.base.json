@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@tomtomb/query-angular": ["libs/query-angular/src/index.ts"],
       "@tomtomb/query-core": ["libs/query-core/src/index.ts"]
     }
   },

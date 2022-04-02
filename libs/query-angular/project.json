@@ -1,0 +1,42 @@
+{
+  "projectType": "library",
+  "root": "libs/query-angular",
+  "sourceRoot": "libs/query-angular/src",
+  "prefix": "tomtomb",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/angular:package",
+      "outputs": ["dist/libs/query-angular"],
+      "options": {
+        "project": "libs/query-angular/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/query-angular/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/query-angular/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/query-angular"],
+      "options": {
+        "jestConfig": "libs/query-angular/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/query-angular/src/**/*.ts",
+          "libs/query-angular/src/**/*.html"
+        ]
+      }
+    }
+  },
+  "tags": []
+}
