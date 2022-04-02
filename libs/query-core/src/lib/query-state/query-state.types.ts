@@ -8,7 +8,7 @@ export interface QueryStateLoadingItem {
 
 export interface QueryStateSuccessItem {
   state: 'success';
-  expiresIn: number;
+  expiresIn: number | null;
   data: unknown;
 }
 

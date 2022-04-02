@@ -1,5 +1,5 @@
-import { RequestError } from './request.types';
-import { isFetchResponse } from './request.util';
+import { RequestError, CacheAdapterFn } from './request.types';
+import { extractExpiresIn, isFetchResponse } from './request.util';
 
 export const request = async <
   SuccessResponse = unknown,
@@ -7,6 +7,7 @@ export const request = async <
 >(options: {
   route: string;
   init?: RequestInit;
+  cacheAdapter?: CacheAdapterFn;
 }) => {
   try {
     const response = await fetch(options.route, options.init);
@@ -17,7 +18,15 @@ export const request = async <
 
     const data = (await response.json()) as SuccessResponse;
 
-    return data;
+    const expiresInSeconds = options.cacheAdapter
+      ? options.cacheAdapter(response.headers)
+      : extractExpiresIn(response.headers);
+
+    let expiresInTimestamp = expiresInSeconds
+      ? new Date(Date.now() + expiresInSeconds * 1000).getTime()
+      : null;
+
+    return { data, expiresInTimestamp };
   } catch (error) {
     if (error instanceof DOMException && error.code === error.ABORT_ERR) {
       throw {

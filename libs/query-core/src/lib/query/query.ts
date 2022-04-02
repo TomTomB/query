@@ -5,7 +5,13 @@ import {
   isQueryStateSuccessItem,
   QueryState,
 } from '../query-state';
-import { buildRoute, isRequestError, request, RequestError } from '../request';
+import {
+  buildRoute,
+  isRequestError,
+  request,
+  RequestError,
+  isAbortRequestError,
+} from '../request';
 import {
   ExecuteFn,
   InitializeQueryConfig,
@@ -67,21 +73,24 @@ const createQuery = <
         RequestError<ErrorResponse>
       >(async (resolve, reject) => {
         try {
-          const result = await request<Response, ErrorResponse>({
+          const { data, expiresInTimestamp } = await request<
+            Response,
+            ErrorResponse
+          >({
             route,
             init: { method: config.method, signal: abortController.signal },
+            cacheAdapter: queryOptions.request?.cacheAdapter,
           });
 
-          queryState.transformToSuccessState(route, result, Date.now() + 3600);
+          queryState.transformToSuccessState(route, data, expiresInTimestamp);
 
-          resolve(result);
+          resolve(data);
         } catch (error) {
-          if (isRequestError(error)) {
-            // This request was aborted. Do nothing
-            if (error.code === -1) {
-              return;
-            }
+          if (isAbortRequestError(error)) {
+            return;
+          }
 
+          if (isRequestError(error)) {
             queryState.transformToErrorState(route, error);
             reject(error as RequestError<ErrorResponse>);
           }
@@ -102,7 +111,8 @@ const createQuery = <
 
 export const initializeQuery = (config: InitializeQueryConfig): Query => {
   const QUERY_STATE = new QueryState({
-    enableLogging: config.logging?.queryState,
+    enableChangeLogging: config.logging?.queryStateChanges,
+    enableGarbageCollectorLogging: config.logging?.queryStateGarbageCollector,
   });
 
   if (config.baseRoute.endsWith('/')) {
@@ -111,6 +121,7 @@ export const initializeQuery = (config: InitializeQueryConfig): Query => {
 
   const QUERY_OPTIONS = {
     baseRoute: config.baseRoute,
+    request: config.request,
   };
 
   return {

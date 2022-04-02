@@ -27,3 +27,5 @@ export type UnfilteredParams = Record<
 >;
 
 export type UnfilteredParamArray = Array<UnfilteredParamPrimitive>;
+
+export type CacheAdapterFn = (headers: Headers) => number | null;

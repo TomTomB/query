@@ -3,5 +3,14 @@ import { environment } from '../../environments/environment';
 
 export const query = initializeQuery({
   baseRoute: environment.apiUrl,
-  logging: { queryState: !environment.production },
+  logging: {
+    queryStateChanges: !environment.production,
+  },
+});
+
+export const ggQuery = initializeQuery({
+  baseRoute: environment.ggApiUrl,
+  logging: {
+    queryStateChanges: !environment.production,
+  },
 });

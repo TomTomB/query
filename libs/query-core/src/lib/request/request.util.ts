@@ -15,6 +15,10 @@ export const isRequestError = (error: unknown): error is RequestError => {
   return error instanceof Object && 'code' in error && 'message' in error;
 };
 
+export const isAbortRequestError = (error: unknown): error is RequestError => {
+  return isRequestError(error) && error.code === -1;
+};
+
 export const buildRoute = (options: {
   base: string;
   route: ((args: Record<string, unknown>) => string) | string;
@@ -119,4 +123,45 @@ export const isParamValid = (primitive: UnfilteredParamPrimitive) => {
   }
 
   return true;
+};
+
+export const extractExpiresIn = (headers: Headers) => {
+  const cacheControl = headers.get('cache-control');
+  const age = headers.get('age');
+  const expires = headers.get('expires');
+
+  // In seconds
+  let expiresIn: number | null = null;
+  let maxAge: number | null = null;
+
+  if (cacheControl?.includes('no-cache')) {
+    return null;
+  }
+
+  if (cacheControl?.includes('max-age')) {
+    maxAge = parseInt(cacheControl.split('max-age=')[1]);
+  } else if (cacheControl?.includes('s-maxage')) {
+    maxAge = parseInt(cacheControl.split('s-maxage=')[1]);
+  }
+
+  if (maxAge && age) {
+    const ageSeconds = parseInt(age);
+
+    expiresIn = maxAge - ageSeconds;
+  } else if (expires) {
+    // Used by some apis to tell the response will never expire
+    // In this case we let the response expire after 1 hour
+    if (expires === '-1') {
+      expiresIn = 3600;
+    } else {
+      const expiresDate = new Date(expires);
+
+      // check if the date is valid
+      if (expiresDate.toString() !== 'Invalid Date') {
+        expiresIn = Math.floor((expiresDate.getTime() - Date.now()) / 1000);
+      }
+    }
+  }
+
+  return expiresIn;
 };

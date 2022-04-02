@@ -9,7 +9,12 @@ export class QueryState {
   private readonly state = new Map<string, QueryStateItem>();
   private _garbageCollector: number | null = null;
 
-  constructor(private _config?: { enableLogging?: boolean }) {}
+  constructor(
+    private _config?: {
+      enableChangeLogging?: boolean;
+      enableGarbageCollectorLogging?: boolean;
+    }
+  ) {}
 
   get(key: string) {
     return this.state.get(key) ?? null;
@@ -47,7 +52,11 @@ export class QueryState {
     this.set(key, { ...item, state: 'loading' });
   }
 
-  transformToSuccessState(key: string, data: unknown, expiresIn: number) {
+  transformToSuccessState(
+    key: string,
+    data: unknown,
+    expiresIn: number | null
+  ) {
     const item = this.get(key);
 
     if (!item) {
@@ -87,7 +96,7 @@ export class QueryState {
     item: QueryStateItem | null,
     operation: string
   ) {
-    if (!this._config?.enableLogging) return;
+    if (!this._config?.enableChangeLogging) return;
 
     const stateAsJson: Record<string, QueryStateItem> = {};
 
@@ -119,13 +128,14 @@ export class QueryState {
   private _runGarbageCollector() {
     const now = Date.now();
 
-    if (this._config?.enableLogging) {
+    if (this._config?.enableGarbageCollectorLogging) {
       console.log('Garbage collector: Start run');
     }
 
     this.state.forEach((item, key) => {
       if (
-        (item.state === 'success' && now > item.expiresIn) ||
+        (item.state === 'success' &&
+          (item.expiresIn === null || now > item.expiresIn)) ||
         item.state === 'error'
       ) {
         this.delete(key);
@@ -134,12 +144,12 @@ export class QueryState {
 
     if (!this.state.size) {
       this._stopGarbageCollector();
-      if (this._config?.enableLogging) {
+      if (this._config?.enableGarbageCollectorLogging) {
         console.log('Garbage collector: Stop');
       }
     }
 
-    if (this._config?.enableLogging) {
+    if (this._config?.enableGarbageCollectorLogging) {
       console.log('Garbage collector: End run');
     }
   }
