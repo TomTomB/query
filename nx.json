@@ -1,7 +1,7 @@
 {
   "npmScope": "tomtomb",
   "affected": {
-    "defaultBase": "master"
+    "defaultBase": "main"
   },
   "cli": {
     "defaultCollection": "@nrwl/angular",
@@ -18,12 +18,7 @@
     "default": {
       "runner": "@nrwl/nx-cloud",
       "options": {
-        "cacheableOperations": [
-          "build",
-          "lint",
-          "test",
-          "e2e"
-        ],
+        "cacheableOperations": ["build", "lint", "test", "e2e"],
         "accessToken": "NGUxMDY5NjUtOTlmNS00YTBiLTk1MzYtYmYxZGU0ZDNiNWU5fHJlYWQtd3JpdGU="
       }
     }
