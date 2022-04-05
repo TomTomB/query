@@ -11,9 +11,12 @@ const TEST_URL = 'https://jsonplaceholder.typicode.com';
 
 describe('request', () => {
   it('should return a specified object', async () => {
-    const responseData = { foo: 'bar', bar: 'baz' };
+    const responseData = {
+      data: { foo: 'bar', bar: 'baz' },
+      expiresInTimestamp: null,
+    };
 
-    fetchMock.mockResponseOnce(JSON.stringify(responseData));
+    fetchMock.mockResponseOnce(JSON.stringify(responseData.data));
 
     const response = await request<TestResponse>({
       route: TEST_URL + '/posts/1',
@@ -24,9 +27,12 @@ describe('request', () => {
   });
 
   it('should return a specified object with usage of params', async () => {
-    const responseData = { foo: 'bar', bar: 'baz' };
+    const responseData = {
+      data: { foo: 'bar', bar: 'baz' },
+      expiresInTimestamp: null,
+    };
 
-    fetchMock.mockResponseOnce(JSON.stringify(responseData));
+    fetchMock.mockResponseOnce(JSON.stringify(responseData.data));
 
     const route = buildRoute({
       base: TEST_URL,
