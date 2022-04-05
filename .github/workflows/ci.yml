@@ -27,6 +27,7 @@ jobs:
       - uses: pnpm/action-setup@v2.1.0
         with:
           version: latest
+          run_install: true
 
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
         uses: nrwl/nx-set-shas@v2
@@ -34,7 +35,6 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-          run_install: true
 
       - run: pnpm dlx nx format:check
 
@@ -64,6 +64,7 @@ jobs:
       - uses: pnpm/action-setup@v2.1.0
         with:
           version: latest
+          run_install: true
 
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
         uses: nrwl/nx-set-shas@v2
@@ -71,7 +72,6 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16'
-          run_install: true
 
       - run: pnpm dlx nx format:check
 
