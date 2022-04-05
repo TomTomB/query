@@ -22,7 +22,7 @@ export const request = async <
       ? options.cacheAdapter(response.headers)
       : extractExpiresIn(response.headers);
 
-    let expiresInTimestamp = expiresInSeconds
+    const expiresInTimestamp = expiresInSeconds
       ? new Date(Date.now() + expiresInSeconds * 1000).getTime()
       : null;
 
