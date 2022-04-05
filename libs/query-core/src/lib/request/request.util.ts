@@ -11,13 +11,11 @@ import {
   UnfilteredParamPrimitive,
 } from './request.types';
 
-export const isRequestError = (error: unknown): error is RequestError => {
-  return error instanceof Object && 'code' in error && 'message' in error;
-};
+export const isRequestError = (error: unknown): error is RequestError =>
+  error instanceof Object && 'code' in error && 'message' in error;
 
-export const isAbortRequestError = (error: unknown): error is RequestError => {
-  return isRequestError(error) && error.code === -1;
-};
+export const isAbortRequestError = (error: unknown): error is RequestError =>
+  isRequestError(error) && error.code === -1;
 
 export const buildRoute = (options: {
   base: string;
@@ -125,7 +123,7 @@ export const isParamValid = (primitive: UnfilteredParamPrimitive) => {
   return true;
 };
 
-export const extractExpiresIn = (headers: Headers) => {
+export const extractExpiresInSeconds = (headers: Headers) => {
   const cacheControl = headers.get('cache-control');
   const age = headers.get('age');
   const expires = headers.get('expires');
@@ -164,4 +162,49 @@ export const extractExpiresIn = (headers: Headers) => {
   }
 
   return expiresIn;
+};
+
+export const buildTimestampFromSeconds = (seconds: number | null) => {
+  if (seconds === null) {
+    return null;
+  }
+
+  const date = new Date(seconds * 1000);
+
+  return date.getTime();
+};
+
+export const buildRequestError = async <ErrorResponse = unknown>(
+  error: unknown
+) => {
+  if (error instanceof DOMException && error.code === error.ABORT_ERR) {
+    const err: RequestError<null> = {
+      code: -1,
+      message: 'Request aborted',
+      detail: null,
+      raw: error,
+    };
+
+    return err;
+  }
+
+  if (isFetchResponse(error)) {
+    const err: RequestError<ErrorResponse> = {
+      code: error.status,
+      message: error.statusText,
+      detail: await error.json(),
+      raw: error,
+    };
+
+    return err;
+  }
+
+  const err: RequestError = {
+    code: 0,
+    message: 'Unknown error',
+    detail: null,
+    raw: error,
+  };
+
+  return err;
 };

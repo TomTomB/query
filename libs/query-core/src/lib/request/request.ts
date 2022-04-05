@@ -1,5 +1,9 @@
-import { RequestError, CacheAdapterFn } from './request.types';
-import { extractExpiresIn, isFetchResponse } from './request.util';
+import { CacheAdapterFn } from './request.types';
+import {
+  buildRequestError,
+  buildTimestampFromSeconds,
+  extractExpiresInSeconds,
+} from './request.util';
 
 export const request = async <
   SuccessResponse = unknown,
@@ -20,37 +24,12 @@ export const request = async <
 
     const expiresInSeconds = options.cacheAdapter
       ? options.cacheAdapter(response.headers)
-      : extractExpiresIn(response.headers);
+      : extractExpiresInSeconds(response.headers);
 
-    const expiresInTimestamp = expiresInSeconds
-      ? new Date(Date.now() + expiresInSeconds * 1000).getTime()
-      : null;
+    const expiresInTimestamp = buildTimestampFromSeconds(expiresInSeconds);
 
     return { data, expiresInTimestamp };
   } catch (error) {
-    if (error instanceof DOMException && error.code === error.ABORT_ERR) {
-      throw {
-        code: -1,
-        message: 'Request aborted',
-        detail: null,
-        raw: error,
-      } as RequestError;
-    }
-
-    if (isFetchResponse(error)) {
-      throw {
-        code: error.status,
-        message: error.statusText,
-        detail: await error.json(),
-        raw: error,
-      } as RequestError<ErrorResponse>;
-    }
-
-    throw {
-      code: 0,
-      message: 'Unknown error',
-      detail: null,
-      raw: error,
-    } as RequestError;
+    throw await buildRequestError<ErrorResponse>(error);
   }
 };

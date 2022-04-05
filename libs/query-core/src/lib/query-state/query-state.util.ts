@@ -17,6 +17,5 @@ export const isQueryStateErrorItem = (
   item: QueryStateItem | null
 ): item is QueryStateErrorItem => item?.state === 'error';
 
-export const isQueryStateExpired = (item: QueryStateSuccessItem) => {
-  return item.expiresIn === null || item.expiresIn < Date.now();
-};
+export const isQueryStateExpired = (item: QueryStateSuccessItem) =>
+  item.expiresIn === null || item.expiresIn < Date.now();

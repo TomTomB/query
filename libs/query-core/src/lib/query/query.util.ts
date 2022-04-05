@@ -6,9 +6,7 @@ import {
 
 export const executeConfigIsWithArgs = (
   config?: ExecuteConfig<QueryBaseArguments> | ExecuteConfigWithoutArgs
-): config is ExecuteConfig<QueryBaseArguments> => {
-  return !!config && 'args' in config;
-};
+): config is ExecuteConfig<QueryBaseArguments> => !!config && 'args' in config;
 
 export class QueryPromise<Resolve, Reject> extends Promise<Resolve> {
   constructor(
