@@ -48,9 +48,9 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          version: yarn changeset version
+          version: pnpm changeset version
           commit: 'chore: 🤖 update versions'
-          publish: yarn changeset tag
+          publish: pnpm changeset tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
