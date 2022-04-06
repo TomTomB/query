@@ -2,12 +2,6 @@ import { QueryState } from '../query-state';
 import { RequestError, UnfilteredParams, CacheAdapterFn } from '../request';
 import { QueryPromise } from './query.util';
 
-export interface QueryBaseArguments {
-  isPaginated?: boolean;
-  queryParams?: UnfilteredParams;
-  pathParams?: Record<string, unknown>;
-}
-
 export interface InitializeQueryConfig {
   /**
    * The api base route.
@@ -41,6 +35,12 @@ export interface InitializeQueryConfig {
      */
     cacheAdapter?: CacheAdapterFn;
   };
+}
+
+export interface QueryBaseArguments {
+  isPaginated?: boolean;
+  queryParams?: UnfilteredParams;
+  pathParams?: Record<string, unknown>;
 }
 
 export interface RunQueryConfig<
