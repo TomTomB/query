@@ -44,6 +44,16 @@ jobs:
 
       - run: pnpm dlx nx affected --target=test --parallel=2
 
+      - name: Create and publish versions
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          version: yarn changeset version
+          commit: 'chore: 🤖 update versions'
+          publish: yarn changeset tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   pr:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'pull_request' }}
