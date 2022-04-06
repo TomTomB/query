@@ -11,7 +11,8 @@
     "start": "nx serve",
     "build": "nx build",
     "test": "nx test",
-    "prepare:release": "sed -e \"s|libs/|dist/libs/|\" pnpm-workspace.yaml > pnpm-new.yaml && mv pnpm-new.yaml pnpm-workspace.yaml"
+    "release": "pnpm prepare:release && pnpm changeset publish",
+    "prepare:release": "pnpm config set no-git-checks true && sed -e \"s|libs/|dist/libs/|\" pnpm-workspace.yaml > pnpm-new.yaml && mv pnpm-new.yaml pnpm-workspace.yaml"
   },
   "private": true,
   "dependencies": {
