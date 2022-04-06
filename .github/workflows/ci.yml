@@ -44,6 +44,7 @@ jobs:
 
       - run: pnpm dlx nx affected --target=test --parallel=2 --all
 
+      - run: ls
       - run: ls ./coverage
       - run: ls ./coverage/libs
       - run: ls ./coverage/query-angular
