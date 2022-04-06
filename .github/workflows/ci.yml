@@ -50,7 +50,7 @@ jobs:
         with:
           version: pnpm changeset version
           commit: 'chore: 🤖 update versions'
-          publish: sed -e "s|libs\/|dist/libs/|" pnpm-workspace.yaml > pnpm-new.yaml && mv pnpm-new.yaml pnpm-workspace.yaml && pnpm changeset publish
+          publish: pnpm prepare:release && pnpm config set no-git-checks true && pnpm changeset publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
