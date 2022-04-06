@@ -46,8 +46,7 @@ jobs:
 
       - uses: codecov/codecov-action@v2
         with:
-          directory: ./coverage/
-          files: ./libs/query-angular/clover.xml,./libs/query-core/clover.xml
+          files: ./coverage/libs/query-angular/clover.xml,./coverage/libs/query-core/clover.xml
 
       - name: Create and publish versions
         id: changesets
