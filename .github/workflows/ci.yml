@@ -44,7 +44,7 @@ jobs:
 
       - run: pnpm dlx nx affected --target=test --parallel=2 --all
 
-      - uses: codecov/codecov-action@v2
+      - uses: codecov/codecov-action@v3
         with:
           files: ./coverage/libs/query-angular/clover.xml,./coverage/libs/query-core/clover.xml
 
