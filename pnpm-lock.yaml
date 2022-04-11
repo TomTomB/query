@@ -42,7 +42,7 @@ importers:
       jest: 27.5.1
       jest-fetch-mock: 3.0.3
       jest-preset-angular: 11.1.1
-      ng-packagr: 13.3.0
+      ng-packagr: 13.3.1
       nx: 13.9.7
       postcss: 8.4.12
       postcss-import: 14.1.0
@@ -69,7 +69,7 @@ importers:
       tslib: 2.3.1
       zone.js: 0.11.5
     devDependencies:
-      '@angular-devkit/build-angular': 13.3.2_b100be183b8846d2040ed671503a49c1
+      '@angular-devkit/build-angular': 13.3.2_2514ede46070aff7a99269192eccfc44
       '@angular-eslint/eslint-plugin': 13.2.0_eslint@8.12.0+typescript@4.6.3
       '@angular-eslint/eslint-plugin-template': 13.2.0_eslint@8.12.0+typescript@4.6.3
       '@angular-eslint/template-parser': 13.2.0_eslint@8.12.0+typescript@4.6.3
@@ -97,7 +97,7 @@ importers:
       jest: 27.5.1
       jest-fetch-mock: 3.0.3
       jest-preset-angular: 11.1.1_09a532ad75f7f55d408fa77d1e4ddf4d
-      ng-packagr: 13.3.0_a7432f6517226ea06ba979d27e8a360b
+      ng-packagr: 13.3.1_a7432f6517226ea06ba979d27e8a360b
       nx: 13.9.7
       postcss: 8.4.12
       postcss-import: 14.1.0_postcss@8.4.12
@@ -142,7 +142,7 @@ packages:
       - chokidar
     dev: true
 
-  /@angular-devkit/build-angular/13.3.2_b100be183b8846d2040ed671503a49c1:
+  /@angular-devkit/build-angular/13.3.2_2514ede46070aff7a99269192eccfc44:
     resolution: {integrity: sha512-Gja7bahLWwg8xTz/1Rrmdjcy21EROXQYCjP/PUrI/pt6xu5Ec6kHYcE4DMv5TouLoXlZTqc5Z9vN0L6tS+n5qw==}
     engines: {node: ^12.20.0 || ^14.15.0 || >=16.10.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
@@ -206,7 +206,7 @@ packages:
       loader-utils: 3.2.0
       mini-css-extract-plugin: 2.5.3_webpack@5.70.0
       minimatch: 3.0.5
-      ng-packagr: 13.3.0_a7432f6517226ea06ba979d27e8a360b
+      ng-packagr: 13.3.1_a7432f6517226ea06ba979d27e8a360b
       open: 8.4.0
       ora: 5.4.1
       parse5-html-rewriting-stream: 6.0.1
@@ -7571,7 +7571,7 @@ packages:
       '@angular/core': '>=10.0.0'
       '@angular/platform-browser-dynamic': '>=10.0.0'
     dependencies:
-      '@angular-devkit/build-angular': 13.3.2_b100be183b8846d2040ed671503a49c1
+      '@angular-devkit/build-angular': 13.3.2_2514ede46070aff7a99269192eccfc44
       '@angular/compiler-cli': 13.3.2_1d1fb930f2a4fcb5ce3934186233662e
       '@angular/core': 13.3.2_rxjs@7.5.5+zone.js@0.11.5
       '@angular/platform-browser-dynamic': 13.3.2_c37c5b1c5c97ab051150f9d2ac4e2c7d
@@ -8165,6 +8165,7 @@ packages:
   /lru-cache/7.7.1:
     resolution: {integrity: sha512-cRffBiTW8s73eH4aTXqBcTLU0xQnwGV3/imttRHGWCrbergmnK4D6JXQd8qin5z43HnDwRI+o7mVW0LEB+tpAw==}
     engines: {node: '>=12'}
+    deprecated: Please update to latest patch version to fix memory leak https://github.com/isaacs/node-lru-cache/issues/227
     dev: true
 
   /magic-string/0.25.7:
@@ -8531,8 +8532,8 @@ packages:
   /neo-async/2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
-  /ng-packagr/13.3.0_a7432f6517226ea06ba979d27e8a360b:
-    resolution: {integrity: sha512-y0bmIkGp1YQJVPYX3/dOjZBTqN+qD6rDbVhJB//1y0WEs8WDjrwaRPp6JGT79z2jbUXoIOsDmPnIKNegpNAgPw==}
+  /ng-packagr/13.3.1_a7432f6517226ea06ba979d27e8a360b:
+    resolution: {integrity: sha512-RFB6+03qPlhsOZc0wPenkyCceUYU0kRymbO7fIZ4Uz3y7RltXeknfjWKVcN6o5o42Md/lbNabt4gViXNzahhjA==}
     engines: {node: ^12.20.0 || ^14.15.0 || >=16.10.0}
     hasBin: true
     peerDependencies:
