@@ -1,6 +1,5 @@
 {
   "projectType": "library",
-  "root": "libs/query-angular",
   "sourceRoot": "libs/query-angular/src",
   "prefix": "tomtomb",
   "targets": {
@@ -24,7 +23,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/query-angular"],
       "options": {
-        "jestConfig": "libs/query-angular/jest.config.js",
+        "jestConfig": "libs/query-angular/jest.config.ts",
         "passWithNoTests": true
       }
     },

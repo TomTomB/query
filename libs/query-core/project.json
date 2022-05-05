@@ -1,5 +1,4 @@
 {
-  "root": "libs/query-core",
   "sourceRoot": "libs/query-core/src",
   "projectType": "library",
   "targets": {
@@ -24,7 +23,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/query-core"],
       "options": {
-        "jestConfig": "libs/query-core/jest.config.js",
+        "jestConfig": "libs/query-core/jest.config.ts",
         "passWithNoTests": true
       }
     }

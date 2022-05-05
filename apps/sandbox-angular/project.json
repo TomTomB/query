@@ -1,6 +1,5 @@
 {
   "projectType": "application",
-  "root": "apps/sandbox-angular",
   "sourceRoot": "apps/sandbox-angular/src",
   "prefix": "tomtomb",
   "targets": {
@@ -85,7 +84,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/sandbox-angular"],
       "options": {
-        "jestConfig": "apps/sandbox-angular/jest.config.js",
+        "jestConfig": "apps/sandbox-angular/jest.config.ts",
         "passWithNoTests": true
       }
     }
