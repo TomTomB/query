@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+  test: false,
   apiUrl: 'https://jsonplaceholder.typicode.com',
   ggApiUrl: 'https://api.fifa.gg',
 };
