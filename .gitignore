@@ -40,3 +40,11 @@ Thumbs.db
 
 .angular
 migrations.json
+
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
