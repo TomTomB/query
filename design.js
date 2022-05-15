@@ -19,6 +19,11 @@ queryClient.auth.provideAutoRefreshAdapter((tokens) => ({
     route: 'auth/refresh-token',
   }),
   body: () => ({ refreshToken: tokens.refreshToken }),
+
+  /**
+   * onTokenExpired | onUnauthorizedResponse
+   */
+  refreshStrategy: 'onTokenExpired',
 }));
 
 // Somewhere after a successful login
@@ -28,6 +33,7 @@ queryClient.auth.useTokens(tokens);
  * Create a new query
  *
  * - method
+ * - route
  *
  * - usePolling
  * - pollingInterval

@@ -9,7 +9,6 @@ import {
   buildRoute,
   isRequestError,
   request,
-  RequestError,
   isAbortRequestError,
 } from '../request';
 import {
@@ -19,12 +18,11 @@ import {
   QueryBaseArguments,
   RunQueryConfig,
 } from './query.types';
-import { executeConfigIsWithArgs, QueryPromise } from './query.util';
+import { executeConfigIsWithArgs } from './query.util';
 
 const createQuery = <
   Response = unknown,
-  Arguments extends QueryBaseArguments | unknown = unknown,
-  ErrorResponse = unknown
+  Arguments extends QueryBaseArguments | unknown = unknown
 >(
   config: RunQueryConfig<Arguments>,
   queryState: QueryState,
@@ -68,33 +66,27 @@ const createQuery = <
 
       const abortController = new AbortController();
 
-      const queryPromise = new QueryPromise<
-        Response,
-        RequestError<ErrorResponse>
-      >(async (resolve, reject) => {
-        try {
-          const { data, expiresInTimestamp } = await request<
-            Response,
-            ErrorResponse
-          >({
-            route,
-            init: { method: config.method, signal: abortController.signal },
-            cacheAdapter: queryOptions.request?.cacheAdapter,
+      const queryPromise = new Promise<Response>((resolve, reject) => {
+        request<Response>({
+          route,
+          init: { method: config.method, signal: abortController.signal },
+          cacheAdapter: queryOptions.request?.cacheAdapter,
+        })
+          .then(({ data, expiresInTimestamp }) => {
+            queryState.transformToSuccessState(route, data, expiresInTimestamp);
+
+            resolve(data);
+          })
+          .catch((error) => {
+            if (isAbortRequestError(error)) {
+              return;
+            }
+
+            if (isRequestError(error)) {
+              queryState.transformToErrorState(route, error);
+              reject(error);
+            }
           });
-
-          queryState.transformToSuccessState(route, data, expiresInTimestamp);
-
-          resolve(data);
-        } catch (error) {
-          if (isAbortRequestError(error)) {
-            return;
-          }
-
-          if (isRequestError(error)) {
-            queryState.transformToErrorState(route, error);
-            reject(error as RequestError<ErrorResponse>);
-          }
-        }
       });
 
       queryState.insertLoadingState(route, {
@@ -105,7 +97,7 @@ const createQuery = <
       return queryPromise;
     },
   } as {
-    execute: ExecuteFn<Response, Arguments, ErrorResponse>;
+    execute: ExecuteFn<Response, Arguments>;
   };
 };
 
