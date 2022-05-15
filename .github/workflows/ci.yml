@@ -16,33 +16,23 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Cache pnpm modules
-        uses: actions/cache@v3
-        with:
-          path: ~/.pnpm-store
-          key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-
-
-      - uses: pnpm/action-setup@v2.2.1
-        with:
-          version: latest
-          run_install: true
-
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
         uses: nrwl/nx-set-shas@v2
 
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
+          cache: 'yarn'
 
-      - run: pnpm dlx nx format:check
+      - run: yarn install --frozen-lockfile
 
-      - run: pnpm dlx nx affected --target=lint --parallel=3 --all
+      - run: yarn nx format:check
 
-      - run: pnpm dlx nx affected --target=build --parallel=3 --all
+      - run: yarn nx affected --target=lint --parallel=3 --all
 
-      - run: pnpm dlx nx affected --target=test --parallel=2 --all
+      - run: yarn nx affected --target=build --parallel=3 --all
+
+      - run: yarn nx affected --target=test --parallel=2 --all
 
       - uses: codecov/codecov-action@v3
         with:
@@ -52,9 +42,9 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          version: pnpm changeset version
+          version: yarn changeset version
           commit: 'chore: 🤖 update versions'
-          publish: pnpm release
+          publish: yarn release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -68,30 +58,20 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
 
-      - name: Cache pnpm modules
-        uses: actions/cache@v3
-        with:
-          path: ~/.pnpm-store
-          key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-
-
-      - uses: pnpm/action-setup@v2.2.1
-        with:
-          version: latest
-          run_install: true
-
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
         uses: nrwl/nx-set-shas@v2
 
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
+          cache: 'yarn'
 
-      - run: pnpm dlx nx format:check
+      - run: yarn install --frozen-lockfile
 
-      - run: pnpm dlx nx affected --target=lint --parallel=3
+      - run: yarn nx format:check
 
-      - run: pnpm dlx nx affected --target=build --parallel=3
+      - run: yarn nx affected --target=lint --parallel=3
 
-      - run: pnpm dlx nx affected --target=test --parallel=2
+      - run: yarn nx affected --target=build --parallel=3
+
+      - run: yarn nx affected --target=test --parallel=2
