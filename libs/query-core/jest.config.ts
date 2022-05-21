@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   displayName: 'query-core',
 
   globals: {
@@ -12,5 +12,5 @@ module.exports = {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/libs/query-core',
   setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
-  preset: '../../jest.preset.ts',
+  preset: '../../jest.preset.js',
 };
