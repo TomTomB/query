@@ -16,25 +16,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Cache pnpm modules
-        uses: actions/cache@v3
-        with:
-          path: ~/.pnpm-store
-          key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-
-
-      - uses: pnpm/action-setup@v2.2.1
-        with:
-          version: latest
-          run_install: true
-
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
         uses: nrwl/nx-set-shas@v2
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: latest
 
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
 
       - run: pnpm dlx nx format:check
 
@@ -68,25 +62,19 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
 
-      - name: Cache pnpm modules
-        uses: actions/cache@v3
-        with:
-          path: ~/.pnpm-store
-          key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-
-
-      - uses: pnpm/action-setup@v2.2.1
-        with:
-          version: latest
-          run_install: true
-
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
         uses: nrwl/nx-set-shas@v2
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: latest
 
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
 
       - run: pnpm dlx nx format:check
 
