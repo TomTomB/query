@@ -1,5 +1,15 @@
 # @tomtomb/query-core
 
+## 0.1.0
+
+### Minor Changes
+
+- [#36](https://github.com/TomTomB/query/pull/36) [`007e728`](https://github.com/TomTomB/query/commit/007e7288b980b1f6d2c072766057d0e8038d546a) Thanks [@TomTomB](https://github.com/TomTomB)! - Removed error typings from query lib
+
+### Patch Changes
+
+- [#36](https://github.com/TomTomB/query/pull/36) [`ee3c747`](https://github.com/TomTomB/query/commit/ee3c74776361288394f8752671dd9387b2410cd1) Thanks [@TomTomB](https://github.com/TomTomB)! - Fixed route property typings
+
 ## 0.0.2
 
 ### Patch Changes
