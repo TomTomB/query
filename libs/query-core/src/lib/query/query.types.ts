@@ -1,6 +1,5 @@
 import { QueryState } from '../query-state';
-import { RequestError, UnfilteredParams, CacheAdapterFn } from '../request';
-import { QueryPromise } from './query.util';
+import { UnfilteredParams, CacheAdapterFn } from '../request';
 
 export interface InitializeQueryConfig {
   /**
@@ -83,33 +82,26 @@ export type ExecuteOptions = {
 export interface Query {
   create: <
     Response = unknown,
-    Arguments extends QueryBaseArguments | unknown = unknown,
-    ErrorResponse = unknown
+    Arguments extends QueryBaseArguments | unknown = unknown
   >(
     config: RunQueryConfig<Arguments>
-  ) => ReturnType<CreateQuery<Response, Arguments, ErrorResponse>>;
+  ) => ReturnType<CreateQuery<Response, Arguments>>;
 }
 
 export type CreateQuery<
   Response = unknown,
-  Arguments extends QueryBaseArguments | unknown = unknown,
-  ErrorResponse = unknown
+  Arguments extends QueryBaseArguments | unknown = unknown
 > = (
   config: RunQueryConfig<Arguments>,
   queryState: QueryState,
   queryOptions: InitializeQueryConfig
 ) => {
-  execute: ExecuteFn<Response, Arguments, ErrorResponse>;
+  execute: ExecuteFn<Response, Arguments>;
 };
 
 export type ExecuteFn<
   Response = unknown,
-  Arguments extends QueryBaseArguments | unknown = unknown,
-  ErrorResponse = unknown
+  Arguments extends QueryBaseArguments | unknown = unknown
 > = Arguments extends QueryBaseArguments
-  ? (
-      config: ExecuteConfig<Arguments>
-    ) => QueryPromise<Response, RequestError<ErrorResponse>>
-  : (
-      config?: ExecuteConfigWithoutArgs
-    ) => QueryPromise<Response, RequestError<ErrorResponse>>;
+  ? (config: ExecuteConfig<Arguments>) => Promise<Response>
+  : (config?: ExecuteConfigWithoutArgs) => Promise<Response>;

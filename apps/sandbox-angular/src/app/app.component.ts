@@ -31,6 +31,6 @@ export class AppComponent implements OnInit {
         options,
       })
       .then((p) => (this.post = p))
-      .catch((e) => (this.postError = e)); // FIXME: This should be typed as RequestError<unknown>
+      .catch((e: RequestError) => (this.postError = e));
   }
 }

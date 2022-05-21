@@ -5,10 +5,7 @@ import {
   extractExpiresInSeconds,
 } from './request.util';
 
-export const request = async <
-  SuccessResponse = unknown,
-  ErrorResponse = unknown
->(options: {
+export const request = async <Response = unknown>(options: {
   route: string;
   init?: RequestInit;
   cacheAdapter?: CacheAdapterFn;
@@ -20,7 +17,7 @@ export const request = async <
       throw response;
     }
 
-    const data = (await response.json()) as SuccessResponse;
+    const data = (await response.json()) as Response;
 
     const expiresInSeconds = options.cacheAdapter
       ? options.cacheAdapter(response.headers)
@@ -30,6 +27,6 @@ export const request = async <
 
     return { data, expiresInTimestamp };
   } catch (error) {
-    throw await buildRequestError<ErrorResponse>(error);
+    throw await buildRequestError(error);
   }
 };
