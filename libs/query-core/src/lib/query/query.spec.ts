@@ -72,7 +72,7 @@ describe('query', () => {
 
     fetchMock.mockRejectOnce(() => Promise.reject(resp));
 
-    const getPost = query.create<{ foo: string }, unknown, { error: string }>({
+    const getPost = query.create<{ foo: string }, { error: string }>({
       method: 'GET',
       route: '/posts',
     });
