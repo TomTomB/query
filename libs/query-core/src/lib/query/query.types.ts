@@ -63,7 +63,7 @@ export interface RunQueryConfig<
 }
 
 export type RouteFn<Arguments extends QueryBaseArguments | unknown> =
-  Arguments extends QueryBaseArguments
+  Arguments extends { pathParams?: Record<string, unknown> }
     ? (args: Arguments['pathParams']) => string
     : string;
 
