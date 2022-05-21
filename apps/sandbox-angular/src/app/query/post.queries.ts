@@ -15,7 +15,7 @@ export const getPost = query.create<Post, GetPostQuery>({
 });
 
 export const getPosts = query.create<Post[], GetPostsQuery>({
-  route: () => '/posts', // FIXME: This should be a normal string
+  route: '/posts',
   method: 'GET',
 });
 
