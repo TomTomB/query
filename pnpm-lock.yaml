@@ -17,7 +17,7 @@ importers:
       '@angular/forms': 13.3.9
       '@angular/language-service': 13.3.9
       '@angular/platform-browser': 13.3.9
-      '@angular/platform-browser-dynamic': 13.3.6
+      '@angular/platform-browser-dynamic': 13.3.9
       '@angular/router': 13.3.9
       '@changesets/changelog-github': 0.4.4
       '@changesets/cli': 2.22.0
@@ -61,7 +61,7 @@ importers:
       '@angular/core': 13.3.9_rxjs@7.5.5+zone.js@0.11.5
       '@angular/forms': 13.3.9_pm4vdonypbpigl6cfdce4sfmdq
       '@angular/platform-browser': 13.3.9_dqq6bam42gj54rld5uipnmqzs4
-      '@angular/platform-browser-dynamic': 13.3.6_2k4rivkxnvexphdpkfvakgfjci
+      '@angular/platform-browser-dynamic': 13.3.9_2k4rivkxnvexphdpkfvakgfjci
       '@angular/router': 13.3.9_pm4vdonypbpigl6cfdce4sfmdq
       '@changesets/cli': 2.22.0
       '@nrwl/angular': 14.1.7_gcjvmsoicb3ovmijo4spbno5di
@@ -96,7 +96,7 @@ importers:
       husky: 8.0.1
       jest: 27.5.1
       jest-fetch-mock: 3.0.3
-      jest-preset-angular: 11.1.2_jw2ndriygigofwfdpqdewt2n5e
+      jest-preset-angular: 11.1.2_sat6zizdfjfbo6krz56zzlggwa
       ng-packagr: 13.3.1_zvhr5qp3vzk6yncwa2uuehneq4
       nx: 14.1.7
       postcss: 8.4.14
@@ -499,14 +499,14 @@ packages:
     engines: {node: ^12.20.0 || ^14.15.0 || >=16.10.0}
     dev: true
 
-  /@angular/platform-browser-dynamic/13.3.6_2k4rivkxnvexphdpkfvakgfjci:
-    resolution: {integrity: sha512-FcQlodqhjnxaa7b9Gskfi9Lk8L3970lRuFSXtzJmeASyqnTj9UaLkE5kpSJqh07Ulxf2UFU4SD/nP1QChbvPuA==}
+  /@angular/platform-browser-dynamic/13.3.9_2k4rivkxnvexphdpkfvakgfjci:
+    resolution: {integrity: sha512-flyfoJG9vBSj3rmH/jUNaOPGfGlGHSj4v34OL16Qjk3M5bxbQKxBYNrDAUwk0Ve4S4qUfXF7ZDE0v1vUvn+3MA==}
     engines: {node: ^12.20.0 || ^14.15.0 || >=16.10.0}
     peerDependencies:
-      '@angular/common': 13.3.6
-      '@angular/compiler': 13.3.6
-      '@angular/core': 13.3.6
-      '@angular/platform-browser': 13.3.6
+      '@angular/common': 13.3.9
+      '@angular/compiler': 13.3.9
+      '@angular/core': 13.3.9
+      '@angular/platform-browser': 13.3.9
     dependencies:
       '@angular/common': 13.3.9_ykbm67bhu2bcu7yn4wh7ib7zmq
       '@angular/compiler': 13.3.9
@@ -7696,7 +7696,7 @@ packages:
     dependencies:
       jest-resolve: 27.5.1
 
-  /jest-preset-angular/11.1.2_jw2ndriygigofwfdpqdewt2n5e:
+  /jest-preset-angular/11.1.2_sat6zizdfjfbo6krz56zzlggwa:
     resolution: {integrity: sha512-qPvOP6wnLP8M01TDVSa3UC3PcDWxoj87T58mWEp5yWlWPrXBJ6rhnTEI+HPmZLyehwlK686+O/49hwFRVXFP0A==}
     engines: {node: ^12.20.0 || ^14.15.0 || >=16.10.0}
     peerDependencies:
@@ -7708,7 +7708,7 @@ packages:
       '@angular-devkit/build-angular': 13.3.6_fnhxunwcsogvtwprrsgy5mwh64
       '@angular/compiler-cli': 13.3.9_p6rnabs4674uzfsi7vl7zwqdi4
       '@angular/core': 13.3.9_rxjs@7.5.5+zone.js@0.11.5
-      '@angular/platform-browser-dynamic': 13.3.6_2k4rivkxnvexphdpkfvakgfjci
+      '@angular/platform-browser-dynamic': 13.3.9_2k4rivkxnvexphdpkfvakgfjci
       bs-logger: 0.2.6
       esbuild-wasm: 0.14.11
       jest-environment-jsdom: 27.5.1
