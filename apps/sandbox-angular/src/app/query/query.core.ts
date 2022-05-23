@@ -1,15 +1,8 @@
-import { initializeQuery } from '@tomtomb/query-core';
+import { QueryClient } from '@tomtomb/query-core';
 import { environment } from '../../environments/environment';
 
-export const query = initializeQuery({
+export const query = new QueryClient({
   baseRoute: environment.apiUrl,
-  logging: {
-    queryStateChanges: !environment.production && !environment.test,
-  },
-});
-
-export const ggQuery = initializeQuery({
-  baseRoute: environment.ggApiUrl,
   logging: {
     queryStateChanges: !environment.production && !environment.test,
   },
