@@ -1,4 +1,4 @@
-import { invalidBaseRouteError } from '../logger';
+import { QueryClientConfig } from '../query-client';
 import {
   isQueryStateExpired,
   isQueryStateLoadingItem,
@@ -7,39 +7,42 @@ import {
 } from '../query-state';
 import {
   buildRoute,
-  isRequestError,
-  request,
   isAbortRequestError,
+  isRequestError,
+  MethodType,
+  request,
 } from '../request';
 import {
-  ExecuteFn,
-  InitializeQueryConfig,
+  BaseArguments,
   Query,
-  QueryBaseArguments,
-  RunQueryConfig,
+  QueryConfig,
+  RunQueryOptions,
+  RouteType,
 } from './query.types';
-import { executeConfigIsWithArgs } from './query.util';
 
-const createQuery = <
+export const createQuery = <
+  Method extends MethodType,
+  Name extends string,
+  FullName extends `${Lowercase<Method>}${Name}`,
+  Route extends RouteType<Arguments>,
   Response = unknown,
-  Arguments extends QueryBaseArguments | unknown = unknown
+  Arguments extends BaseArguments | void = void
 >(
-  config: RunQueryConfig<Arguments>,
+  config: QueryConfig<Method, Name, Route, Response, Arguments>,
   queryState: QueryState,
-  queryOptions: InitializeQueryConfig
+  queryClientConfig: QueryClientConfig
 ) => {
-  return {
-    execute: async (execConfig) => {
-      const pathParams = executeConfigIsWithArgs(execConfig)
-        ? execConfig.args.pathParams
-        : undefined;
+  const fullName = `${config.method.toLowerCase()}${config.name}` as FullName;
 
-      const queryParams = executeConfigIsWithArgs(execConfig)
-        ? execConfig.args.queryParams
-        : undefined;
+  const doStuff = () => true;
+
+  const query = {
+    [fullName]: (args?: Arguments, options?: RunQueryOptions) => {
+      const pathParams = args?.pathParams;
+      const queryParams = args?.queryParams;
 
       const route = buildRoute({
-        base: queryOptions.baseRoute,
+        base: queryClientConfig.baseRoute,
         route: config.route,
         pathParams,
         queryParams,
@@ -48,7 +51,7 @@ const createQuery = <
       const existingQuery = queryState.get(route);
 
       if (isQueryStateLoadingItem(existingQuery)) {
-        if (execConfig?.options?.abortPrevious) {
+        if (options?.abortPrevious) {
           existingQuery.abortController.abort();
           queryState.delete(route);
         } else {
@@ -59,7 +62,7 @@ const createQuery = <
       if (
         isQueryStateSuccessItem(existingQuery) &&
         !isQueryStateExpired(existingQuery) &&
-        !execConfig?.options?.skipCache
+        !options?.skipCache
       ) {
         return existingQuery.data;
       }
@@ -70,7 +73,7 @@ const createQuery = <
         request<Response>({
           route,
           init: { method: config.method, signal: abortController.signal },
-          cacheAdapter: queryOptions.request?.cacheAdapter,
+          cacheAdapter: queryClientConfig.request?.cacheAdapter,
         })
           .then(({ data, expiresInTimestamp }) => {
             queryState.transformToSuccessState(route, data, expiresInTimestamp);
@@ -96,27 +99,8 @@ const createQuery = <
 
       return queryPromise;
     },
-  } as {
-    execute: ExecuteFn<Response, Arguments>;
-  };
-};
+    doStuff,
+  } as Query<FullName, Arguments, Response>;
 
-export const initializeQuery = (config: InitializeQueryConfig): Query => {
-  const QUERY_STATE = new QueryState({
-    enableChangeLogging: config.logging?.queryStateChanges,
-    enableGarbageCollectorLogging: config.logging?.queryStateGarbageCollector,
-  });
-
-  if (config.baseRoute.endsWith('/')) {
-    throw invalidBaseRouteError(config.baseRoute);
-  }
-
-  const QUERY_OPTIONS = {
-    baseRoute: config.baseRoute,
-    request: config.request,
-  };
-
-  return {
-    create: (config) => createQuery(config, QUERY_STATE, QUERY_OPTIONS),
-  };
+  return query;
 };

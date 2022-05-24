@@ -1,3 +1,18 @@
+export type MethodType =
+  | 'GET'
+  | 'POST'
+  | 'PUT'
+  | 'DELETE'
+  | 'PATCH'
+  | 'HEAD'
+  | 'OPTIONS'
+  | 'TRACE'
+  | 'CONNECT'
+  | 'PURGE'
+  | 'LINK'
+  | 'UNLINK'
+  | 'CUSTOM';
+
 export interface RequestError<Detail = unknown> {
   code: number;
   message: string;

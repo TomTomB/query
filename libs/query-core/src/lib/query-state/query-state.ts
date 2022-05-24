@@ -1,52 +1,53 @@
 import {
-  queryStateCannotTransform,
-  queryStateAlreadyHasKey,
-  queryStateDoesNotContainKey,
+  queryStateCannotTransformError,
+  queryStateAlreadyHasKeyError,
+  queryStateDoesNotContainKeyError,
 } from '../logger';
 import { QueryStateItem, QueryStateLoadingItem } from './query-state.types';
 
 export class QueryState {
-  private readonly state = new Map<string, QueryStateItem>();
-  private _garbageCollector: number | null = null;
+  readonly #_state = new Map<string, QueryStateItem>();
+  #_garbageCollector: number | null = null;
+  #_config;
 
-  constructor(
-    private _config?: {
-      enableChangeLogging?: boolean;
-      enableGarbageCollectorLogging?: boolean;
-    }
-  ) {}
+  constructor(_config?: {
+    enableChangeLogging?: boolean;
+    enableGarbageCollectorLogging?: boolean;
+  }) {
+    this.#_config = _config ?? {};
+  }
 
   get(key: string) {
-    return this.state.get(key) ?? null;
+    return this.#_state.get(key) ?? null;
   }
 
   set(key: string, value: QueryStateItem) {
-    this.state.set(key, value);
-    this._initGarbageCollector();
+    this.#_state.set(key, value);
+    this.#_initGarbageCollector();
 
-    this._logState(key, value, 'SET');
+    this.#_logState(key, value, 'SET');
   }
 
   delete(key: string) {
-    this.state.delete(key);
+    this.#_state.delete(key);
 
-    this._logState(key, null, 'DELETE');
+    this.#_logState(key, null, 'DELETE');
   }
 
   has(key: string) {
-    return this.state.has(key);
+    return this.#_state.has(key);
   }
 
   clear() {
-    this.state.clear();
-    this._initGarbageCollector();
+    this.#_state.clear();
+    this.#_initGarbageCollector();
 
-    this._logState(null, null, 'CLEAR');
+    this.#_logState(null, null, 'CLEAR');
   }
 
   insertLoadingState(key: string, item: Omit<QueryStateLoadingItem, 'state'>) {
     if (this.has(key)) {
-      throw queryStateAlreadyHasKey(key);
+      throw queryStateAlreadyHasKeyError(key);
     }
 
     this.set(key, { ...item, state: 'loading' });
@@ -60,11 +61,11 @@ export class QueryState {
     const item = this.get(key);
 
     if (!item) {
-      throw queryStateDoesNotContainKey(key);
+      throw queryStateDoesNotContainKeyError(key);
     }
 
     if (item.state !== 'loading') {
-      throw queryStateCannotTransform(item);
+      throw queryStateCannotTransformError(item);
     }
 
     this.set(key, {
@@ -78,11 +79,11 @@ export class QueryState {
     const item = this.get(key);
 
     if (!item) {
-      throw queryStateDoesNotContainKey(key);
+      throw queryStateDoesNotContainKeyError(key);
     }
 
     if (item.state !== 'loading') {
-      throw queryStateCannotTransform(item);
+      throw queryStateCannotTransformError(item);
     }
 
     this.set(key, {
@@ -91,48 +92,50 @@ export class QueryState {
     });
   }
 
-  private _logState(
+  #_logState(
     key: string | null,
     item: QueryStateItem | null,
     operation: string
   ) {
-    if (!this._config?.enableChangeLogging) return;
+    if (!this.#_config?.enableChangeLogging) return;
 
     const stateAsJson: Record<string, QueryStateItem> = {};
 
-    this.state.forEach((value, key) => {
+    this.#_state.forEach((value, key) => {
       stateAsJson[key] = value;
     });
 
-    console.log({ operation, key, item });
-    console.log(stateAsJson);
+    console.log(`%c[${operation}] ${key}`, 'font-weight: bold');
+
+    console.table({ operation, key, item });
+    console.table(stateAsJson);
   }
 
-  private _initGarbageCollector() {
-    if (this._garbageCollector !== null) {
+  #_initGarbageCollector() {
+    if (this.#_garbageCollector !== null) {
       return;
     }
 
-    this._garbageCollector = window.setInterval(() => {
-      this._runGarbageCollector();
+    this.#_logGarbageCollector('Start');
+
+    this.#_garbageCollector = window.setInterval(() => {
+      this.#_runGarbageCollector();
     }, 15000);
   }
 
-  private _stopGarbageCollector() {
-    if (this._garbageCollector !== null) {
-      window.clearInterval(this._garbageCollector);
-      this._garbageCollector = null;
+  #_stopGarbageCollector() {
+    if (this.#_garbageCollector !== null) {
+      window.clearInterval(this.#_garbageCollector);
+      this.#_garbageCollector = null;
     }
   }
 
-  private _runGarbageCollector() {
+  #_runGarbageCollector() {
     const now = Date.now();
 
-    if (this._config?.enableGarbageCollectorLogging) {
-      console.log('Garbage collector: Start run');
-    }
+    this.#_logGarbageCollector('Collecting...');
 
-    this.state.forEach((item, key) => {
+    this.#_state.forEach((item, key) => {
       if (
         (item.state === 'success' &&
           (item.expiresIn === null || now > item.expiresIn)) ||
@@ -142,15 +145,17 @@ export class QueryState {
       }
     });
 
-    if (!this.state.size) {
-      this._stopGarbageCollector();
-      if (this._config?.enableGarbageCollectorLogging) {
-        console.log('Garbage collector: Stop');
-      }
-    }
+    this.#_logGarbageCollector('Collection done');
 
-    if (this._config?.enableGarbageCollectorLogging) {
-      console.log('Garbage collector: End run');
+    if (!this.#_state.size) {
+      this.#_stopGarbageCollector();
+      this.#_logGarbageCollector('Stop');
     }
+  }
+
+  #_logGarbageCollector(action: string) {
+    if (!this.#_config?.enableGarbageCollectorLogging) return;
+
+    console.log(`%cGC: ${action}`, 'color: yellow; font-weight: bold');
   }
 }
