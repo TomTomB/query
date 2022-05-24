@@ -24,23 +24,23 @@ export const pathParamsMissingInRouteFunctionError = (data: unknown) =>
     data
   );
 
-export const queryStateAlreadyHasKey = (data: unknown) =>
+export const queryStateAlreadyHasKeyError = (data: unknown) =>
   new QueryError(
     '004',
     'The query state already contains the provided key',
     data
   );
 
-export const queryStateDoesNotContainKey = (data: unknown) =>
+export const queryStateDoesNotContainKeyError = (data: unknown) =>
   new QueryError(
     '005',
     'The query state does not contain the provided key',
     data
   );
 
-export const queryStateCannotTransform = (data: unknown) =>
+export const queryStateCannotTransformError = (data: unknown) =>
   new QueryError(
-    '005',
+    '006',
     'The query state cannot be transformed because it is not loading',
     data
   );

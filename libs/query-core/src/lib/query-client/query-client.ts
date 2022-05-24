@@ -1,23 +1,20 @@
 import { invalidBaseRouteError } from '../logger';
 import { QueryState } from '../query-state';
-import { InitializeQueryConfig } from '../query/query.types';
-import { createQuery } from './query';
-import {
-  BaseArguments,
-  MethodType,
-  QueryConfig,
-  RouteType,
-} from './query.types';
+import { MethodType } from '../request';
+import { BaseArguments, QueryConfig, RouteType, createQuery } from '../query';
+import { QueryClientConfig } from './query-client.types';
 
 export class QueryClient {
-  private readonly _queryState;
+  readonly #_queryState;
+  readonly #_config;
 
-  constructor(private _config: InitializeQueryConfig) {
-    if (_config.baseRoute.endsWith('/')) {
-      throw invalidBaseRouteError(_config.baseRoute);
+  constructor(config: QueryClientConfig) {
+    if (config.baseRoute.endsWith('/')) {
+      throw invalidBaseRouteError(config.baseRoute);
     }
 
-    this._queryState = this._initializeQueryState(_config);
+    this.#_config = config;
+    this.#_queryState = this.#_initializeQueryState(config);
   }
 
   create = <
@@ -32,11 +29,11 @@ export class QueryClient {
   ) =>
     createQuery<Method, Name, FullName, Route, Response, Arguments>(
       config,
-      this._queryState,
-      this._config
+      this.#_queryState,
+      this.#_config
     );
 
-  private _initializeQueryState(config: InitializeQueryConfig) {
+  #_initializeQueryState(config: QueryClientConfig) {
     return new QueryState({
       enableChangeLogging: config.logging?.queryStateChanges,
       enableGarbageCollectorLogging: config.logging?.queryStateGarbageCollector,

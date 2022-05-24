@@ -1,3 +1,4 @@
-export * from './lib/query';
-export * from './lib/query-new';
-export { RequestError } from './lib/request';
+export * from './lib/query/public-api';
+export * from './lib/query-client/public-api';
+export * from './lib/query-state/public-api';
+export * from './lib/request/public-api';
