@@ -22,22 +22,18 @@ import {
 
 export const createQuery = <
   Method extends MethodType,
-  Name extends string,
-  FullName extends `${Lowercase<Method>}${Name}`,
   Route extends RouteType<Arguments>,
   Response = unknown,
   Arguments extends BaseArguments | void = void
 >(
-  config: QueryConfig<Method, Name, Route, Response, Arguments>,
+  config: QueryConfig<Method, Route, Response, Arguments>,
   queryState: QueryState,
   queryClientConfig: QueryClientConfig
 ) => {
-  const fullName = `${config.method.toLowerCase()}${config.name}` as FullName;
-
   const doStuff = () => true;
 
   const query = {
-    [fullName]: (args?: Arguments, options?: RunQueryOptions) => {
+    execute: (args?: Arguments, options?: RunQueryOptions) => {
       const pathParams = args?.pathParams;
       const queryParams = args?.queryParams;
 
@@ -100,7 +96,7 @@ export const createQuery = <
       return queryPromise;
     },
     doStuff,
-  } as Query<FullName, Arguments, Response>;
+  } as Query<Arguments, Response>;
 
   return query;
 };
