@@ -10,8 +10,7 @@ import {
   UpdatePostQuery,
 } from './types';
 
-export const { getPost, ...getPostQuery } = query.create({
-  name: 'Post',
+export const { execute: getPost, ...getPostQuery } = query.create({
   route: (p) => `/posts/${p.id}`,
   method: 'GET',
   types: {
@@ -20,8 +19,7 @@ export const { getPost, ...getPostQuery } = query.create({
   },
 });
 
-export const { getPosts, ...getPostsQuery } = query.create({
-  name: 'Posts',
+export const { execute: getPosts, ...getPostsQuery } = query.create({
   route: '/posts',
   method: 'GET',
   types: {
@@ -30,8 +28,7 @@ export const { getPosts, ...getPostsQuery } = query.create({
   },
 });
 
-export const { postPost, ...postPostQuery } = query.create({
-  name: 'Post',
+export const { execute: postPost, ...postPostQuery } = query.create({
   route: '/posts',
   method: 'POST',
   types: {
@@ -40,8 +37,7 @@ export const { postPost, ...postPostQuery } = query.create({
   },
 });
 
-export const { putPost, ...putPostQuery } = query.create({
-  name: 'Post',
+export const { execute: putPost, ...putPostQuery } = query.create({
   route: (p) => `/posts/${p.id}`,
   method: 'PUT',
   types: {
@@ -50,8 +46,7 @@ export const { putPost, ...putPostQuery } = query.create({
   },
 });
 
-export const { patchPost, ...patchPostQuery } = query.create({
-  name: 'Post',
+export const { execute: patchPost, ...patchPostQuery } = query.create({
   route: (p) => `/posts/${p.id}`,
   method: 'PATCH',
   types: {
@@ -60,8 +55,7 @@ export const { patchPost, ...patchPostQuery } = query.create({
   },
 });
 
-export const { deletePost, ...deletePostQuery } = query.create({
-  name: 'Post',
+export const { execute: deletePost, ...deletePostQuery } = query.create({
   route: (p) => `/posts/${p.id}`,
   method: 'DELETE',
   types: {
