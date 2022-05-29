@@ -1,3 +1,5 @@
+import { QueryClientConfig } from '../query-client';
+import { QueryState } from '../query-state';
 import { Method, UnfilteredParams } from '../request';
 
 export interface QueryConfig<
@@ -44,3 +46,13 @@ export type RouteType<Arguments = unknown> = Arguments extends {
 }
   ? (p: PathParams) => string
   : string;
+
+export interface CombinedQueryConfig<
+  Route extends RouteType<Arguments>,
+  Response = unknown,
+  Arguments extends BaseArguments | unknown = unknown
+> {
+  client: QueryClientConfig;
+  query: QueryConfig<Route, Response, Arguments>;
+  state: QueryState;
+}

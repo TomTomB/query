@@ -30,11 +30,11 @@ export class QueryClient {
   >(
     config: QueryConfigWithoutMethod<Route, Response, Arguments>
   ) =>
-    createQuery<Route, Response, Arguments>(
-      { ...config, method: 'GET' },
-      this.#_queryState,
-      this.#_config
-    );
+    createQuery<Route, Response, Arguments>({
+      client: this.#_config,
+      query: { ...config, method: 'GET' },
+      state: this.#_queryState,
+    });
 
   post = <
     Route extends RouteType<Arguments>,
@@ -43,11 +43,11 @@ export class QueryClient {
   >(
     config: QueryConfigWithoutMethod<Route, Response, Arguments>
   ) =>
-    createQuery<Route, Response, Arguments>(
-      { ...config, method: 'POST' },
-      this.#_queryState,
-      this.#_config
-    );
+    createQuery<Route, Response, Arguments>({
+      client: this.#_config,
+      query: { ...config, method: 'POST' },
+      state: this.#_queryState,
+    });
 
   put = <
     Route extends RouteType<Arguments>,
@@ -56,11 +56,11 @@ export class QueryClient {
   >(
     config: QueryConfigWithoutMethod<Route, Response, Arguments>
   ) =>
-    createQuery<Route, Response, Arguments>(
-      { ...config, method: 'PUT' },
-      this.#_queryState,
-      this.#_config
-    );
+    createQuery<Route, Response, Arguments>({
+      client: this.#_config,
+      query: { ...config, method: 'PUT' },
+      state: this.#_queryState,
+    });
 
   patch = <
     Route extends RouteType<Arguments>,
@@ -69,11 +69,11 @@ export class QueryClient {
   >(
     config: QueryConfigWithoutMethod<Route, Response, Arguments>
   ) =>
-    createQuery<Route, Response, Arguments>(
-      { ...config, method: 'PATCH' },
-      this.#_queryState,
-      this.#_config
-    );
+    createQuery<Route, Response, Arguments>({
+      client: this.#_config,
+      query: { ...config, method: 'PATCH' },
+      state: this.#_queryState,
+    });
 
   delete = <
     Route extends RouteType<Arguments>,
@@ -82,11 +82,11 @@ export class QueryClient {
   >(
     config: QueryConfigWithoutMethod<Route, Response, Arguments>
   ) =>
-    createQuery<Route, Response, Arguments>(
-      { ...config, method: 'DELETE' },
-      this.#_queryState,
-      this.#_config
-    );
+    createQuery<Route, Response, Arguments>({
+      client: this.#_config,
+      query: { ...config, method: 'DELETE' },
+      state: this.#_queryState,
+    });
 
   fetch = <
     Route extends RouteType<Arguments>,
@@ -95,11 +95,11 @@ export class QueryClient {
   >(
     config: QueryConfig<Route, Response, Arguments>
   ) =>
-    createQuery<Route, Response, Arguments>(
-      config,
-      this.#_queryState,
-      this.#_config
-    );
+    createQuery<Route, Response, Arguments>({
+      client: this.#_config,
+      query: config,
+      state: this.#_queryState,
+    });
 
   #_initializeQueryState(config: QueryClientConfig) {
     return new QueryState({
