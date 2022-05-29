@@ -1,7 +1,13 @@
 import { invalidBaseRouteError } from '../logger';
 import { QueryState } from '../query-state';
-import { MethodType } from '../request';
-import { BaseArguments, QueryConfig, RouteType, createQuery } from '../query';
+import { Method } from '../request';
+import {
+  BaseArguments,
+  QueryConfig,
+  RouteType,
+  createQuery,
+  QueryConfigWithoutMethod,
+} from '../query';
 import { QueryClientConfig } from './query-client.types';
 
 export class QueryClient {
@@ -17,15 +23,79 @@ export class QueryClient {
     this.#_queryState = this.#_initializeQueryState(config);
   }
 
-  create = <
-    Method extends MethodType,
+  get = <
     Route extends RouteType<Arguments>,
     Response = unknown,
     Arguments extends BaseArguments | void = void
   >(
-    config: QueryConfig<Method, Route, Response, Arguments>
+    config: QueryConfigWithoutMethod<Route, Response, Arguments>
   ) =>
-    createQuery<Method, Route, Response, Arguments>(
+    createQuery<Route, Response, Arguments>(
+      { ...config, method: 'GET' },
+      this.#_queryState,
+      this.#_config
+    );
+
+  post = <
+    Route extends RouteType<Arguments>,
+    Response = unknown,
+    Arguments extends BaseArguments | void = void
+  >(
+    config: QueryConfigWithoutMethod<Route, Response, Arguments>
+  ) =>
+    createQuery<Route, Response, Arguments>(
+      { ...config, method: 'POST' },
+      this.#_queryState,
+      this.#_config
+    );
+
+  put = <
+    Route extends RouteType<Arguments>,
+    Response = unknown,
+    Arguments extends BaseArguments | void = void
+  >(
+    config: QueryConfigWithoutMethod<Route, Response, Arguments>
+  ) =>
+    createQuery<Route, Response, Arguments>(
+      { ...config, method: 'PUT' },
+      this.#_queryState,
+      this.#_config
+    );
+
+  patch = <
+    Route extends RouteType<Arguments>,
+    Response = unknown,
+    Arguments extends BaseArguments | void = void
+  >(
+    config: QueryConfigWithoutMethod<Route, Response, Arguments>
+  ) =>
+    createQuery<Route, Response, Arguments>(
+      { ...config, method: 'PATCH' },
+      this.#_queryState,
+      this.#_config
+    );
+
+  delete = <
+    Route extends RouteType<Arguments>,
+    Response = unknown,
+    Arguments extends BaseArguments | void = void
+  >(
+    config: QueryConfigWithoutMethod<Route, Response, Arguments>
+  ) =>
+    createQuery<Route, Response, Arguments>(
+      { ...config, method: 'DELETE' },
+      this.#_queryState,
+      this.#_config
+    );
+
+  fetch = <
+    Route extends RouteType<Arguments>,
+    Response = unknown,
+    Arguments extends BaseArguments | void = void
+  >(
+    config: QueryConfig<Route, Response, Arguments>
+  ) =>
+    createQuery<Route, Response, Arguments>(
       config,
       this.#_queryState,
       this.#_config

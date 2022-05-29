@@ -1,4 +1,4 @@
-export type MethodType =
+export type Method =
   | 'GET'
   | 'POST'
   | 'PUT'
