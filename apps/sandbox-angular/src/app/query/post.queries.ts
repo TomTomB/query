@@ -10,56 +10,49 @@ import {
   UpdatePostQuery,
 } from './types';
 
-export const { execute: getPost, ...getPostQuery } = query.create({
+export const getPost = query.get({
   route: (p) => `/posts/${p.id}`,
-  method: 'GET',
   types: {
     args: def<GetPostQuery>(),
     response: def<Post>(),
   },
 });
 
-export const { execute: getPosts, ...getPostsQuery } = query.create({
+export const getPosts = query.get({
   route: '/posts',
-  method: 'GET',
   types: {
     args: def<GetPostsQuery>(),
     response: def<Post[]>(),
   },
 });
 
-export const { execute: postPost, ...postPostQuery } = query.create({
+export const postPost = query.post({
   route: '/posts',
-  method: 'POST',
   types: {
     args: def<CreatePostQuery>(),
     response: def<Post>(),
   },
 });
 
-export const { execute: putPost, ...putPostQuery } = query.create({
+export const putPost = query.put({
   route: (p) => `/posts/${p.id}`,
-  method: 'PUT',
   types: {
     args: def<UpdatePostQuery>(),
     response: def<Post>(),
   },
 });
 
-export const { execute: patchPost, ...patchPostQuery } = query.create({
+export const patchPost = query.patch({
   route: (p) => `/posts/${p.id}`,
-  method: 'PATCH',
   types: {
     args: def<PatchPostQuery>(),
     response: def<Post>(),
   },
 });
 
-export const { execute: deletePost, ...deletePostQuery } = query.create({
+export const deletePost = query.delete({
   route: (p) => `/posts/${p.id}`,
-  method: 'DELETE',
   types: {
     args: def<DeletePostQuery>(),
-    response: def<void>(),
   },
 });

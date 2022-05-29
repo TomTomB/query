@@ -9,7 +9,6 @@ import {
   buildRoute,
   isAbortRequestError,
   isRequestError,
-  MethodType,
   request,
 } from '../request';
 import {
@@ -21,12 +20,11 @@ import {
 } from './query.types';
 
 export const createQuery = <
-  Method extends MethodType,
   Route extends RouteType<Arguments>,
   Response = unknown,
   Arguments extends BaseArguments | void = void
 >(
-  config: QueryConfig<Method, Route, Response, Arguments>,
+  config: QueryConfig<Route, Response, Arguments>,
   queryState: QueryState,
   queryClientConfig: QueryClientConfig
 ) => {

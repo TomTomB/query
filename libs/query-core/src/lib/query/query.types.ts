@@ -1,7 +1,6 @@
-import { MethodType, UnfilteredParams } from '../request';
+import { Method, UnfilteredParams } from '../request';
 
 export interface QueryConfig<
-  Method extends MethodType,
   Route extends RouteType<Arguments>,
   Response = unknown,
   Arguments extends BaseArguments | unknown = unknown
@@ -13,6 +12,12 @@ export interface QueryConfig<
     args?: Arguments;
   };
 }
+
+export type QueryConfigWithoutMethod<
+  Route extends RouteType<Arguments>,
+  Response = unknown,
+  Arguments extends BaseArguments | unknown = unknown
+> = Omit<QueryConfig<Route, Response, Arguments>, 'method'>;
 
 export interface BaseArguments {
   pathParams?: Record<string, string | number>;

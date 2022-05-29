@@ -25,11 +25,12 @@ export class AppComponent implements OnInit {
   }
 
   executeGetPost(id: number, options?: RunQueryOptions) {
-    getPost({ pathParams: { id } }, options)
+    getPost
+      .execute({ pathParams: { id } }, options)
       .then((p) => (this.post = p))
       .catch((e: RequestError) => (this.postError = e));
 
-    // from(getPost({ pathParams: { id } }, options))
+    // from(getPost.execute({ pathParams: { id } }, options))
     //   .pipe(tap((p) => (this.post = p)))
     //   .subscribe();
   }
