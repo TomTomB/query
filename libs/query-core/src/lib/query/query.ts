@@ -1,122 +1,107 @@
-import { invalidBaseRouteError } from '../logger';
 import {
   isQueryStateExpired,
   isQueryStateLoadingItem,
   isQueryStateSuccessItem,
-  QueryState,
 } from '../query-state';
 import {
   buildRoute,
+  isAbortRequestError,
   isRequestError,
   request,
-  isAbortRequestError,
 } from '../request';
 import {
-  ExecuteFn,
-  InitializeQueryConfig,
+  BaseArguments,
   Query,
-  QueryBaseArguments,
-  RunQueryConfig,
+  RunQueryOptions,
+  RouteType,
+  CombinedQueryConfig,
 } from './query.types';
-import { executeConfigIsWithArgs } from './query.util';
 
-const createQuery = <
+export const execute = <
+  Route extends RouteType<Arguments>,
   Response = unknown,
-  Arguments extends QueryBaseArguments | unknown = unknown
+  Arguments extends BaseArguments | void = void
 >(
-  config: RunQueryConfig<Arguments>,
-  queryState: QueryState,
-  queryOptions: InitializeQueryConfig
+  config: CombinedQueryConfig<Route, Response, Arguments>,
+  args?: Arguments,
+  options?: RunQueryOptions
 ) => {
-  return {
-    execute: async (execConfig) => {
-      const pathParams = executeConfigIsWithArgs(execConfig)
-        ? execConfig.args.pathParams
-        : undefined;
+  const pathParams = args?.pathParams;
+  const queryParams = args?.queryParams;
 
-      const queryParams = executeConfigIsWithArgs(execConfig)
-        ? execConfig.args.queryParams
-        : undefined;
-
-      const route = buildRoute({
-        base: queryOptions.baseRoute,
-        route: config.route,
-        pathParams,
-        queryParams,
-      });
-
-      const existingQuery = queryState.get(route);
-
-      if (isQueryStateLoadingItem(existingQuery)) {
-        if (execConfig?.options?.abortPrevious) {
-          existingQuery.abortController.abort();
-          queryState.delete(route);
-        } else {
-          return existingQuery.promise;
-        }
-      }
-
-      if (
-        isQueryStateSuccessItem(existingQuery) &&
-        !isQueryStateExpired(existingQuery) &&
-        !execConfig?.options?.skipCache
-      ) {
-        return existingQuery.data;
-      }
-
-      const abortController = new AbortController();
-
-      const queryPromise = new Promise<Response>((resolve, reject) => {
-        request<Response>({
-          route,
-          init: { method: config.method, signal: abortController.signal },
-          cacheAdapter: queryOptions.request?.cacheAdapter,
-        })
-          .then(({ data, expiresInTimestamp }) => {
-            queryState.transformToSuccessState(route, data, expiresInTimestamp);
-
-            resolve(data);
-          })
-          .catch((error) => {
-            if (isAbortRequestError(error)) {
-              return;
-            }
-
-            if (isRequestError(error)) {
-              queryState.transformToErrorState(route, error);
-              reject(error);
-            }
-          });
-      });
-
-      queryState.insertLoadingState(route, {
-        promise: queryPromise,
-        abortController,
-      });
-
-      return queryPromise;
-    },
-  } as {
-    execute: ExecuteFn<Response, Arguments>;
-  };
-};
-
-export const initializeQuery = (config: InitializeQueryConfig): Query => {
-  const QUERY_STATE = new QueryState({
-    enableChangeLogging: config.logging?.queryStateChanges,
-    enableGarbageCollectorLogging: config.logging?.queryStateGarbageCollector,
+  const route = buildRoute({
+    base: config.client.baseRoute,
+    route: config.query.route,
+    pathParams,
+    queryParams,
   });
 
-  if (config.baseRoute.endsWith('/')) {
-    throw invalidBaseRouteError(config.baseRoute);
+  const existingQuery = config.state.get(route);
+
+  if (isQueryStateLoadingItem(existingQuery)) {
+    if (options?.abortPrevious) {
+      existingQuery.abortController.abort();
+      config.state.delete(route);
+    } else {
+      return existingQuery.promise;
+    }
   }
 
-  const QUERY_OPTIONS = {
-    baseRoute: config.baseRoute,
-    request: config.request,
-  };
+  if (
+    isQueryStateSuccessItem(existingQuery) &&
+    !isQueryStateExpired(existingQuery) &&
+    !options?.skipCache
+  ) {
+    return existingQuery.data;
+  }
 
-  return {
-    create: (config) => createQuery(config, QUERY_STATE, QUERY_OPTIONS),
-  };
+  const abortController = new AbortController();
+
+  const queryPromise = new Promise<Response>((resolve, reject) => {
+    request<Response>({
+      route,
+      init: { method: config.query.method, signal: abortController.signal },
+      cacheAdapter: config.client.request?.cacheAdapter,
+    })
+      .then(({ data, expiresInTimestamp }) => {
+        config.state.transformToSuccessState(route, data, expiresInTimestamp);
+
+        resolve(data);
+      })
+      .catch((error) => {
+        if (isAbortRequestError(error)) {
+          return;
+        }
+
+        if (isRequestError(error)) {
+          config.state.transformToErrorState(route, error);
+          reject(error);
+        }
+      });
+  });
+
+  config.state.insertLoadingState(route, {
+    promise: queryPromise,
+    abortController,
+  });
+
+  return queryPromise;
+};
+
+export const createQuery = <
+  Route extends RouteType<Arguments>,
+  Response = unknown,
+  Arguments extends BaseArguments | void = void
+>(
+  config: CombinedQueryConfig<Route, Response, Arguments>
+) => {
+  const doStuff = () => true;
+
+  const query = {
+    execute: (args?: Arguments, options?: RunQueryOptions) =>
+      execute(config, args, options),
+    doStuff,
+  } as Query<Arguments, Response>;
+
+  return query;
 };

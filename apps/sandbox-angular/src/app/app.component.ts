@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ExecuteOptions, RequestError } from '@tomtomb/query-core';
+import { RunQueryOptions, RequestError } from '@tomtomb/query-core';
 import { getPost } from './query';
 import { Post } from './types';
 
@@ -24,13 +24,14 @@ export class AppComponent implements OnInit {
     }, 20000);
   }
 
-  executeGetPost(id: number, options?: ExecuteOptions) {
+  executeGetPost(id: number, options?: RunQueryOptions) {
     getPost
-      .execute({
-        args: { pathParams: { id } },
-        options,
-      })
+      .execute({ pathParams: { id } }, options)
       .then((p) => (this.post = p))
       .catch((e: RequestError) => (this.postError = e));
+
+    // from(getPost.execute({ pathParams: { id } }, options))
+    //   .pipe(tap((p) => (this.post = p)))
+    //   .subscribe();
   }
 }

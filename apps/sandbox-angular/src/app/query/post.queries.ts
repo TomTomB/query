@@ -1,3 +1,4 @@
+import { def } from '@tomtomb/query-core';
 import { Post } from '../types';
 import { query } from './query.core';
 import {
@@ -9,32 +10,49 @@ import {
   UpdatePostQuery,
 } from './types';
 
-export const getPost = query.create<Post, GetPostQuery>({
+export const getPost = query.get({
   route: (p) => `/posts/${p.id}`,
-  method: 'GET',
+  types: {
+    args: def<GetPostQuery>(),
+    response: def<Post>(),
+  },
 });
 
-export const getPosts = query.create<Post[], GetPostsQuery>({
+export const getPosts = query.get({
   route: '/posts',
-  method: 'GET',
+  types: {
+    args: def<GetPostsQuery>(),
+    response: def<Post[]>(),
+  },
 });
 
-export const createPost = query.create<Post, CreatePostQuery>({
+export const postPost = query.post({
   route: '/posts',
-  method: 'POST',
+  types: {
+    args: def<CreatePostQuery>(),
+    response: def<Post>(),
+  },
 });
 
-export const updatePost = query.create<Post, UpdatePostQuery>({
+export const putPost = query.put({
   route: (p) => `/posts/${p.id}`,
-  method: 'PUT',
+  types: {
+    args: def<UpdatePostQuery>(),
+    response: def<Post>(),
+  },
 });
 
-export const patchPost = query.create<Post, PatchPostQuery>({
+export const patchPost = query.patch({
   route: (p) => `/posts/${p.id}`,
-  method: 'PATCH',
+  types: {
+    args: def<PatchPostQuery>(),
+    response: def<Post>(),
+  },
 });
 
-export const deletePost = query.create<void, DeletePostQuery>({
+export const deletePost = query.delete({
   route: (p) => `/posts/${p.id}`,
-  method: 'DELETE',
+  types: {
+    args: def<DeletePostQuery>(),
+  },
 });
