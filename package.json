@@ -63,7 +63,7 @@
     "husky": "8.0.1",
     "jest": "27.5.1",
     "jest-fetch-mock": "3.0.3",
-    "jest-preset-angular": "11.1.2",
+    "jest-preset-angular": "12.2.0",
     "ng-packagr": "13.3.1",
     "nx": "14.1.7",
     "postcss": "8.4.14",
