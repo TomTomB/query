@@ -33,16 +33,15 @@ interface QueryContext<Q extends AnyQuery | null> {
 export class QueryDirective<Q extends AnyQuery | null>
   implements OnInit, OnDestroy
 {
-  private isMainViewCreated = false;
+  private _isMainViewCreated = false;
+  private _subscription: Subscription | null = null;
 
-  private readonly viewContext: QueryContext<Q> = {
+  private readonly _viewContext: QueryContext<Q> = {
     $implicit: null as any,
     query: null as any,
     loading: false,
     error: null,
   };
-
-  private subscription: Subscription | null = null;
 
   @Input()
   get query(): Q {
@@ -64,9 +63,9 @@ export class QueryDirective<Q extends AnyQuery | null>
   private _cache = false;
 
   constructor(
-    private readonly mainTemplateRef: TemplateRef<QueryContext<Q>>,
-    private readonly viewContainerRef: ViewContainerRef,
-    private readonly errorHandler: ErrorHandler
+    private _mainTemplateRef: TemplateRef<QueryContext<Q>>,
+    private _viewContainerRef: ViewContainerRef,
+    private _errorHandler: ErrorHandler
   ) {}
 
   static ngTemplateContextGuard<Q extends AnyQuery | null>(
@@ -82,12 +81,12 @@ export class QueryDirective<Q extends AnyQuery | null>
   }
 
   ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
+    this._subscription?.unsubscribe();
   }
 
   private _subscribeToQuery(): void {
-    this.subscription?.unsubscribe();
-    this.subscription = null;
+    this._subscription?.unsubscribe();
+    this._subscription = null;
 
     if (!this.query) {
       return;
@@ -97,39 +96,39 @@ export class QueryDirective<Q extends AnyQuery | null>
       .pipe(tap((state) => this._updateView(state)))
       .subscribe();
 
-    this.subscription = sub;
+    this._subscription = sub;
   }
 
   private _updateView(state: QueryState) {
     if (isQueryStateLoading(state)) {
-      this.viewContext.loading = true;
+      this._viewContext.loading = true;
     } else {
-      this.viewContext.loading = false;
+      this._viewContext.loading = false;
     }
 
     if (isQueryStateSuccess(state)) {
-      this.viewContext.query = state.response as any;
-      this.viewContext.$implicit = state.response as any;
+      this._viewContext.query = state.response as any;
+      this._viewContext.$implicit = state.response as any;
     } else if (!this.cache) {
-      this.viewContext.query = null as any;
-      this.viewContext.$implicit = null as any;
+      this._viewContext.query = null as any;
+      this._viewContext.$implicit = null as any;
     }
 
     if (isQueryStateFailure(state)) {
-      this.viewContext.error = state.error;
+      this._viewContext.error = state.error;
 
-      this.errorHandler.handleError(state.error);
+      this._errorHandler.handleError(state.error);
     } else {
-      this.viewContext.error = null;
+      this._viewContext.error = null;
     }
   }
 
   private _renderMainView(): void {
-    if (!this.isMainViewCreated) {
-      this.isMainViewCreated = true;
-      this.viewContainerRef.createEmbeddedView(
-        this.mainTemplateRef,
-        this.viewContext
+    if (!this._isMainViewCreated) {
+      this._isMainViewCreated = true;
+      this._viewContainerRef.createEmbeddedView(
+        this._mainTemplateRef,
+        this._viewContext
       );
     }
   }
