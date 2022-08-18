@@ -5,6 +5,7 @@ import {
   UnfilteredParams,
 } from '@tomtomb/query-core';
 import { Observable } from 'rxjs';
+import { Query } from './query';
 
 type PathParams = Record<string, string | number>;
 export type QueryParams = UnfilteredParams;
@@ -83,3 +84,9 @@ export type QueryState<Data = unknown> =
 
 export type QueryStateData<T extends QueryState = QueryState> =
   T extends Success<infer X> ? X : never;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AnyQuery = Query<any, any, any>;
+
+export type QueryType<T extends { prepare: () => AnyQuery }> =
+  T['prepare'] extends () => infer R ? R : never;

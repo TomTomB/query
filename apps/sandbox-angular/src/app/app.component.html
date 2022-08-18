@@ -2,11 +2,47 @@
 
 <hr />
 
-<h3>Get post with id 1</h3>
+<h3>Query directive</h3>
 
-<p>Response</p>
-<pre>{{ post | json }}</pre>
+<ng-container *query="getPosts as p; loading as l; error as e">
+  <p>Loading</p>
+  <pre>{{ l | json }}</pre>
 
-<p>Error</p>
-<pre>{{ postError | json }}</pre>
+  <p>Error</p>
+  <pre>{{ e | json }}</pre>
+
+  <p>Response</p>
+  <pre style="height: 92px">{{ p | json }}</pre>
+</ng-container>
+
+<hr />
+
+<h3>Query directive (with cache)</h3>
+
+<ng-container *query="getPosts as p; loading as l; error as e; cache: true">
+  <p>Loading</p>
+  <pre>{{ l | json }}</pre>
+
+  <p>Error</p>
+  <pre>{{ e | json }}</pre>
+
+  <p>Response</p>
+  <pre style="height: 92px">{{ p | json }}</pre>
+</ng-container>
+
+<hr />
+
+<h3>Query directive (async source)</h3>
+
+<ng-container *query="getPosts$ | async as p; loading as l; error as e">
+  <p>Loading</p>
+  <pre>{{ l | json }}</pre>
+
+  <p>Error</p>
+  <pre>{{ e | json }}</pre>
+
+  <p>Response</p>
+  <pre style="height: 92px">{{ p | json }}</pre>
+</ng-container>
+
 <hr />
