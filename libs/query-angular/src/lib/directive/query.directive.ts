@@ -49,8 +49,6 @@ export class QueryDirective<Q extends AnyQuery | null>
     return this._query;
   }
   set query(v: Q) {
-    console.log('set query', v);
-
     this._query = v;
     this._subscribeToQuery();
   }
@@ -61,8 +59,6 @@ export class QueryDirective<Q extends AnyQuery | null>
     return this._cache;
   }
   set cache(v: boolean) {
-    console.log('set cache', v);
-
     this._cache = v;
   }
   private _cache = false;
