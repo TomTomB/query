@@ -44,3 +44,6 @@ export const queryStateCannotTransformError = (data: unknown) =>
     'The query state cannot be transformed because it is not loading',
     data
   );
+
+export const invalidBodyError = (data: unknown) =>
+  new QueryError('007', 'The body is not valid or upsupported', data);

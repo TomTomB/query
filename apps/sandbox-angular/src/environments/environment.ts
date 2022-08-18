@@ -6,8 +6,7 @@ export const environment = {
   production: false,
   test: false,
   apiUrl: 'https://jsonplaceholder.typicode.com',
-  ggApiUrl: 'https://api.fifa.gg',
-};
+} as const;
 
 /*
  * For easier debugging in development mode, you can import the following file

@@ -5,7 +5,7 @@ export interface QueryClientConfig {
    * The api base route.
    * @example 'https://api.example.com'
    */
-  baseRoute: string;
+  baseRoute: `https://${string}` | `http://localhost:${string}`;
 
   /**
    * Logging configuration for debugging.

@@ -44,8 +44,10 @@ export type Query<
 export type RouteType<Arguments = unknown> = Arguments extends {
   pathParams: infer PathParams;
 }
-  ? (p: PathParams) => string
-  : string;
+  ? (p: PathParams) => RouteString
+  : RouteString;
+
+export type RouteString = `/${string}`;
 
 export interface CombinedQueryConfig<
   Route extends RouteType<Arguments>,

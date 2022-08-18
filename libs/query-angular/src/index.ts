@@ -1,1 +1,1 @@
-export * from './lib/query-angular.module';
+export * from './lib/new';
