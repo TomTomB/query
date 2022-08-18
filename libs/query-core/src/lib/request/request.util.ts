@@ -1,5 +1,6 @@
 import {
   invalidBaseRouteError,
+  invalidBodyError,
   invalidRouteError,
   pathParamsMissingInRouteFunctionError,
 } from '../logger';
@@ -169,9 +170,7 @@ export const buildTimestampFromSeconds = (seconds: number | null) => {
     return null;
   }
 
-  const date = new Date(seconds * 1000);
-
-  return date.getTime();
+  return new Date(Date.now() + seconds * 1000).getTime();
 };
 
 export const buildRequestError = async <ErrorResponse = unknown>(
@@ -199,7 +198,18 @@ export const buildRequestError = async <ErrorResponse = unknown>(
     return err;
   }
 
-  const err: RequestError = {
+  if (error instanceof Error) {
+    const err: RequestError<null> = {
+      code: -2,
+      message: `${error.name}: ${error.message}`,
+      detail: null,
+      raw: error,
+    };
+
+    return err;
+  }
+
+  const err: RequestError<null> = {
     code: 0,
     message: 'Unknown error',
     detail: null,
@@ -207,4 +217,24 @@ export const buildRequestError = async <ErrorResponse = unknown>(
   };
 
   return err;
+};
+
+export const buildBody = (body: unknown) => {
+  if (body === undefined || body === null) {
+    return null;
+  }
+
+  if (typeof body === 'string') {
+    return body;
+  }
+
+  if (typeof body === 'object') {
+    return JSON.stringify(body);
+  }
+
+  if (body instanceof FormData) {
+    return body;
+  }
+
+  throw invalidBodyError(body);
 };
