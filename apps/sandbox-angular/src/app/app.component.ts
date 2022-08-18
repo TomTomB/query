@@ -32,15 +32,13 @@ export class AppComponent implements OnInit {
     //   this.executeGetPost(2);
     // }, 20000);
 
+    /**
+     * fasas
+     */
+    const _destroy$ = new Subject();
+
     const client = new QueryClient({
       baseRoute: 'https://jsonplaceholder.typicode.com',
-      logging: {
-        queryStateChanges: true,
-        queryStateGarbageCollector: true,
-      },
-      request: {
-        cacheAdapter: () => 10,
-      },
     });
 
     const getPosts = client.get({
@@ -52,13 +50,11 @@ export class AppComponent implements OnInit {
     });
 
     const query = getPosts
-      .prepare(
-        {
-          queryParams: { foo: 0 },
-        },
-        { skipCache: true }
-      )
-      .execute();
+      .prepare({
+        queryParams: { foo: 0 },
+      })
+      .execute({ skipCache: true })
+      .poll({ interval: 10000, takeUntil: _destroy$ });
 
     query.state$
       .pipe(

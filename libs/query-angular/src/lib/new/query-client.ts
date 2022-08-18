@@ -3,17 +3,13 @@ import {
   buildRoute,
   Method,
   QueryClientConfig,
+  QueryConfig,
   QueryConfigWithoutMethod,
   RouteType,
 } from '@tomtomb/query-core';
 import { Query } from './query';
 import { QueryStore2 } from './query-store';
-import {
-  CreateQueryConfig,
-  CreateQueryConfigWithoutMethod,
-  PrepareQueryConfig,
-  RunQueryOptions,
-} from './types';
+import { RunQueryOptions } from './types';
 
 export class QueryClient {
   private readonly _store: QueryStore2;
@@ -91,10 +87,10 @@ export class QueryClient {
     Response = unknown,
     Arguments extends BaseArguments | void = void
   >(
-    queryConfig: CreateQueryConfig
+    queryConfig: QueryConfig<Route, Response, Arguments>
   ) => {
     return {
-      prepare: (args?: Arguments, options?: RunQueryOptions) => {
+      prepare: (args?: Arguments) => {
         const route = buildRoute({
           base: this._clientConfig.baseRoute,
           route: queryConfig.route,
@@ -102,7 +98,6 @@ export class QueryClient {
           queryParams: args?.queryParams,
         }) as Route;
 
-        // Caching should only be enabled for GET requests.
         if (this._shouldCache(queryConfig.method)) {
           const existingQuery = this._store.get(route);
 
@@ -114,10 +109,8 @@ export class QueryClient {
         const query = new Query<Route, Response, Arguments>(
           this._clientConfig,
           queryConfig,
-          args,
-          options,
           route,
-          this._store
+          args
         );
 
         if (this._shouldCache(queryConfig.method)) {

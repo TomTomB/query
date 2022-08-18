@@ -60,10 +60,8 @@ export class Query<
   constructor(
     private _clientConfig: QueryClientConfig,
     private _queryConfig: CreateQueryConfig,
-    private _args: Arguments | undefined,
-    private _options: RunQueryOptions | undefined,
     private _route: Route,
-    private _store: QueryStore2
+    private _args: Arguments | undefined
   ) {
     this._state$ = new BehaviorSubject<QueryState<Response>>({
       type: QueryStateType.Prepared,
@@ -71,7 +69,7 @@ export class Query<
     });
   }
 
-  execute() {
+  execute(options?: RunQueryOptions) {
     const id = this._nextId;
 
     if (isQueryStateLoading(this._state$.value)) {
@@ -118,20 +116,22 @@ export class Query<
   }
 
   poll(config: PollConfig) {
-    const unsubscribe = () => {
-      this._pollingSubscription?.unsubscribe();
-      this._pollingSubscription = null;
-    };
-
     if (this._pollingSubscription) {
-      return unsubscribe;
+      return this;
     }
 
     this._pollingSubscription = interval(config.interval)
       .pipe(takeUntil(config.takeUntil))
       .subscribe(() => this.execute());
 
-    return unsubscribe;
+    return this;
+  }
+
+  stopPolling() {
+    this._pollingSubscription?.unsubscribe();
+    this._pollingSubscription = null;
+
+    return this;
   }
 
   private _handleExecuteError(error: unknown, meta: QueryStateMeta) {
