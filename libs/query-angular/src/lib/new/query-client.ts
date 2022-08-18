@@ -7,9 +7,10 @@ import {
   QueryConfigWithoutMethod,
   RouteType,
 } from '@tomtomb/query-core';
+import { BehaviorSubject } from 'rxjs';
 import { Query } from './query';
 import { QueryStore2 } from './query-store';
-import { RunQueryOptions } from './types';
+import { QueryType, RunQueryOptions } from './types';
 
 export class QueryClient {
   private readonly _store: QueryStore2;
@@ -89,36 +90,43 @@ export class QueryClient {
   >(
     queryConfig: QueryConfig<Route, Response, Arguments>
   ) => {
+    const prepare = (args?: Arguments) => {
+      const route = buildRoute({
+        base: this._clientConfig.baseRoute,
+        route: queryConfig.route,
+        pathParams: args?.pathParams,
+        queryParams: args?.queryParams,
+      }) as Route;
+
+      if (this._shouldCache(queryConfig.method)) {
+        const existingQuery = this._store.get(route);
+
+        if (existingQuery) {
+          return existingQuery as Query<Route, Response, Arguments>;
+        }
+      }
+
+      const query = new Query<Route, Response, Arguments>(
+        this._clientConfig,
+        queryConfig,
+        route,
+        args
+      );
+
+      if (this._shouldCache(queryConfig.method)) {
+        this._store.add(route, query);
+      }
+
+      return query;
+    };
+
+    const behaviorSubject = <T extends ReturnType<typeof prepare>>(
+      initialValue: T | null = null
+    ) => new BehaviorSubject<T | null>(initialValue);
+
     return {
-      prepare: (args?: Arguments) => {
-        const route = buildRoute({
-          base: this._clientConfig.baseRoute,
-          route: queryConfig.route,
-          pathParams: args?.pathParams,
-          queryParams: args?.queryParams,
-        }) as Route;
-
-        if (this._shouldCache(queryConfig.method)) {
-          const existingQuery = this._store.get(route);
-
-          if (existingQuery) {
-            return existingQuery as Query<Route, Response, Arguments>;
-          }
-        }
-
-        const query = new Query<Route, Response, Arguments>(
-          this._clientConfig,
-          queryConfig,
-          route,
-          args
-        );
-
-        if (this._shouldCache(queryConfig.method)) {
-          this._store.add(route, query);
-        }
-
-        return query;
-      },
+      prepare,
+      behaviorSubject,
     };
   };
 

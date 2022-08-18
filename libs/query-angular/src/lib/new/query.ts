@@ -70,6 +70,10 @@ export class Query<
   }
 
   execute(options?: RunQueryOptions) {
+    if (!this.isExpired && !options?.skipCache) {
+      return this;
+    }
+
     const id = this._nextId;
 
     if (isQueryStateLoading(this._state$.value)) {
@@ -122,7 +126,7 @@ export class Query<
 
     this._pollingSubscription = interval(config.interval)
       .pipe(takeUntil(config.takeUntil))
-      .subscribe(() => this.execute());
+      .subscribe(() => this.execute({ skipCache: true }));
 
     return this;
   }

@@ -3,14 +3,24 @@ import {
   QueryClient,
   filterSuccess,
   takeUntilResponse,
-  Success,
-  isQueryStateSuccess,
   filterFailure,
+  QueryType,
 } from '@tomtomb/query-angular';
-import { RunQueryOptions, RequestError, def } from '@tomtomb/query-core';
-import { combineLatest, filter, Subject, tap } from 'rxjs';
-import { getPost } from './query';
+import { def } from '@tomtomb/query-core';
+import { Subject, tap } from 'rxjs';
 import { Post } from './types';
+
+const client = new QueryClient({
+  baseRoute: 'https://jsonplaceholder.typicode.com',
+});
+
+const getPost = client.get({
+  route: (p) => `/posts/${p.id}`,
+  types: {
+    args: def<{ pathParams: { id: number } }>(),
+    response: def<Post>(),
+  },
+});
 
 @Component({
   selector: 'tomtomb-root',
@@ -18,43 +28,33 @@ import { Post } from './types';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  title = 'sandbox-angular';
+  getPosts!: QueryType<typeof getPost>;
 
-  post?: Post;
-  postError?: RequestError;
+  getPosts$ = getPost.behaviorSubject();
 
   ngOnInit(): void {
-    // this.executeGetPost(1);
-    // this.executeGetPost(1, { abortPrevious: true });
-    // this.executeGetPost(2);
-
-    // setTimeout(() => {
-    //   this.executeGetPost(2);
-    // }, 20000);
-
-    /**
-     * fasas
-     */
     const _destroy$ = new Subject();
 
-    const client = new QueryClient({
-      baseRoute: 'https://jsonplaceholder.typicode.com',
-    });
-
-    const getPosts = client.get({
-      route: '/posts',
-      types: {
-        args: def<{ queryParams: { foo: number } }>(),
-        response: def<Post[]>(),
-      },
-    });
-
-    const query = getPosts
+    const query = getPost
       .prepare({
-        queryParams: { foo: 0 },
+        pathParams: { id: 1 },
       })
       .execute({ skipCache: true })
       .poll({ interval: 10000, takeUntil: _destroy$ });
+
+    this.getPosts = query;
+    this.getPosts$.next(query);
+
+    setTimeout(() => {
+      const query2 = getPost
+        .prepare({
+          pathParams: { id: 4 },
+        })
+        .execute({ skipCache: true })
+        .poll({ interval: 10000, takeUntil: _destroy$ });
+
+      this.getPosts$.next(query2);
+    }, 2500);
 
     query.state$
       .pipe(
@@ -71,46 +71,5 @@ export class AppComponent implements OnInit {
         tap((data) => console.log(data.error))
       )
       .subscribe();
-
-    // const getPosts2 = client.createQuery({
-    //   route: '/posts',
-    //   method: 'POST',
-    // });
-
-    // const query2 = getPosts2.execute({
-    //   queryParams: { foo: 0 },
-    // });
-
-    // query2.state$
-    //   .pipe(
-    //     tap((d) => {
-    //       console.warn('Data 2');
-    //       console.log(d);
-    //     })
-    //   )
-    //   .subscribe({ complete: () => console.warn('Complete') });
-
-    // setTimeout(() => {
-    //   query.execute();
-    //   const unsubscribe = query.poll({
-    //     interval: 1000,
-    //     takeUntil: new Subject(),
-    //   });
-    //   setTimeout(() => {
-    //     unsubscribe();
-    //     console.log('unsubscribed');
-    //   }, 5000);
-    // }, 2500);
-  }
-
-  executeGetPost(id: number, options?: RunQueryOptions) {
-    getPost
-      .execute({ pathParams: { id } }, options)
-      .then((p) => (this.post = p))
-      .catch((e: RequestError) => (this.postError = e));
-
-    // from(getPost.execute({ pathParams: { id } }, options))
-    //   .pipe(tap((p) => (this.post = p)))
-    //   .subscribe();
   }
 }
