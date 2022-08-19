@@ -36,10 +36,12 @@ export type UnfilteredParamPrimitive =
   | null
   | undefined;
 
-export type UnfilteredParams = Record<
+export type QueryParams = Record<
   string | number | symbol,
   UnfilteredParamPrimitive | UnfilteredParamArray
 >;
+
+export type PathParams = Record<string, string | number>;
 
 export type UnfilteredParamArray = Array<UnfilteredParamPrimitive>;
 

@@ -5,7 +5,7 @@ import {
   pathParamsMissingInRouteFunctionError,
 } from '../logger';
 import {
-  UnfilteredParams,
+  QueryParams,
   Params,
   RequestError,
   ParamArray,
@@ -22,7 +22,7 @@ export const buildRoute = (options: {
   base: string;
   route: ((args: Record<string, unknown>) => string) | string;
   pathParams?: Record<string, unknown>;
-  queryParams?: UnfilteredParams;
+  queryParams?: QueryParams;
 }) => {
   if (options.base.endsWith('/')) {
     throw invalidBaseRouteError(options.base);
@@ -55,7 +55,7 @@ export const buildRoute = (options: {
   return `${options.base}${route}`;
 };
 
-export const buildQueryString = (params: UnfilteredParams) => {
+export const buildQueryString = (params: QueryParams) => {
   const validParams = filterInvalidParams(params);
 
   const queryString = Object.keys(validParams)
@@ -93,7 +93,7 @@ export const isFetchResponse = (response: unknown): response is Response =>
   'json' in response &&
   typeof (response as Response)['json'] === 'function';
 
-export const filterInvalidParams = (params: UnfilteredParams) => {
+export const filterInvalidParams = (params: QueryParams) => {
   const filteredParams: Params = Object.entries(params)
     .map(([key, value]) => {
       if (!Array.isArray(value)) {

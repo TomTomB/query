@@ -1,6 +1,6 @@
 import { QueryClientConfig } from '../query-client';
 import { QueryState } from '../query-state';
-import { Method, UnfilteredParams } from '../request';
+import { Method, QueryParams } from '../request';
 
 export interface QueryConfig<
   Route extends RouteType<Arguments>,
@@ -23,7 +23,7 @@ export type QueryConfigWithoutMethod<
 
 export interface BaseArguments {
   pathParams?: Record<string, string | number>;
-  queryParams?: UnfilteredParams;
+  queryParams?: QueryParams;
   body?: unknown;
 }
 
