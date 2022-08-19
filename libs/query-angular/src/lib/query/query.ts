@@ -4,6 +4,7 @@ import {
   buildBody,
   isAbortRequestError,
   isRequestError,
+  BaseArguments,
 } from '@tomtomb/query-core';
 import { Subscription, BehaviorSubject, interval, takeUntil } from 'rxjs';
 import { QueryClientConfig } from '../query-client/query-client.types';
@@ -13,16 +14,16 @@ import {
   PollConfig,
   QueryStateMeta,
   RouteType,
-  BaseArguments,
   QueryConfig,
   RunQueryOptions,
+  AnyDynamicArguments,
 } from './query.types';
 import { isQueryStateSuccess, isQueryStateLoading } from './query.utils';
 
 export class Query<
   Route extends RouteType<Arguments>,
-  Response = unknown,
-  Arguments extends BaseArguments | void = void
+  Response,
+  Arguments extends AnyDynamicArguments | undefined
 > {
   private _currentId = 0;
   private _abortController = new AbortController();
@@ -91,7 +92,7 @@ export class Query<
       init: {
         method: this._queryConfig.method,
         signal: this._abortController.signal,
-        body: buildBody(this._args?.body),
+        body: buildBody((this._args as BaseArguments)?.body),
       },
       cacheAdapter: this._clientConfig.request?.cacheAdapter,
     })

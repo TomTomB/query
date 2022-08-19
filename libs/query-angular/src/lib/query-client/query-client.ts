@@ -1,7 +1,8 @@
-import { buildRoute } from '@tomtomb/query-core';
+import { buildRoute, Method as MethodType } from '@tomtomb/query-core';
 import { BehaviorSubject } from 'rxjs';
 import {
   BaseArguments,
+  DynamicArguments,
   Query,
   QueryConfig,
   QueryConfigWithoutMethod,
@@ -24,91 +25,98 @@ export class QueryClient {
 
   get = <
     Route extends RouteType<Arguments>,
-    Response = unknown,
-    Arguments extends BaseArguments | void = void
+    Response,
+    Arguments extends BaseArguments | undefined
   >(
     queryConfig: QueryConfigWithoutMethod<Route, Response, Arguments>
   ) =>
-    this.fetch<Route, Response, Arguments>({
+    this.fetch<Route, Response, Arguments, 'GET'>({
       ...queryConfig,
       method: 'GET',
     });
 
-  post = <
-    Route extends RouteType<Arguments>,
-    Response = unknown,
-    Arguments extends BaseArguments | void = void
-  >(
-    queryConfig: QueryConfigWithoutMethod<Route, Response, Arguments>
-  ) =>
-    this.fetch<Route, Response, Arguments>({
-      ...queryConfig,
-      method: 'POST',
-    });
+  // post = <
+  //   Route extends RouteType<Arguments>,
+  //   Response = unknown,
+  //   Arguments extends BaseArguments | void = void
+  // >(
+  //   queryConfig: QueryConfigWithoutMethod<Route, Response, Arguments>
+  // ) =>
+  //   this.fetch<Route, Response, Arguments>({
+  //     ...queryConfig,
+  //     method: 'POST',
+  //   });
 
-  put = <
-    Route extends RouteType<Arguments>,
-    Response = unknown,
-    Arguments extends BaseArguments | void = void
-  >(
-    queryConfig: QueryConfigWithoutMethod<Route, Response, Arguments>
-  ) =>
-    this.fetch<Route, Response, Arguments>({
-      ...queryConfig,
-      method: 'PUT',
-    });
+  // put = <
+  //   Route extends RouteType<Arguments>,
+  //   Response = unknown,
+  //   Arguments extends BaseArguments | void = void
+  // >(
+  //   queryConfig: QueryConfigWithoutMethod<Route, Response, Arguments>
+  // ) =>
+  //   this.fetch<Route, Response, Arguments>({
+  //     ...queryConfig,
+  //     method: 'PUT',
+  //   });
 
-  patch = <
-    Route extends RouteType<Arguments>,
-    Response = unknown,
-    Arguments extends BaseArguments | void = void
-  >(
-    queryConfig: QueryConfigWithoutMethod<Route, Response, Arguments>
-  ) =>
-    this.fetch<Route, Response, Arguments>({
-      ...queryConfig,
-      method: 'PATCH',
-    });
+  // patch = <
+  //   Route extends RouteType<Arguments>,
+  //   Response = unknown,
+  //   Arguments extends BaseArguments | void = void
+  // >(
+  //   queryConfig: QueryConfigWithoutMethod<Route, Response, Arguments>
+  // ) =>
+  //   this.fetch<Route, Response, Arguments>({
+  //     ...queryConfig,
+  //     method: 'PATCH',
+  //   });
 
-  delete = <
-    Route extends RouteType<Arguments>,
-    Response = unknown,
-    Arguments extends BaseArguments | void = void
-  >(
-    queryConfig: QueryConfigWithoutMethod<Route, Response, Arguments>
-  ) =>
-    this.fetch<Route, Response, Arguments>({
-      ...queryConfig,
-      method: 'DELETE',
-    });
+  // delete = <
+  //   Route extends RouteType<Arguments>,
+  //   Response = unknown,
+  //   Arguments extends BaseArguments | void = void
+  // >(
+  //   queryConfig: QueryConfigWithoutMethod<Route, Response, Arguments>
+  // ) =>
+  //   this.fetch<Route, Response, Arguments>({
+  //     ...queryConfig,
+  //     method: 'DELETE',
+  //   });
 
   fetch = <
     Route extends RouteType<Arguments>,
-    Response = unknown,
-    Arguments extends BaseArguments | void = void
+    Response,
+    Arguments extends BaseArguments | undefined,
+    Method extends MethodType
   >(
     queryConfig: QueryConfig<Route, Response, Arguments>
   ) => {
-    const prepare = (args?: Arguments) => {
+    const prepare = <
+      Args extends DynamicArguments<Arguments, Method>,
+      R extends RouteType<Args>,
+      Cfg extends QueryConfig<R, Response, Args>
+    >(
+      args?: Args
+    ) => {
       const route = buildRoute({
         base: this._clientConfig.baseRoute,
         route: queryConfig.route,
-        pathParams: args?.pathParams,
-        queryParams: args?.queryParams,
+        pathParams: (args as BaseArguments)?.pathParams,
+        queryParams: (args as BaseArguments)?.queryParams,
       }) as Route;
 
       if (shouldCacheQuery(queryConfig.method)) {
         const existingQuery = this._store.get(route);
 
         if (existingQuery) {
-          return existingQuery as Query<Route, Response, Arguments>;
+          return existingQuery as Query<R, Response, Args>;
         }
       }
 
-      const query = new Query<Route, Response, Arguments>(
+      const query = new Query<R, Response, Args>(
         this._clientConfig,
-        queryConfig,
-        route,
+        queryConfig as unknown as Cfg,
+        route as unknown as R,
         args
       );
 

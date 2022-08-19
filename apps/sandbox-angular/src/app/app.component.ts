@@ -22,6 +22,13 @@ const getPost = client.get({
   },
 });
 
+const getPosts = client.get({
+  route: '/posts',
+  types: {
+    response: def<Post>(),
+  },
+});
+
 @Component({
   selector: 'tomtomb-root',
   templateUrl: './app.component.html',
@@ -36,7 +43,7 @@ export class AppComponent implements OnInit {
     const _destroy$ = new Subject();
 
     const query = getPost
-      .prepare({
+      ?.prepare({
         pathParams: { id: 1 },
       })
       .execute();
@@ -44,6 +51,8 @@ export class AppComponent implements OnInit {
 
     this.getPosts = query;
     this.getPosts$.next(query);
+
+    getPosts.prepare({});
 
     setTimeout(() => {
       const query2 = getPost
