@@ -1,10 +1,6 @@
-import { RouteString } from '@tomtomb/query-core';
-import { Query } from './query';
+import { AnyQuery } from '../query';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyQuery = Query<RouteString, any, any>;
-
-export class QueryStore2 {
+export class QueryStore {
   private readonly _store = new Map<string, AnyQuery>();
   private _garbageCollector: number | null = null;
 
