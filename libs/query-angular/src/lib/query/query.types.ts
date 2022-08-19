@@ -1,26 +1,44 @@
-import {
-  BaseArguments,
-  Method,
-  RequestError,
-  UnfilteredParams,
-} from '@tomtomb/query-core';
+import { Method, RequestError, UnfilteredParams } from '@tomtomb/query-core';
 import { Observable } from 'rxjs';
 import { Query } from './query';
 
-type PathParams = Record<string, string | number>;
-export type QueryParams = UnfilteredParams;
-
-export interface CreateQueryConfig {
-  route: string;
+export interface QueryConfig<
+  Route extends RouteType<Arguments>,
+  Response = unknown,
+  Arguments extends BaseArguments | unknown = unknown
+> {
   method: Method;
+  route: Route;
+  types?: {
+    response?: Response;
+    args?: Arguments;
+  };
 }
 
-export type CreateQueryConfigWithoutMethod = Omit<CreateQueryConfig, 'method'>;
+export type QueryConfigWithoutMethod<
+  Route extends RouteType<Arguments>,
+  Response = unknown,
+  Arguments extends BaseArguments | unknown = unknown
+> = Omit<QueryConfig<Route, Response, Arguments>, 'method'>;
 
-export interface PrepareQueryConfig<T extends BaseArguments | void> {
-  args: T;
-  options?: RunQueryOptions;
+export interface BaseArguments {
+  pathParams?: Record<string, string | number>;
+  queryParams?: UnfilteredParams;
+  body?: unknown;
 }
+
+export interface RunQueryOptions {
+  skipCache?: boolean;
+  abortPrevious?: boolean;
+}
+
+export type RouteType<Arguments = unknown> = Arguments extends {
+  pathParams: infer PathParams;
+}
+  ? (p: PathParams) => RouteString
+  : RouteString;
+
+export type RouteString = `/${string}`;
 
 export interface PollConfig {
   interval: number;
@@ -70,11 +88,6 @@ export interface QueryStateSuccessMeta extends QueryStateMeta {
   readonly expiresAt: number | null;
 }
 
-export interface RunQueryOptions {
-  skipCache?: boolean;
-  abortPrevious?: boolean;
-}
-
 export type QueryState<Data = unknown> =
   | Loading
   | Success<Data>
@@ -90,3 +103,9 @@ export type AnyQuery = Query<any, any, any>;
 
 export type QueryType<T extends { prepare: () => AnyQuery }> =
   T['prepare'] extends () => infer R ? R : never;
+
+export interface BaseArguments {
+  pathParams?: Record<string, string | number>;
+  queryParams?: UnfilteredParams;
+  body?: unknown;
+}

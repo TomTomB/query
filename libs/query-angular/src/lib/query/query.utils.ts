@@ -8,7 +8,7 @@ import {
   QueryStateData,
   QueryStateType,
   Success,
-} from './types';
+} from './query.types';
 
 export function filterSuccess() {
   return function <T extends QueryState, Response extends QueryStateData<T>>(

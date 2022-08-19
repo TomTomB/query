@@ -1,24 +1,23 @@
 import {
-  QueryClientConfig,
   deepFreeze,
   request,
   buildBody,
   isAbortRequestError,
   isRequestError,
-  BaseArguments,
-  RouteType,
 } from '@tomtomb/query-core';
 import { Subscription, BehaviorSubject, interval, takeUntil } from 'rxjs';
-import { QueryStore2 } from './query-store';
+import { QueryClientConfig } from '../query-client/query-client.types';
 import {
   QueryState,
-  CreateQueryConfig,
   QueryStateType,
   PollConfig,
   QueryStateMeta,
+  RouteType,
+  BaseArguments,
+  QueryConfig,
   RunQueryOptions,
-} from './types';
-import { isQueryStateSuccess, isQueryStateLoading } from './util';
+} from './query.types';
+import { isQueryStateSuccess, isQueryStateLoading } from './query.utils';
 
 export class Query<
   Route extends RouteType<Arguments>,
@@ -59,7 +58,7 @@ export class Query<
 
   constructor(
     private _clientConfig: QueryClientConfig,
-    private _queryConfig: CreateQueryConfig,
+    private _queryConfig: QueryConfig<Route, Response, Arguments>,
     private _route: Route,
     private _args: Arguments | undefined
   ) {

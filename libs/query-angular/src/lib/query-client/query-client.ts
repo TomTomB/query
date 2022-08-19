@@ -1,22 +1,21 @@
+import { buildRoute } from '@tomtomb/query-core';
+import { BehaviorSubject } from 'rxjs';
 import {
   BaseArguments,
-  buildRoute,
-  Method,
-  QueryClientConfig,
+  Query,
   QueryConfig,
   QueryConfigWithoutMethod,
   RouteType,
-} from '@tomtomb/query-core';
-import { BehaviorSubject } from 'rxjs';
-import { Query } from './query';
-import { QueryStore2 } from './query-store';
-import { QueryType, RunQueryOptions } from './types';
+} from '../query';
+import { QueryStore } from '../query-store';
+import { QueryClientConfig } from './query-client.types';
+import { shouldCacheQuery } from './query-client.utils';
 
 export class QueryClient {
-  private readonly _store: QueryStore2;
+  private readonly _store: QueryStore;
 
   constructor(private _clientConfig: QueryClientConfig) {
-    this._store = new QueryStore2({
+    this._store = new QueryStore({
       enableChangeLogging: _clientConfig.logging?.queryStateChanges,
       enableGarbageCollectorLogging:
         _clientConfig.logging?.queryStateGarbageCollector,
@@ -98,7 +97,7 @@ export class QueryClient {
         queryParams: args?.queryParams,
       }) as Route;
 
-      if (this._shouldCache(queryConfig.method)) {
+      if (shouldCacheQuery(queryConfig.method)) {
         const existingQuery = this._store.get(route);
 
         if (existingQuery) {
@@ -113,7 +112,7 @@ export class QueryClient {
         args
       );
 
-      if (this._shouldCache(queryConfig.method)) {
+      if (shouldCacheQuery(queryConfig.method)) {
         this._store.add(route, query);
       }
 
@@ -129,8 +128,4 @@ export class QueryClient {
       behaviorSubject,
     };
   };
-
-  private _shouldCache(method: Method) {
-    return method === 'GET' || method === 'OPTIONS' || method === 'HEAD';
-  }
 }

@@ -16,11 +16,15 @@ import {
   isQueryStateSuccess,
   QueryState,
   QueryStateData,
-} from '../new';
+} from '../query';
+
+type QueryValue<Q extends AnyQuery | null> = Q extends AnyQuery
+  ? QueryStateData<Q['state']> | null
+  : null;
 
 interface QueryContext<Q extends AnyQuery | null> {
-  $implicit: Q extends AnyQuery ? QueryStateData<Q['state']> | null : null;
-  query: Q extends AnyQuery ? QueryStateData<Q['state']> | null : null;
+  $implicit: QueryValue<Q>;
+  query: QueryValue<Q>;
   loading: boolean;
   error: RequestError<unknown> | null;
 }
@@ -37,8 +41,8 @@ export class QueryDirective<Q extends AnyQuery | null>
   private _subscription: Subscription | null = null;
 
   private readonly _viewContext: QueryContext<Q> = {
-    $implicit: null as any,
-    query: null as any,
+    $implicit: null as QueryValue<Q>,
+    query: null as QueryValue<Q>,
     loading: false,
     error: null,
   };
@@ -49,6 +53,7 @@ export class QueryDirective<Q extends AnyQuery | null>
   }
   set query(v: Q) {
     this._query = v;
+
     this._subscribeToQuery();
   }
   private _query!: Q;
@@ -77,7 +82,6 @@ export class QueryDirective<Q extends AnyQuery | null>
 
   ngOnInit(): void {
     this._renderMainView();
-    this._subscribeToQuery();
   }
 
   ngOnDestroy(): void {
@@ -107,11 +111,11 @@ export class QueryDirective<Q extends AnyQuery | null>
     }
 
     if (isQueryStateSuccess(state)) {
-      this._viewContext.query = state.response as any;
-      this._viewContext.$implicit = state.response as any;
+      this._viewContext.query = state.response as QueryValue<Q>;
+      this._viewContext.$implicit = state.response as QueryValue<Q>;
     } else if (!this.cache) {
-      this._viewContext.query = null as any;
-      this._viewContext.$implicit = null as any;
+      this._viewContext.query = null as QueryValue<Q>;
+      this._viewContext.$implicit = null as QueryValue<Q>;
     }
 
     if (isQueryStateFailure(state)) {
