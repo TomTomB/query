@@ -39,8 +39,8 @@ export class AppComponent implements OnInit {
       .prepare({
         pathParams: { id: 1 },
       })
-      .execute({ skipCache: true })
-      .poll({ interval: 10000, takeUntil: _destroy$ });
+      .execute();
+    // .poll({ interval: 10000, takeUntil: _destroy$ });
 
     this.getPosts = query;
     this.getPosts$.next(query);
@@ -50,8 +50,8 @@ export class AppComponent implements OnInit {
         .prepare({
           pathParams: { id: 4 },
         })
-        .execute({ skipCache: true })
-        .poll({ interval: 10000, takeUntil: _destroy$ });
+        .execute();
+      // .poll({ interval: 10000, takeUntil: _destroy$ });
 
       this.getPosts$.next(query2);
     }, 2500);
