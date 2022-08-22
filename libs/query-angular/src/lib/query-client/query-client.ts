@@ -1,4 +1,4 @@
-import { buildRoute, Method as MethodType } from '@tomtomb/query-core';
+import { buildRoute, def, Method as MethodType } from '@tomtomb/query-core';
 import { BehaviorSubject } from 'rxjs';
 import {
   BaseArguments,
@@ -35,53 +35,53 @@ export class QueryClient {
       method: 'GET',
     });
 
-  // post = <
-  //   Route extends RouteType<Arguments>,
-  //   Response = unknown,
-  //   Arguments extends BaseArguments | void = void
-  // >(
-  //   queryConfig: QueryConfigWithoutMethod<Route, Response, Arguments>
-  // ) =>
-  //   this.fetch<Route, Response, Arguments>({
-  //     ...queryConfig,
-  //     method: 'POST',
-  //   });
+  post = <
+    Route extends RouteType<Arguments>,
+    Response,
+    Arguments extends BaseArguments | undefined
+  >(
+    queryConfig: QueryConfigWithoutMethod<Route, Response, Arguments>
+  ) =>
+    this.fetch<Route, Response, Arguments, 'POST'>({
+      ...queryConfig,
+      method: 'POST',
+    });
 
-  // put = <
-  //   Route extends RouteType<Arguments>,
-  //   Response = unknown,
-  //   Arguments extends BaseArguments | void = void
-  // >(
-  //   queryConfig: QueryConfigWithoutMethod<Route, Response, Arguments>
-  // ) =>
-  //   this.fetch<Route, Response, Arguments>({
-  //     ...queryConfig,
-  //     method: 'PUT',
-  //   });
+  put = <
+    Route extends RouteType<Arguments>,
+    Response,
+    Arguments extends BaseArguments | undefined
+  >(
+    queryConfig: QueryConfigWithoutMethod<Route, Response, Arguments>
+  ) =>
+    this.fetch<Route, Response, Arguments, 'PUT'>({
+      ...queryConfig,
+      method: 'PUT',
+    });
 
-  // patch = <
-  //   Route extends RouteType<Arguments>,
-  //   Response = unknown,
-  //   Arguments extends BaseArguments | void = void
-  // >(
-  //   queryConfig: QueryConfigWithoutMethod<Route, Response, Arguments>
-  // ) =>
-  //   this.fetch<Route, Response, Arguments>({
-  //     ...queryConfig,
-  //     method: 'PATCH',
-  //   });
+  patch = <
+    Route extends RouteType<Arguments>,
+    Response,
+    Arguments extends BaseArguments | undefined
+  >(
+    queryConfig: QueryConfigWithoutMethod<Route, Response, Arguments>
+  ) =>
+    this.fetch<Route, Response, Arguments, 'PATCH'>({
+      ...queryConfig,
+      method: 'PATCH',
+    });
 
-  // delete = <
-  //   Route extends RouteType<Arguments>,
-  //   Response = unknown,
-  //   Arguments extends BaseArguments | void = void
-  // >(
-  //   queryConfig: QueryConfigWithoutMethod<Route, Response, Arguments>
-  // ) =>
-  //   this.fetch<Route, Response, Arguments>({
-  //     ...queryConfig,
-  //     method: 'DELETE',
-  //   });
+  delete = <
+    Route extends RouteType<Arguments>,
+    Response,
+    Arguments extends BaseArguments | undefined
+  >(
+    queryConfig: QueryConfigWithoutMethod<Route, Response, Arguments>
+  ) =>
+    this.fetch<Route, Response, Arguments, 'DELETE'>({
+      ...queryConfig,
+      method: 'DELETE',
+    });
 
   fetch = <
     Route extends RouteType<Arguments>,
