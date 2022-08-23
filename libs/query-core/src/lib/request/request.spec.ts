@@ -53,7 +53,7 @@ describe('request', () => {
     expect(response).toEqual(responseData);
   });
 
-  it('should throw an error with code 0', async () => {
+  it('should throw an error with code -2', async () => {
     fetchMock.mockRejectOnce(new Error('This is an error'));
 
     try {
@@ -63,9 +63,9 @@ describe('request', () => {
       });
     } catch (error) {
       expect(error).toEqual({
-        code: 0,
+        code: -2,
         detail: null,
-        message: 'Unknown error',
+        message: 'Error: This is an error',
         raw: new Error('This is an error'),
       });
     }
