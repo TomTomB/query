@@ -1,5 +1,6 @@
-import { buildRoute, def, Method as MethodType } from '@tomtomb/query-core';
+import { buildRoute, Method as MethodType } from '@tomtomb/query-core';
 import { BehaviorSubject } from 'rxjs';
+import { AuthProvider } from '../auth';
 import {
   BaseArguments,
   DynamicArguments,
@@ -14,6 +15,15 @@ import { shouldCacheQuery } from './query-client.utils';
 
 export class QueryClient {
   private readonly _store: QueryStore;
+  private _authProvider: AuthProvider | null = null;
+
+  get config() {
+    return this._clientConfig;
+  }
+
+  get authProvider() {
+    return this._authProvider;
+  }
 
   constructor(private _clientConfig: QueryClientConfig) {
     this._store = new QueryStore({
@@ -114,7 +124,7 @@ export class QueryClient {
       }
 
       const query = new Query<R, Response, Args>(
-        this._clientConfig,
+        this,
         queryConfig as unknown as Cfg,
         route as unknown as R,
         args
@@ -135,5 +145,21 @@ export class QueryClient {
       prepare,
       behaviorSubject,
     };
+  };
+
+  setAuthProvider = (authProvider: AuthProvider) => {
+    if (this._authProvider) {
+      throw new Error(
+        'The auth provider is already set. Please call clearAuthProvider() first.'
+      );
+    }
+
+    this._authProvider = authProvider;
+    authProvider.queryClient = this;
+  };
+
+  clearAuthProvider = () => {
+    this._authProvider?.cleanUp();
+    this._authProvider = null;
   };
 }

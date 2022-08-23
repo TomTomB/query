@@ -46,3 +46,5 @@ export type PathParams = Record<string, string | number>;
 export type UnfilteredParamArray = Array<UnfilteredParamPrimitive>;
 
 export type CacheAdapterFn = (headers: Headers) => number | null;
+
+export type RequestHeaders = Record<string, string>;

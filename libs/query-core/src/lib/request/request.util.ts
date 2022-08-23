@@ -187,11 +187,11 @@ export const buildRequestError = async <ErrorResponse = unknown>(
     return err;
   }
 
-  if (isFetchResponse(error)) {
-    const err: RequestError<ErrorResponse> = {
-      code: error.status,
-      message: error.statusText,
-      detail: await error.json(),
+  if (error instanceof SyntaxError) {
+    const err: RequestError<null> = {
+      code: -3,
+      message: 'Syntax error',
+      detail: null,
       raw: error,
     };
 
@@ -203,6 +203,26 @@ export const buildRequestError = async <ErrorResponse = unknown>(
       code: -2,
       message: `${error.name}: ${error.message}`,
       detail: null,
+      raw: error,
+    };
+
+    return err;
+  }
+
+  if (isFetchResponse(error)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let detail: any;
+
+    try {
+      detail = await error.text();
+    } catch (err) {
+      detail = null;
+    }
+
+    const err: RequestError<ErrorResponse> = {
+      code: error.status,
+      message: error.statusText,
+      detail,
       raw: error,
     };
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   QueryClient,
   filterSuccess,
@@ -14,17 +14,23 @@ const client = new QueryClient({
   baseRoute: 'https://jsonplaceholder.typicode.com',
 });
 
+// const authProvider = new BearerAuthProvider({
+//   token:
+//     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTYzMzkwMjJ9.KoPc-onJu1GGMz7IY8aZwz7PQyro500DKeKB7gSlPNw',
+//   refreshConfig: {
+//     method: 'POST',
+//     route: '/auth/refresh-token',
+//     token: 'refreshToken',
+//   },
+// });
+
+// client.setAuthProvider(authProvider);
+
 const getPost = client.get({
   route: (p) => `/posts/${p.id}`,
+  // secure: true,
   types: {
     args: def<{ pathParams: { id: number } }>(),
-    response: def<Post>(),
-  },
-});
-
-const getPosts = client.get({
-  route: '/posts',
-  types: {
     response: def<Post>(),
   },
 });
@@ -34,25 +40,22 @@ const getPosts = client.get({
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   getPosts!: QueryType<typeof getPost>;
-
   getPosts$ = getPost.behaviorSubject();
 
-  ngOnInit(): void {
-    const _destroy$ = new Subject();
+  private _destroy$ = new Subject();
 
+  ngOnInit(): void {
     const query = getPost
       ?.prepare({
         pathParams: { id: 1 },
       })
       .execute();
-    // .poll({ interval: 10000, takeUntil: _destroy$ });
+    // .poll({ interval: 10000, takeUntil: this._destroy$ });
 
     this.getPosts = query;
     this.getPosts$.next(query);
-
-    getPosts.prepare({});
 
     setTimeout(() => {
       const query2 = getPost
@@ -60,7 +63,7 @@ export class AppComponent implements OnInit {
           pathParams: { id: 4 },
         })
         .execute();
-      // .poll({ interval: 10000, takeUntil: _destroy$ });
+      // .poll({ interval: 10000, takeUntil: this._destroy$ });
 
       this.getPosts$.next(query2);
     }, 2500);
@@ -80,5 +83,10 @@ export class AppComponent implements OnInit {
         tap((data) => console.log(data.error))
       )
       .subscribe();
+  }
+
+  ngOnDestroy(): void {
+    this._destroy$.next(true);
+    this._destroy$.unsubscribe();
   }
 }

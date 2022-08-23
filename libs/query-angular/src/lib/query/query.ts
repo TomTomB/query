@@ -7,6 +7,8 @@ import {
   BaseArguments,
 } from '@tomtomb/query-core';
 import { Subscription, BehaviorSubject, interval, takeUntil } from 'rxjs';
+import { AuthProvider } from '../auth';
+import { QueryClient } from '../query-client';
 import { QueryClientConfig } from '../query-client/query-client.types';
 import {
   QueryState,
@@ -18,7 +20,11 @@ import {
   RunQueryOptions,
   AnyDynamicArguments,
 } from './query.types';
-import { isQueryStateSuccess, isQueryStateLoading } from './query.utils';
+import {
+  isQueryStateSuccess,
+  isQueryStateLoading,
+  mergeHeaders,
+} from './query.utils';
 
 export class Query<
   Route extends RouteType<Arguments>,
@@ -58,7 +64,7 @@ export class Query<
   }
 
   constructor(
-    private _clientConfig: QueryClientConfig,
+    private _client: QueryClient,
     private _queryConfig: QueryConfig<Route, Response, Arguments>,
     private _route: Route,
     private _args: Arguments | undefined
@@ -70,8 +76,16 @@ export class Query<
   }
 
   execute(options?: RunQueryOptions) {
-    if (!this.isExpired && !options?.skipCache) {
+    if (
+      !this.isExpired &&
+      !options?.skipCache &&
+      isQueryStateSuccess(this.state)
+    ) {
       return this;
+    }
+
+    if (this._queryConfig.secure && !this._client.authProvider) {
+      throw new Error('Cannot execute secure query without auth provider');
     }
 
     const id = this._nextId;
@@ -93,8 +107,12 @@ export class Query<
         method: this._queryConfig.method,
         signal: this._abortController.signal,
         body: buildBody((this._args as BaseArguments)?.body),
+        headers: mergeHeaders(
+          this._client.authProvider?.header,
+          this._args?.headers
+        ),
       },
-      cacheAdapter: this._clientConfig.request?.cacheAdapter,
+      cacheAdapter: this._client.config.request?.cacheAdapter,
     })
       .then((response) => {
         const isResponseObject = typeof response === 'object';
