@@ -12,10 +12,39 @@ export interface QueryConfig<
   Response,
   Arguments extends BaseArguments | AnyDynamicArguments | undefined
 > {
+  /**
+   * The http method to use for the query.
+   */
   method: Method;
+
+  /**
+   * The api route to use for the query.
+   */
   route: Route;
+
+  /**
+   * Determines if the auth provider should be used for this query.
+   * The query **will throw** if the query client's auth provider is unset.
+   */
+  secure?: boolean;
+
+  /**
+   * Object containing the query's type information.
+   */
   types?: {
+    /**
+     * The type of the successful response.
+     */
     response?: Response;
+
+    /**
+     * Arguments for executing the query.
+     *
+     * - `pathParams`: The path parameters for the query. (in front of the ? in the url)
+     * - `queryParams`: The query parameters for the query. (after the ? in the url)
+     * - `body`: The body for the query. Unavailable for GET, HEAD and OPTIONS requests.
+     * - `headers`: The headers for the query.
+     */
     args?: Arguments;
   };
 }
@@ -87,7 +116,6 @@ export interface WithBody<T> {
 
 export interface RunQueryOptions {
   skipCache?: boolean;
-  abortPrevious?: boolean;
 }
 
 export type RouteType<

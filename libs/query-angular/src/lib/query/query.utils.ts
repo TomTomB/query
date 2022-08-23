@@ -1,3 +1,4 @@
+import { RequestHeaders } from '@tomtomb/query-core';
 import { filter, Observable, takeWhile } from 'rxjs';
 import {
   Cancelled,
@@ -48,3 +49,21 @@ export const isQueryStateCancelled = (state: QueryState): state is Cancelled =>
 
 export const isQueryStatePrepared = (state: QueryState): state is Prepared =>
   state.type === QueryStateType.Prepared;
+
+export const mergeHeaders = (
+  a: RequestHeaders | null | undefined,
+  b: RequestHeaders | null | undefined
+) => {
+  if (!a) {
+    return b ?? undefined;
+  }
+
+  if (!b) {
+    return a ?? undefined;
+  }
+
+  return {
+    ...a,
+    ...b,
+  };
+};
