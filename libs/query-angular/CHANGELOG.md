@@ -1,5 +1,11 @@
 # @tomtomb/query-angular
 
+## 0.1.0
+
+### Minor Changes
+
+- [#44](https://github.com/TomTomB/query/pull/44) [`cf2a171`](https://github.com/TomTomB/query/commit/cf2a1718a93c65ff01d90f4789d6045e1c850b40) Thanks [@TomTomB](https://github.com/TomTomB)! - Add angular query logic
+
 ## 0.0.2
 
 ### Patch Changes
