@@ -50,7 +50,7 @@ importers:
       postcss-url: 10.1.3
       prettier: 2.7.1
       rxjs: 7.5.6
-      ts-jest: 27.1.4
+      ts-jest: 27.1.5
       tslib: 2.4.0
       typescript: 4.7.4
       zone.js: 0.11.8
@@ -104,7 +104,7 @@ importers:
       postcss-preset-env: 7.8.0_postcss@8.4.16
       postcss-url: 10.1.3_postcss@8.4.16
       prettier: 2.7.1
-      ts-jest: 27.1.4_iskzidabacb4pjngypf7wromau
+      ts-jest: 27.1.5_iskzidabacb4pjngypf7wromau
       typescript: 4.7.4
 
   libs/query-angular:
@@ -9461,7 +9461,7 @@ packages:
       esbuild-wasm: 0.14.11
       jest-environment-jsdom: 27.5.1
       pretty-format: 27.5.1
-      ts-jest: 27.1.4_blcukzaiixbyfggv2k6zkjg7mu
+      ts-jest: 27.1.5_blcukzaiixbyfggv2k6zkjg7mu
     optionalDependencies:
       esbuild: 0.14.11
     transitivePeerDependencies:
@@ -10021,7 +10021,7 @@ packages:
     resolution: {integrity: sha1-gteb/zCmfEAF/9XiUVMArZyk168=}
 
   /lodash.memoize/4.1.2:
-    resolution: {integrity: sha1-vMbEmkKihA7Zl/Mj6tpezRguC/4=}
+    resolution: {integrity: sha512-t7j+NzmgnQzTAYXcsHYLgimltOV1MXHtlOWf6GjL9Kj8GK5FInw5JotxvbOs+IvV1/Dzo04/fCGfLVs7aXb4Ag==}
 
   /lodash.merge/4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
@@ -13649,8 +13649,8 @@ packages:
     engines: {node: '>=8'}
     dev: false
 
-  /ts-jest/27.1.4_blcukzaiixbyfggv2k6zkjg7mu:
-    resolution: {integrity: sha512-qjkZlVPWVctAezwsOD1OPzbZ+k7zA5z3oxII4dGdZo5ggX/PL7kvwTM0pXTr10fAtbiVpJaL3bWd502zAhpgSQ==}
+  /ts-jest/27.1.5_blcukzaiixbyfggv2k6zkjg7mu:
+    resolution: {integrity: sha512-Xv6jBQPoBEvBq/5i2TeSG9tt/nqkbpcurrEG1b+2yfBrcJelOZF9Ml6dmyMh7bcW9JyFbRYpR5rxROSlBLTZHA==}
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
     hasBin: true
     peerDependencies:
@@ -13679,13 +13679,13 @@ packages:
       json5: 2.2.1
       lodash.memoize: 4.1.2
       make-error: 1.3.6
-      semver: 7.3.5
+      semver: 7.3.7
       typescript: 4.7.4
       yargs-parser: 20.2.9
     dev: true
 
-  /ts-jest/27.1.4_iskzidabacb4pjngypf7wromau:
-    resolution: {integrity: sha512-qjkZlVPWVctAezwsOD1OPzbZ+k7zA5z3oxII4dGdZo5ggX/PL7kvwTM0pXTr10fAtbiVpJaL3bWd502zAhpgSQ==}
+  /ts-jest/27.1.5_iskzidabacb4pjngypf7wromau:
+    resolution: {integrity: sha512-Xv6jBQPoBEvBq/5i2TeSG9tt/nqkbpcurrEG1b+2yfBrcJelOZF9Ml6dmyMh7bcW9JyFbRYpR5rxROSlBLTZHA==}
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
     hasBin: true
     peerDependencies:
@@ -13713,7 +13713,7 @@ packages:
       json5: 2.2.1
       lodash.memoize: 4.1.2
       make-error: 1.3.6
-      semver: 7.3.5
+      semver: 7.3.7
       typescript: 4.7.4
       yargs-parser: 20.2.9
     dev: true
