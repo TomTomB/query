@@ -9,7 +9,7 @@ importers:
       '@angular-eslint/eslint-plugin-template': 14.1.2
       '@angular-eslint/template-parser': 14.1.2
       '@angular/animations': 14.2.3
-      '@angular/cli': ~14.2.3
+      '@angular/cli': 14.2.3
       '@angular/common': 14.2.3
       '@angular/compiler': 14.2.3
       '@angular/compiler-cli': 14.2.3
