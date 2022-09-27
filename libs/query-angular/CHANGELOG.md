@@ -1,5 +1,11 @@
 # @tomtomb/query-angular
 
+## 0.2.0
+
+### Minor Changes
+
+- [#62](https://github.com/TomTomB/query/pull/62) [`af27fc3`](https://github.com/TomTomB/query/commit/af27fc3c50b4c5f4f56b3e8238a36a63fc32fb1a) Thanks [@TomTomB](https://github.com/TomTomB)! - Add def util to query angular
+
 ## 0.1.1
 
 ### Patch Changes
