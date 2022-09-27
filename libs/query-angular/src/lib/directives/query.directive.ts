@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Directive,
   ErrorHandler,
   Input,
@@ -70,7 +71,8 @@ export class QueryDirective<Q extends AnyQuery | null>
   constructor(
     private _mainTemplateRef: TemplateRef<QueryContext<Q>>,
     private _viewContainerRef: ViewContainerRef,
-    private _errorHandler: ErrorHandler
+    private _errorHandler: ErrorHandler,
+    private _cdr: ChangeDetectorRef
   ) {}
 
   static ngTemplateContextGuard<Q extends AnyQuery | null>(
@@ -125,6 +127,8 @@ export class QueryDirective<Q extends AnyQuery | null>
     } else {
       this._viewContext.error = null;
     }
+
+    this._cdr.markForCheck();
   }
 
   private _renderMainView(): void {
