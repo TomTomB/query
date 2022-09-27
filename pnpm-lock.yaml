@@ -111,8 +111,10 @@ importers:
 
   libs/query-angular:
     specifiers:
+      '@tomtomb/query-core': 0.1.0
       tslib: 2.4.0
     dependencies:
+      '@tomtomb/query-core': link:../query-core
       tslib: 2.4.0
 
   libs/query-core:
