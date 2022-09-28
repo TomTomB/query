@@ -1,5 +1,11 @@
 # @tomtomb/query-angular
 
+## 0.3.0
+
+### Minor Changes
+
+- [`29d1702`](https://github.com/TomTomB/query/commit/29d1702786c5919cc6c5f2b53aed74308b02a8b8) Thanks [@TomTomB](https://github.com/TomTomB)! - Add method to clone a query into a query creator function
+
 ## 0.2.0
 
 ### Minor Changes
