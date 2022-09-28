@@ -5,6 +5,8 @@ import {
   takeUntilResponse,
   filterFailure,
   QueryType,
+  QueryCreator,
+  BaseArguments,
 } from '@tomtomb/query-angular';
 import { def } from '@tomtomb/query-core';
 import { Subject, tap } from 'rxjs';
@@ -35,13 +37,32 @@ const getPost = client.get({
   },
 });
 
+export type QueryType2<T extends QueryCreator<any, any, any, any>> =
+  T['prepare'] extends () => infer R
+    ? R
+    : T['prepare'] extends (args: any) => infer R
+    ? R
+    : never;
+
+type InferReturnTypeFromQuery<
+  T extends QueryCreator<BaseArguments | undefined, any, any, any>
+> = ReturnType<T['prepare']>;
+
+type Foo = InferReturnTypeFromQuery<typeof getPost>;
+
+type X = ReturnType<typeof getPost['prepare']>;
+
+const x = getPost.prepare({ pathParams: { id: 1 } }).execute();
+const clone = x.clone();
+const y = clone.prepare({ pathParams: { id: 2 } }).execute();
+
 @Component({
   selector: 'tomtomb-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  getPosts!: QueryType<typeof getPost>;
+  getPosts!: QueryType2<typeof getPost>;
   getPosts$ = getPost.behaviorSubject();
 
   private _destroy$ = new Subject();

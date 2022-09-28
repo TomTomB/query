@@ -4,7 +4,7 @@ import {
   QueryParams,
   PathParams,
 } from '@tomtomb/query-core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Query } from './query';
 
 export interface QueryConfig<
@@ -187,7 +187,14 @@ export type QueryStateData<T extends QueryState = QueryState> =
   T extends Success<infer X> ? X : never;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyQuery = Query<any, any, any>;
+export type AnyQuery = Query<any, any, any, any, any, any>;
 
-export type QueryType<T extends { prepare: () => AnyQuery }> =
-  T['prepare'] extends () => infer R ? R : never;
+export type QueryType<
+  T extends {
+    prepare: (args: any) => AnyQuery;
+  }
+> = T['prepare'] extends () => infer R
+  ? R
+  : T['prepare'] extends (args: any) => infer R
+  ? R
+  : never;

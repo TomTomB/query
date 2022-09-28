@@ -13,6 +13,33 @@ import { QueryStore } from '../query-store';
 import { QueryClientConfig } from './query-client.types';
 import { shouldCacheQuery } from './query-client.utils';
 
+export type QueryCreator<
+  Arguments extends BaseArguments | undefined,
+  Method extends MethodType,
+  Response,
+  Route extends RouteType<Arguments>
+> = {
+  prepare: <
+    DynamicArgs extends DynamicArguments<Arguments, Method>,
+    DynamicRoute extends RouteType<DynamicArgs>
+  >(
+    args: DynamicArgs
+  ) => Query<DynamicRoute, Response, DynamicArgs, Arguments, Route, Method>;
+
+  behaviorSubject: <
+    T extends Query<
+      RouteType<DynamicArguments<Arguments, Method>>,
+      Response,
+      DynamicArguments<Arguments, Method>,
+      Arguments,
+      Route,
+      Method
+    >
+  >(
+    initialValue?: T | null
+  ) => BehaviorSubject<T | null>;
+};
+
 export class QueryClient {
   private readonly _store: QueryStore;
   private _authProvider: AuthProvider | null = null;
@@ -100,13 +127,12 @@ export class QueryClient {
     Method extends MethodType
   >(
     queryConfig: QueryConfig<Route, Response, Arguments>
-  ) => {
+  ): QueryCreator<Arguments, Method, Response, Route> => {
     const prepare = <
-      Args extends DynamicArguments<Arguments, Method>,
-      R extends RouteType<Args>,
-      Cfg extends QueryConfig<R, Response, Args>
+      DynamicArgs extends DynamicArguments<Arguments, Method>,
+      DynamicRoute extends RouteType<DynamicArgs>
     >(
-      args?: Args
+      args?: DynamicArgs
     ) => {
       const route = buildRoute({
         base: this._clientConfig.baseRoute,
@@ -119,14 +145,28 @@ export class QueryClient {
         const existingQuery = this._store.get(route);
 
         if (existingQuery) {
-          return existingQuery as Query<R, Response, Args>;
+          return existingQuery as Query<
+            DynamicRoute,
+            Response,
+            DynamicArgs,
+            Arguments,
+            Route,
+            Method
+          >;
         }
       }
 
-      const query = new Query<R, Response, Args>(
+      const query = new Query<
+        DynamicRoute,
+        Response,
+        DynamicArgs,
+        Arguments,
+        Route,
+        Method
+      >(
         this,
-        queryConfig as unknown as Cfg,
-        route as unknown as R,
+        queryConfig as unknown as QueryConfig<Route, Response, Arguments>,
+        route as unknown as DynamicRoute,
         args
       );
 

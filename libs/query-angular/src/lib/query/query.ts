@@ -5,6 +5,7 @@ import {
   isAbortRequestError,
   isRequestError,
   BaseArguments,
+  Method as MethodType,
 } from '@tomtomb/query-core';
 import { Subscription, BehaviorSubject, interval, takeUntil } from 'rxjs';
 import { AuthProvider } from '../auth';
@@ -27,9 +28,12 @@ import {
 } from './query.utils';
 
 export class Query<
-  Route extends RouteType<Arguments>,
+  DynamicRoute extends RouteType<DynamicArguments>,
   Response,
-  Arguments extends AnyDynamicArguments | undefined
+  DynamicArguments extends AnyDynamicArguments | undefined,
+  Arguments extends BaseArguments | undefined,
+  Route extends RouteType<Arguments>,
+  Method extends MethodType
 > {
   private _currentId = 0;
   private _abortController = new AbortController();
@@ -66,13 +70,19 @@ export class Query<
   constructor(
     private _client: QueryClient,
     private _queryConfig: QueryConfig<Route, Response, Arguments>,
-    private _route: Route,
-    private _args: Arguments | undefined
+    private _route: DynamicRoute,
+    private _args: DynamicArguments | undefined
   ) {
     this._state$ = new BehaviorSubject<QueryState<Response>>({
       type: QueryStateType.Prepared,
       meta: { id: this._currentId },
     });
+  }
+
+  clone() {
+    return this._client.fetch<Route, Response, Arguments, Method>(
+      this._queryConfig
+    );
   }
 
   execute(options?: RunQueryOptions) {
