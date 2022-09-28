@@ -59,6 +59,7 @@ export interface BaseArguments {
   pathParams?: PathParams;
   queryParams?: QueryParams;
   body?: unknown;
+  headers?: Record<string, string>;
 }
 
 export type DynamicArguments<
@@ -187,7 +188,7 @@ export type QueryStateData<T extends QueryState = QueryState> =
   T extends Success<infer X> ? X : never;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyQuery = Query<any, any, any, any, any, any>;
+export type AnyQuery = Query<any, any, any, any>;
 
 export type QueryType<
   T extends {

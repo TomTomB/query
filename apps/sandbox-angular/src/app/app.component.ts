@@ -5,8 +5,6 @@ import {
   takeUntilResponse,
   filterFailure,
   QueryType,
-  QueryCreator,
-  BaseArguments,
 } from '@tomtomb/query-angular';
 import { def } from '@tomtomb/query-core';
 import { Subject, tap } from 'rxjs';
@@ -37,24 +35,20 @@ const getPost = client.get({
   },
 });
 
-export type QueryType2<T extends QueryCreator<any, any, any, any>> =
-  T['prepare'] extends () => infer R
-    ? R
-    : T['prepare'] extends (args: any) => infer R
-    ? R
-    : never;
+// const getPosts = client.get({
+//   route: '/posts',
+//   // secure: true,
+//   types: {
+//     response: def<Post[]>(),
+//   },
+// });
 
-type InferReturnTypeFromQuery<
-  T extends QueryCreator<BaseArguments | undefined, any, any, any>
-> = ReturnType<T['prepare']>;
+// const x = getPost.prepare({ pathParams: { id: 1 } }).execute();
+// const clone = x.clone();
+// const y = clone.prepare({ pathParams: { id: 2 } }).execute();
 
-type Foo = InferReturnTypeFromQuery<typeof getPost>;
-
-type X = ReturnType<typeof getPost['prepare']>;
-
-const x = getPost.prepare({ pathParams: { id: 1 } }).execute();
-const clone = x.clone();
-const y = clone.prepare({ pathParams: { id: 2 } }).execute();
+// const shouldError = clone.prepare().execute();
+// const shouldWork = getPosts.prepare().execute();
 
 @Component({
   selector: 'tomtomb-root',
@@ -62,7 +56,7 @@ const y = clone.prepare({ pathParams: { id: 2 } }).execute();
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  getPosts!: QueryType2<typeof getPost>;
+  getPosts!: QueryType<typeof getPost>;
   getPosts$ = getPost.behaviorSubject();
 
   private _destroy$ = new Subject();
@@ -79,7 +73,8 @@ export class AppComponent implements OnInit, OnDestroy {
     this.getPosts$.next(query);
 
     setTimeout(() => {
-      const query2 = getPost
+      const query2 = query
+        .clone()
         .prepare({
           pathParams: { id: 4 },
         })

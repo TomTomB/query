@@ -3,42 +3,14 @@ import { BehaviorSubject } from 'rxjs';
 import { AuthProvider } from '../auth';
 import {
   BaseArguments,
-  DynamicArguments,
   Query,
   QueryConfig,
   QueryConfigWithoutMethod,
   RouteType,
 } from '../query';
 import { QueryStore } from '../query-store';
-import { QueryClientConfig } from './query-client.types';
+import { QueryClientConfig, QueryCreator } from './query-client.types';
 import { shouldCacheQuery } from './query-client.utils';
-
-export type QueryCreator<
-  Arguments extends BaseArguments | undefined,
-  Method extends MethodType,
-  Response,
-  Route extends RouteType<Arguments>
-> = {
-  prepare: <
-    DynamicArgs extends DynamicArguments<Arguments, Method>,
-    DynamicRoute extends RouteType<DynamicArgs>
-  >(
-    args: DynamicArgs
-  ) => Query<DynamicRoute, Response, DynamicArgs, Arguments, Route, Method>;
-
-  behaviorSubject: <
-    T extends Query<
-      RouteType<DynamicArguments<Arguments, Method>>,
-      Response,
-      DynamicArguments<Arguments, Method>,
-      Arguments,
-      Route,
-      Method
-    >
-  >(
-    initialValue?: T | null
-  ) => BehaviorSubject<T | null>;
-};
 
 export class QueryClient {
   private readonly _store: QueryStore;
@@ -128,12 +100,7 @@ export class QueryClient {
   >(
     queryConfig: QueryConfig<Route, Response, Arguments>
   ): QueryCreator<Arguments, Method, Response, Route> => {
-    const prepare = <
-      DynamicArgs extends DynamicArguments<Arguments, Method>,
-      DynamicRoute extends RouteType<DynamicArgs>
-    >(
-      args?: DynamicArgs
-    ) => {
+    const prepare = (args?: Arguments) => {
       const route = buildRoute({
         base: this._clientConfig.baseRoute,
         route: queryConfig.route,
@@ -145,28 +112,14 @@ export class QueryClient {
         const existingQuery = this._store.get(route);
 
         if (existingQuery) {
-          return existingQuery as Query<
-            DynamicRoute,
-            Response,
-            DynamicArgs,
-            Arguments,
-            Route,
-            Method
-          >;
+          return existingQuery as Query<Response, Arguments, Route, Method>;
         }
       }
 
-      const query = new Query<
-        DynamicRoute,
-        Response,
-        DynamicArgs,
-        Arguments,
-        Route,
-        Method
-      >(
+      const query = new Query<Response, Arguments, Route, Method>(
         this,
-        queryConfig as unknown as QueryConfig<Route, Response, Arguments>,
-        route as unknown as DynamicRoute,
+        queryConfig,
+        route,
         args
       );
 
@@ -184,7 +137,7 @@ export class QueryClient {
     return {
       prepare,
       behaviorSubject,
-    };
+    } as unknown as QueryCreator<Arguments, Method, Response, Route>;
   };
 
   setAuthProvider = (authProvider: AuthProvider) => {

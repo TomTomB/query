@@ -4,13 +4,10 @@ import {
   buildBody,
   isAbortRequestError,
   isRequestError,
-  BaseArguments,
   Method as MethodType,
 } from '@tomtomb/query-core';
 import { Subscription, BehaviorSubject, interval, takeUntil } from 'rxjs';
-import { AuthProvider } from '../auth';
 import { QueryClient } from '../query-client';
-import { QueryClientConfig } from '../query-client/query-client.types';
 import {
   QueryState,
   QueryStateType,
@@ -19,7 +16,7 @@ import {
   RouteType,
   QueryConfig,
   RunQueryOptions,
-  AnyDynamicArguments,
+  BaseArguments,
 } from './query.types';
 import {
   isQueryStateSuccess,
@@ -28,9 +25,7 @@ import {
 } from './query.utils';
 
 export class Query<
-  DynamicRoute extends RouteType<DynamicArguments>,
   Response,
-  DynamicArguments extends AnyDynamicArguments | undefined,
   Arguments extends BaseArguments | undefined,
   Route extends RouteType<Arguments>,
   Method extends MethodType
@@ -70,8 +65,8 @@ export class Query<
   constructor(
     private _client: QueryClient,
     private _queryConfig: QueryConfig<Route, Response, Arguments>,
-    private _route: DynamicRoute,
-    private _args: DynamicArguments | undefined
+    private _route: Route,
+    private _args: Arguments | undefined
   ) {
     this._state$ = new BehaviorSubject<QueryState<Response>>({
       type: QueryStateType.Prepared,
