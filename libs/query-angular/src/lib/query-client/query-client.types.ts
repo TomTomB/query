@@ -54,3 +54,5 @@ export type QueryCreator<
     initialValue?: T | null
   ) => BehaviorSubject<T | null>;
 };
+
+export type AnyQueryCreator = QueryCreator<any, any, any, any>;
