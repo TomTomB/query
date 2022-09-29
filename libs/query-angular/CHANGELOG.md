@@ -1,5 +1,11 @@
 # @tomtomb/query-angular
 
+## 0.4.0
+
+### Minor Changes
+
+- [`4a9a7d9`](https://github.com/TomTomB/query/commit/4a9a7d95c3b14caa3241b2359e1882933b9d8c7b) Thanks [@TomTomB](https://github.com/TomTomB)! - Add createReactiveQuery function
+
 ## 0.3.0
 
 ### Minor Changes
