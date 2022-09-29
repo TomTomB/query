@@ -99,6 +99,14 @@ export class AppComponent implements OnInit, OnDestroy {
         tap((data) => console.log(data.error))
       )
       .subscribe();
+
+    // createReactiveQuery({
+    //   form: new FormGroup({ page: new FormControl(1) }),
+    //   fields: [{ key: 'page' }],
+    //   query: getPost,
+    // }).subscribe((preparedQuery) =>
+    //   this.getPosts$.next(preparedQuery.execute())
+    // );
   }
 
   ngOnDestroy(): void {
