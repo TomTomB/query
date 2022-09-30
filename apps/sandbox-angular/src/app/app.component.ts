@@ -1,13 +1,16 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import {
   QueryClient,
   filterSuccess,
   takeUntilResponse,
   filterFailure,
   QueryType,
+  createReactiveQuery,
 } from '@tomtomb/query-angular';
 import { def } from '@tomtomb/query-core';
-import { Subject, tap } from 'rxjs';
+import { Subject, takeUntil, tap } from 'rxjs';
 import { Post } from './types';
 
 const client = new QueryClient({
@@ -100,21 +103,20 @@ export class AppComponent implements OnInit, OnDestroy {
       )
       .subscribe();
 
-    // const { form, changes } = createReactiveQuery({
-    //   query: getPost,
-    //   fields: {
-    //     id: {
-    //       control: new FormControl<number>(1),
-    //       isPathParam: true,
-    //     },
-    //   },
-    // });
+    const { form, changes } = createReactiveQuery({
+      query: getPost,
+      fields: {
+        id: {
+          control: new FormControl<number>(1),
+          isPathParam: true,
+          debounce: 3000,
+        },
+      },
+    });
 
-    // changes
-    //   .pipe(takeUntil(this._destroy$))
-    //   .subscribe((preparedQuery) =>
-    //     this.getPosts$.next(preparedQuery.execute())
-    //   );
+    changes.pipe(takeUntil(this._destroy$)).subscribe((preparedQuery) => {
+      this.getPosts$.next(preparedQuery.execute());
+    });
   }
 
   ngOnDestroy(): void {

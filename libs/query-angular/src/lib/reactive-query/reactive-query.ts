@@ -7,6 +7,8 @@ import {
   map,
   Observable,
   tap,
+  concat,
+  take,
 } from 'rxjs';
 import { AnyQueryCreator } from '../query-client';
 import {
@@ -172,7 +174,16 @@ const buildFieldValueChangeObservables = (
 
     const obs = formField.valueChanges.pipe(startWith(formField.value));
 
-    return field.debounce ? obs.pipe(debounceTime(field.debounce)) : obs;
+    if (!field.debounce) {
+      return obs;
+    }
+
+    // The initial value should get emitted immediately
+    // concat switches to the debounced observable after the first observable is completed
+    return concat(
+      obs.pipe(take(1)),
+      formField.valueChanges.pipe(debounceTime(field.debounce))
+    );
   });
 };
 
