@@ -1,5 +1,11 @@
 # @tomtomb/query-angular
 
+## 0.5.1
+
+### Patch Changes
+
+- [`5479ca0`](https://github.com/TomTomB/query/commit/5479ca03d060abafd76aafd2f2744910715dad95) Thanks [@TomTomB](https://github.com/TomTomB)! - Fix reactive query router query string updating
+
 ## 0.5.0
 
 ### Minor Changes
