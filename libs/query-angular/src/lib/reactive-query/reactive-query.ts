@@ -45,9 +45,9 @@ export const createReactiveQuery = <
 
   const changes = combineLatest(fieldValueChangeObservables).pipe(
     map(() => buildParams(fields, form)),
-    tap((queryParams) => {
+    tap((params) => {
       if (router) {
-        updateQueryString(queryParams, formDefaults, router);
+        updateQueryString(params, formDefaults, router);
       }
     }),
     map(({ pathParams, queryParams }) =>
@@ -93,11 +93,19 @@ const initialPatchFormFromUrlState = (options: {
 };
 
 const updateQueryString = (
-  queryParams: Record<string, unknown>,
+  params: {
+    queryParams: Record<string, unknown>;
+    pathParams: Record<string, unknown>;
+  },
   defaults: { key: string; default: unknown }[],
   router: Router
 ) => {
-  const queryParamsWithoutDefaults = Object.keys(queryParams).reduce(
+  const mergedParams = {
+    ...params.queryParams,
+    ...params.pathParams,
+  };
+
+  const queryParamsWithoutDefaults = Object.keys(mergedParams).reduce(
     (acc, key) => {
       const field = defaults.find((f) => f.key === key);
 
@@ -105,7 +113,7 @@ const updateQueryString = (
         throw new Error(`Field ${key} not found`);
       }
 
-      const value = queryParams[key] === '' ? undefined : queryParams[key];
+      const value = mergedParams[key] === '' ? undefined : mergedParams[key];
 
       if (value != field.default) {
         acc[key] = value;
