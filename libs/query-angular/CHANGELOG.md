@@ -1,5 +1,11 @@
 # @tomtomb/query-angular
 
+## 0.5.2
+
+### Patch Changes
+
+- [`2800815`](https://github.com/TomTomB/query/commit/2800815b0c0920e08b1f5d83c7a626d95c8e04b0) Thanks [@TomTomB](https://github.com/TomTomB)! - Instantly emit the first value in reactive queries even if the debounce option is set
+
 ## 0.5.1
 
 ### Patch Changes
