@@ -1,5 +1,11 @@
 # @tomtomb/query-angular
 
+## 0.5.0
+
+### Minor Changes
+
+- [`74985de`](https://github.com/TomTomB/query/commit/74985def44ca5122b2e69a3a057ee0b5863f6c46) Thanks [@TomTomB](https://github.com/TomTomB)! - Optimize api for reactive query and it's typings
+
 ## 0.4.0
 
 ### Minor Changes
