@@ -4,13 +4,13 @@ import {
   QueryParams,
   PathParams,
 } from '@tomtomb/query-core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Query } from './query';
 
 export interface QueryConfig<
   Route extends RouteType<Arguments>,
   Response,
-  Arguments extends BaseArguments | AnyDynamicArguments | undefined
+  Arguments extends BaseArguments | undefined
 > {
   /**
    * The http method to use for the query.
@@ -62,70 +62,19 @@ export interface BaseArguments {
   headers?: Record<string, string>;
 }
 
-export type DynamicArguments<
-  T extends BaseArguments | undefined,
-  M extends Method
-> = QueryArguments &
-  IncludePathParams<T> &
-  IncludeQueryParams<T> &
-  MaybeIncludeBody<T, M>;
-
-export type AnyDynamicArguments = DynamicArguments<BaseArguments, any>;
-
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type EmptyObject = {};
-
-export type MaybeIncludeBody<
-  T extends BaseArguments | undefined,
-  M extends Method
-> = M extends 'GET' | 'HEAD' | 'OPTIONS' ? EmptyObject : IncludeBody<T>;
-
-export type IncludePathParams<T extends BaseArguments | undefined> = T extends {
-  pathParams: PathParams;
-}
-  ? WithPathParams<T['pathParams']>
-  : EmptyObject;
-
-export type IncludeQueryParams<T extends BaseArguments | undefined> =
-  T extends {
-    queryParams: QueryParams;
-  }
-    ? WithQueryParams<T['queryParams']>
-    : EmptyObject;
-
-export type IncludeBody<T extends BaseArguments | undefined> = T extends {
-  body: unknown;
-}
-  ? WithBody<T['body']>
-  : EmptyObject;
-
-export interface QueryArguments {
-  headers?: Record<string, string>;
-}
-
-export interface WithPathParams<T extends PathParams> {
-  pathParams: T;
-}
-
-export interface WithQueryParams<T extends QueryParams> {
-  queryParams: T;
-}
-
-export interface WithBody<T> {
-  body: T;
-}
 
 export interface RunQueryOptions {
   skipCache?: boolean;
 }
 
-export type RouteType<
-  Arguments extends BaseArguments | AnyDynamicArguments | undefined
-> = Arguments extends {
-  pathParams: infer PathParams;
-}
-  ? (p: PathParams) => RouteString
-  : RouteString;
+export type RouteType<Arguments extends BaseArguments | undefined> =
+  Arguments extends {
+    pathParams: infer PathParams;
+  }
+    ? (p: PathParams) => RouteString
+    : RouteString;
 
 export type RouteString = `/${string}`;
 
@@ -192,10 +141,12 @@ export type AnyQuery = Query<any, any, any, any>;
 
 export type QueryType<
   T extends {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     prepare: (args: any) => AnyQuery;
   }
 > = T['prepare'] extends () => infer R
   ? R
-  : T['prepare'] extends (args: any) => infer R
+  : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  T['prepare'] extends (args: any) => infer R
   ? R
   : never;

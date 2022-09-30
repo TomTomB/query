@@ -1,73 +1,100 @@
 import { FormGroup } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { startWith, debounceTime, combineLatest, map } from 'rxjs';
+import {
+  startWith,
+  debounceTime,
+  combineLatest,
+  map,
+  Observable,
+  tap,
+} from 'rxjs';
 import { AnyQueryCreator } from '../query-client';
-import { ReactiveQueryField } from './reactive-query.types';
+import {
+  FieldControlsOf,
+  ReactiveQueryField,
+  ReactiveQueryFieldsOf,
+} from './reactive-query.types';
 
 export const createReactiveQuery = <
-  T extends FormGroup,
-  J extends AnyQueryCreator
+  J extends AnyQueryCreator,
+  F extends ReactiveQueryFieldsOf<J>
 >(options: {
-  form: T;
-  fields: ReactiveQueryField<T>[];
+  fields: F;
   query: J;
+  headers?: Record<string, string>;
   router?: Router;
   activatedRoute?: ActivatedRoute;
 }) => {
-  const { form, fields, query, router, activatedRoute } = options;
+  const { fields, query, router, activatedRoute, headers } = options;
 
-  const formDefaults = buildFormDefaults<T>(fields, form);
+  const form = buildForm(fields);
+  const formDefaults = buildFormDefaults(form, fields);
 
   if (router && activatedRoute) {
-    initialPatchFormFromUrlState<T>({
+    initialPatchFormFromUrlState({
       form: form,
       fields: fields,
       activatedRoute: activatedRoute,
     });
   }
 
-  const fieldValueChangeObservables = buildFieldValueChangeObservables<T>(
+  const fieldValueChangeObservables = buildFieldValueChangeObservables(
     fields,
     form
   );
 
-  return combineLatest(fieldValueChangeObservables).pipe(
-    map(() => {
-      const queryParams = buildQueryParams<T>(fields, form);
-
+  const changes = combineLatest(fieldValueChangeObservables).pipe(
+    map(() => buildParams(fields, form)),
+    tap((queryParams) => {
       if (router) {
-        updateQueryString<T>(queryParams, formDefaults, router);
+        updateQueryString(queryParams, formDefaults, router);
       }
+    }),
+    map(({ pathParams, queryParams }) =>
+      query.prepare({ queryParams, pathParams, headers })
+    )
+  ) as Observable<ReturnType<J['prepare']>>;
 
-      return query.prepare({ queryParams });
-    })
-  );
+  return {
+    form,
+    changes,
+  };
 };
 
-const initialPatchFormFromUrlState = <T extends FormGroup>(options: {
-  form: T;
-  fields: ReactiveQueryField<T>[];
+const buildForm = <F extends Record<string, ReactiveQueryField>>(fields: F) => {
+  const formFields = Object.keys(fields).reduce((acc, key: keyof F) => {
+    const field = fields[key];
+    acc[key] = field.control;
+    return acc;
+  }, {} as FieldControlsOf<F>);
+
+  return new FormGroup(formFields);
+};
+
+const initialPatchFormFromUrlState = (options: {
+  form: FormGroup;
+  fields: Record<string, ReactiveQueryField>;
   activatedRoute: ActivatedRoute;
 }) => {
   const { form, fields, activatedRoute } = options;
 
   const queryParams = activatedRoute.snapshot.queryParams;
 
-  const initialFormValue = fields
-    .map((field) => {
-      const urlValue = queryParams[field.key as string];
+  const initialFormValue = Object.entries(fields)
+    .map(([key, field]) => {
+      const urlValue = queryParams[key];
       const value = field.deserialize ? field.deserialize(urlValue) : urlValue;
 
-      return value ? { [field.key]: value } : {};
+      return value ? { [key]: value } : {};
     })
     .reduce((acc, curr) => ({ ...acc, ...curr }), {});
 
   form.patchValue(initialFormValue);
 };
 
-const updateQueryString = <T extends FormGroup>(
-  queryParams: Record<keyof T['controls'], unknown>,
-  defaults: { key: keyof T['controls']; default: any }[],
+const updateQueryString = (
+  queryParams: Record<string, unknown>,
+  defaults: { key: string; default: unknown }[],
   router: Router
 ) => {
   const queryParamsWithoutDefaults = Object.keys(queryParams).reduce(
@@ -98,31 +125,41 @@ const updateQueryString = <T extends FormGroup>(
   });
 };
 
-const buildQueryParams = <T extends FormGroup>(
-  fields: ReactiveQueryField<T>[],
-  form: T
+const buildParams = (
+  fields: Record<string, ReactiveQueryField>,
+  form: FormGroup
 ) => {
-  return fields.reduce((acc, field) => {
-    const fieldName = field.key;
-    const originalValue = form.getRawValue()[fieldName];
-    const value = field.serialize
-      ? field.serialize(originalValue)
-      : originalValue;
-    acc[fieldName] = value;
+  return Object.entries(fields).reduce(
+    (acc, [key, field]) => {
+      const originalValue = form.getRawValue()[key];
+      const value = field.serialize
+        ? field.serialize(originalValue)
+        : originalValue;
 
-    return acc;
-  }, {} as Record<keyof T['controls'], unknown>);
+      if (field.isPathParam) {
+        acc.pathParams[key] = value;
+      } else {
+        acc.queryParams[key] = value;
+      }
+
+      return acc;
+    },
+    { queryParams: {}, pathParams: {} } as {
+      queryParams: Record<string, unknown>;
+      pathParams: Record<string, unknown>;
+    }
+  );
 };
 
-const buildFieldValueChangeObservables = <T extends FormGroup>(
-  fields: ReactiveQueryField<T>[],
-  form: T
+const buildFieldValueChangeObservables = (
+  fields: Record<string, ReactiveQueryField>,
+  form: FormGroup
 ) => {
-  return fields.map((field) => {
-    const formField = form.controls[field.key as string];
+  return Object.entries(fields).map(([key, field]) => {
+    const formField = form.controls[key];
 
     if (!formField) {
-      throw new Error(`Field ${field.key as string} not found in form`);
+      throw new Error(`Field ${key} not found in form`);
     }
 
     const obs = formField.valueChanges.pipe(startWith(formField.value));
@@ -131,18 +168,18 @@ const buildFieldValueChangeObservables = <T extends FormGroup>(
   });
 };
 
-const buildFormDefaults = <T extends FormGroup>(
-  fields: ReactiveQueryField<T>[],
-  form: T
+const buildFormDefaults = (
+  form: FormGroup,
+  fields: Record<string, ReactiveQueryField>
 ) => {
-  return fields.map((field) => {
-    const originalValue = form.controls[field.key as string]?.value;
-    const value =
-      field.default ??
-      (field.serialize ? field.serialize(originalValue) : originalValue);
+  return Object.entries(fields).map(([key, field]) => {
+    const originalValue = form.controls[key]?.value;
+    const value = field.serialize
+      ? field.serialize(originalValue)
+      : originalValue;
 
     return {
-      key: field.key,
+      key: key,
       default: value,
     };
   });

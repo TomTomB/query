@@ -56,3 +56,7 @@ export type QueryCreator<
 };
 
 export type AnyQueryCreator = QueryCreator<any, any, any, any>;
+
+export type QueryCreatorArgs<T extends AnyQueryCreator> = Parameters<
+  T['prepare']
+>[0];

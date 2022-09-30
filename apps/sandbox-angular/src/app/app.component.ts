@@ -100,13 +100,21 @@ export class AppComponent implements OnInit, OnDestroy {
       )
       .subscribe();
 
-    // createReactiveQuery({
-    //   form: new FormGroup({ page: new FormControl(1) }),
-    //   fields: [{ key: 'page' }],
+    // const { form, changes } = createReactiveQuery({
     //   query: getPost,
-    // }).subscribe((preparedQuery) =>
-    //   this.getPosts$.next(preparedQuery.execute())
-    // );
+    //   fields: {
+    //     id: {
+    //       control: new FormControl<number>(1),
+    //       isPathParam: true,
+    //     },
+    //   },
+    // });
+
+    // changes
+    //   .pipe(takeUntil(this._destroy$))
+    //   .subscribe((preparedQuery) =>
+    //     this.getPosts$.next(preparedQuery.execute())
+    //   );
   }
 
   ngOnDestroy(): void {
