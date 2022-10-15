@@ -7,7 +7,6 @@ import {
   GqlQueryConfig,
   Loading,
   Prepared,
-  QueryConfig,
   QueryState,
   QueryStateData,
   QueryStateType,

@@ -1,6 +1,5 @@
 import { invalidBaseRouteError } from '../logger';
 import { QueryState } from '../query-state';
-import { Method } from '../request';
 import {
   BaseArguments,
   QueryConfig,
