@@ -1,5 +1,11 @@
 # @tomtomb/query-angular
 
+## 0.6.0
+
+### Minor Changes
+
+- [`df55b50`](https://github.com/TomTomB/query/commit/df55b5093822f7492ac92f1e4d7ce3f21f546ee4) Thanks [@TomTomB](https://github.com/TomTomB)! - Add support for graphql
+
 ## 0.5.2
 
 ### Patch Changes
