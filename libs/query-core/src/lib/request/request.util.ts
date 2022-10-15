@@ -10,6 +10,7 @@ import {
   RequestError,
   ParamArray,
   UnfilteredParamPrimitive,
+  Method,
 } from './request.types';
 
 export const isRequestError = (error: unknown): error is RequestError =>
@@ -257,4 +258,32 @@ export const buildBody = (body: unknown) => {
   }
 
   throw invalidBodyError(body);
+};
+
+export const transformMethod = (method: Method) => {
+  if (method === 'GQL_QUERY' || method === 'GQL_MUTATE') {
+    return 'POST';
+  }
+
+  return method;
+};
+
+export const guessContentType = (body: unknown) => {
+  if (body === null || body === undefined) {
+    return null;
+  }
+
+  if (typeof body === 'string') {
+    return 'text/plain';
+  }
+
+  if (body instanceof FormData) {
+    return 'multipart/form-data';
+  }
+
+  if (typeof body === 'object') {
+    return 'application/json';
+  }
+
+  return null;
 };

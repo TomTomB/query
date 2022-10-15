@@ -8,12 +8,14 @@ import {
   filterFailure,
   QueryType,
   createReactiveQuery,
+  CustomHeaderAuthProvider,
+  gql,
 } from '@tomtomb/query-angular';
 import { def } from '@tomtomb/query-core';
 import { Subject, takeUntil, tap } from 'rxjs';
 import { Post } from './types';
 
-const client = new QueryClient({
+const restClient = new QueryClient({
   baseRoute: 'https://jsonplaceholder.typicode.com',
 });
 
@@ -29,7 +31,7 @@ const client = new QueryClient({
 
 // client.setAuthProvider(authProvider);
 
-const getPost = client.get({
+const getPost = restClient.get({
   route: (p) => `/posts/${p.id}`,
   // secure: true,
   types: {
@@ -52,6 +54,33 @@ const getPost = client.get({
 
 // const shouldError = clone.prepare().execute();
 // const shouldWork = getPosts.prepare().execute();
+
+const gqlClient = new QueryClient({
+  baseRoute: 'https://api.spacex.land/graphql',
+});
+
+const QUERY = gql`
+  query ExampleQuery {
+    roadster {
+      apoapsis_au
+    }
+    capsules {
+      dragon {
+        active
+      }
+    }
+  }
+`;
+
+const getLaunches = gqlClient.gqlQuery({
+  query: QUERY,
+  // types: {
+  //   response: def<any>(),
+  //   args: def<{ variables: { limit: number } }>(),
+  // },
+});
+
+getLaunches.prepare().execute();
 
 @Component({
   selector: 'tomtomb-root',

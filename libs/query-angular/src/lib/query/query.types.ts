@@ -49,16 +49,41 @@ export interface QueryConfig<
   };
 }
 
+export interface GqlQueryConfig<
+  Route extends RouteType<Arguments> | undefined,
+  Response,
+  Arguments extends BaseArguments | undefined
+> {
+  method: Method;
+  query: string;
+  route?: Route;
+  secure?: boolean;
+  types?: {
+    response?: Response;
+    args?: Arguments;
+  };
+}
+
 export type QueryConfigWithoutMethod<
   Route extends RouteType<Arguments>,
   Response,
   Arguments extends BaseArguments | undefined
 > = Omit<QueryConfig<Route, Response, Arguments>, 'method'>;
 
-export interface BaseArguments {
+export type GqlQueryConfigWithoutMethod<
+  Route extends RouteType<Arguments>,
+  Response,
+  Arguments extends BaseArguments | undefined
+> = Omit<GqlQueryConfig<Route, Response, Arguments>, 'method'>;
+
+export interface BaseArguments extends WithHeaders {
   pathParams?: PathParams;
   queryParams?: QueryParams;
   body?: unknown;
+  variables?: Record<string, unknown>;
+}
+
+export interface WithHeaders {
   headers?: Record<string, string>;
 }
 

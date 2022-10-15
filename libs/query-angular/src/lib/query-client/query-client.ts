@@ -3,6 +3,8 @@ import { BehaviorSubject } from 'rxjs';
 import { AuthProvider } from '../auth';
 import {
   BaseArguments,
+  GqlQueryConfig,
+  GqlQueryConfigWithoutMethod,
   Query,
   QueryConfig,
   QueryConfigWithoutMethod,
@@ -92,18 +94,44 @@ export class QueryClient {
       method: 'DELETE',
     });
 
+  gqlQuery = <
+    Route extends RouteType<Arguments>,
+    Response,
+    Arguments extends BaseArguments | undefined
+  >(
+    queryConfig: GqlQueryConfigWithoutMethod<Route, Response, Arguments>
+  ) =>
+    this.fetch<Route, Response, Arguments, 'GQL_QUERY'>({
+      ...queryConfig,
+      method: 'GQL_QUERY',
+    });
+
+  gqlMutate = <
+    Route extends RouteType<Arguments>,
+    Response,
+    Arguments extends BaseArguments | undefined
+  >(
+    queryConfig: GqlQueryConfigWithoutMethod<Route, Response, Arguments>
+  ) =>
+    this.fetch<Route, Response, Arguments, 'GQL_MUTATE'>({
+      ...queryConfig,
+      method: 'GQL_MUTATE',
+    });
+
   fetch = <
     Route extends RouteType<Arguments>,
     Response,
     Arguments extends BaseArguments | undefined,
     Method extends MethodType
   >(
-    queryConfig: QueryConfig<Route, Response, Arguments>
+    queryConfig:
+      | QueryConfig<Route, Response, Arguments>
+      | GqlQueryConfig<Route, Response, Arguments>
   ): QueryCreator<Arguments, Method, Response, Route> => {
     const prepare = (args?: Arguments) => {
       const route = buildRoute({
         base: this._clientConfig.baseRoute,
-        route: queryConfig.route,
+        route: queryConfig.route ?? '/',
         pathParams: (args as BaseArguments)?.pathParams,
         queryParams: (args as BaseArguments)?.queryParams,
       }) as Route;

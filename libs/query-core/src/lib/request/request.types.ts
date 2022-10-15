@@ -11,6 +11,8 @@ export type Method =
   | 'PURGE'
   | 'LINK'
   | 'UNLINK'
+  | 'GQL_QUERY'
+  | 'GQL_MUTATE'
   | 'CUSTOM';
 
 export interface RequestError<Detail = unknown> {

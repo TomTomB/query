@@ -1,13 +1,17 @@
 import { RequestHeaders } from '@tomtomb/query-core';
 import { filter, Observable, takeWhile } from 'rxjs';
 import {
+  BaseArguments,
   Cancelled,
   Failure,
+  GqlQueryConfig,
   Loading,
   Prepared,
+  QueryConfig,
   QueryState,
   QueryStateData,
   QueryStateType,
+  RouteType,
   Success,
 } from './query.types';
 
@@ -51,19 +55,34 @@ export const isQueryStatePrepared = (state: QueryState): state is Prepared =>
   state.type === QueryStateType.Prepared;
 
 export const mergeHeaders = (
-  a: RequestHeaders | null | undefined,
-  b: RequestHeaders | null | undefined
+  ...headers: Array<RequestHeaders | null | undefined>
 ) => {
-  if (!a) {
-    return b ?? undefined;
+  return headers.reduce((acc, headers) => {
+    if (!headers) {
+      return acc;
+    }
+
+    return {
+      ...acc,
+      ...headers,
+    };
+  }, {});
+};
+
+export const isGqlQueryConfig = <
+  Response,
+  Arguments extends BaseArguments | undefined,
+  Route extends RouteType<Arguments> | undefined
+>(
+  config: unknown
+): config is GqlQueryConfig<Route, Response, Arguments> => {
+  if (!config || typeof config !== 'object' || Array.isArray(config)) {
+    return false;
   }
 
-  if (!b) {
-    return a ?? undefined;
+  if (!('query' in config)) {
+    return false;
   }
 
-  return {
-    ...a,
-    ...b,
-  };
+  return true;
 };

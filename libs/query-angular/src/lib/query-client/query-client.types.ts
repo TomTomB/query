@@ -1,7 +1,12 @@
 import { CacheAdapterFn, Method as MethodType } from '@tomtomb/query-core';
 import { BehaviorSubject } from 'rxjs';
 import { Query } from '../query/query';
-import { BaseArguments, RouteType } from '../query/query.types';
+import {
+  BaseArguments,
+  EmptyObject,
+  RouteType,
+  WithHeaders,
+} from '../query/query.types';
 
 export interface QueryClientConfig {
   /**
@@ -43,18 +48,24 @@ export type QueryCreator<
   Method extends MethodType,
   Response,
   Route extends RouteType<Arguments>
-> = (Arguments extends { pathParams: unknown }
+> = (Arguments extends Record<string, unknown>
   ? {
-      prepare: (args: Arguments) => Query<Response, Arguments, Route, Method>;
+      prepare: (
+        args: Arguments & WithHeaders
+      ) => Query<Response, Arguments, Route, Method>;
     }
   : {
-      prepare: (args?: Arguments) => Query<Response, Arguments, Route, Method>;
+      prepare: (
+        args?: (Arguments extends EmptyObject ? Arguments : EmptyObject) &
+          WithHeaders
+      ) => Query<Response, Arguments, Route, Method>;
     }) & {
   behaviorSubject: <T extends Query<Response, Arguments, Route, Method>>(
     initialValue?: T | null
   ) => BehaviorSubject<T | null>;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyQueryCreator = QueryCreator<any, any, any, any>;
 
 export type QueryCreatorArgs<T extends AnyQueryCreator> = Parameters<

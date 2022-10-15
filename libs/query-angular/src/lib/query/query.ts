@@ -5,8 +5,11 @@ import {
   isAbortRequestError,
   isRequestError,
   Method as MethodType,
+  transformMethod,
+  guessContentType,
 } from '@tomtomb/query-core';
 import { Subscription, BehaviorSubject, interval, takeUntil } from 'rxjs';
+import { transformGql } from '../gql';
 import { QueryClient } from '../query-client';
 import {
   QueryState,
@@ -17,11 +20,13 @@ import {
   QueryConfig,
   RunQueryOptions,
   BaseArguments,
+  GqlQueryConfig,
 } from './query.types';
 import {
   isQueryStateSuccess,
   isQueryStateLoading,
   mergeHeaders,
+  isGqlQueryConfig,
 } from './query.utils';
 
 export class Query<
@@ -64,7 +69,9 @@ export class Query<
 
   constructor(
     private _client: QueryClient,
-    private _queryConfig: QueryConfig<Route, Response, Arguments>,
+    private _queryConfig:
+      | QueryConfig<Route, Response, Arguments>
+      | GqlQueryConfig<Route, Response, Arguments>,
     private _route: Route,
     private _args: Arguments | undefined
   ) {
@@ -106,16 +113,57 @@ export class Query<
       meta,
     });
 
+    let body: string | FormData | null = null;
+    let contentType: string | null = null;
+
+    if (isGqlQueryConfig(this._queryConfig)) {
+      const queryTemplate = this._queryConfig.query;
+      const query = transformGql(queryTemplate);
+
+      contentType = 'application/json';
+      body = query(this._args?.variables);
+    } else {
+      body = buildBody(this._args?.body);
+      contentType = guessContentType(body);
+    }
+
+    let authHeader: Record<string, string> | null = null;
+
+    if (this._queryConfig.secure) {
+      const header = this._client.authProvider?.header;
+
+      if (header) {
+        authHeader = header;
+      }
+    } else if (this._client.authProvider?.header) {
+      if (this._queryConfig.secure === undefined || this._queryConfig.secure) {
+        authHeader = this._client.authProvider.header;
+      }
+    }
+
+    let headers = mergeHeaders(authHeader, this._args?.headers);
+
+    if (
+      contentType &&
+      !headers?.['Content-Type'] &&
+      !headers?.['content-type']
+    ) {
+      if (headers) {
+        headers['Content-Type'] = contentType;
+      } else {
+        headers = {
+          'Content-Type': contentType,
+        };
+      }
+    }
+
     request<Response>({
       route: this._route,
       init: {
-        method: this._queryConfig.method,
+        method: transformMethod(this._queryConfig.method),
         signal: this._abortController.signal,
-        body: buildBody((this._args as BaseArguments)?.body),
-        headers: mergeHeaders(
-          this._client.authProvider?.header,
-          this._args?.headers
-        ),
+        body,
+        headers: headers || undefined,
       },
       cacheAdapter: this._client.config.request?.cacheAdapter,
     })
