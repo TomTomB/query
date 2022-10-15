@@ -5,6 +5,7 @@ import {
   BaseArguments,
   GqlQueryConfig,
   GqlQueryConfigWithoutMethod,
+  isGqlQueryConfig,
   Query,
   QueryConfig,
   QueryConfigWithoutMethod,
@@ -12,7 +13,7 @@ import {
 } from '../query';
 import { QueryStore } from '../query-store';
 import { QueryClientConfig, QueryCreator } from './query-client.types';
-import { shouldCacheQuery } from './query-client.utils';
+import { buildGqlCacheKey, shouldCacheQuery } from './query-client.utils';
 
 export class QueryClient {
   private readonly _store: QueryStore;
@@ -136,8 +137,12 @@ export class QueryClient {
         queryParams: (args as BaseArguments)?.queryParams,
       }) as Route;
 
+      const cacheKey = isGqlQueryConfig(queryConfig)
+        ? buildGqlCacheKey(queryConfig, args)
+        : route;
+
       if (shouldCacheQuery(queryConfig.method)) {
-        const existingQuery = this._store.get(route);
+        const existingQuery = this._store.get(cacheKey);
 
         if (existingQuery) {
           return existingQuery as Query<Response, Arguments, Route, Method>;
@@ -152,7 +157,7 @@ export class QueryClient {
       );
 
       if (shouldCacheQuery(queryConfig.method)) {
-        this._store.add(route, query);
+        this._store.add(cacheKey, query);
       }
 
       return query;
