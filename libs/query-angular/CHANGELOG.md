@@ -1,5 +1,11 @@
 # @tomtomb/query-angular
 
+## 0.6.2
+
+### Patch Changes
+
+- [`e0dc5ac`](https://github.com/TomTomB/query/commit/e0dc5acabd0d210948024d0e558909cecb8c2c7b) Thanks [@TomTomB](https://github.com/TomTomB)! - Create gql cache keys based on query and vars
+
 ## 0.6.1
 
 ### Patch Changes
