@@ -1,5 +1,11 @@
 # @tomtomb/query-angular
 
+## 0.6.1
+
+### Patch Changes
+
+- [`9787f44`](https://github.com/TomTomB/query/commit/9787f444f8aa7678cd03c14daa4ccbc681768d6f) Thanks [@TomTomB](https://github.com/TomTomB)! - Set the response to response.data for gql queries
+
 ## 0.6.0
 
 ### Minor Changes
