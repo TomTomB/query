@@ -22,7 +22,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/query-core"],
+      "outputs": ["{workspaceRoot}/coverage/libs/query-core"],
       "options": {
         "jestConfig": "libs/query-core/jest.config.ts",
         "passWithNoTests": true

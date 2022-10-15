@@ -83,7 +83,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/sandbox-angular"],
+      "outputs": ["{workspaceRoot}/coverage/apps/sandbox-angular"],
       "options": {
         "jestConfig": "apps/sandbox-angular/jest.config.ts",
         "passWithNoTests": true
