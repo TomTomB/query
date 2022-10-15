@@ -80,7 +80,7 @@ const getLaunches = gqlClient.gqlQuery({
   // },
 });
 
-getLaunches.prepare().execute();
+getLaunches.prepare().execute().state$.subscribe(console.log);
 
 @Component({
   selector: 'tomtomb-root',

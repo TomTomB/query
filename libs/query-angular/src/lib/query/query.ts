@@ -170,11 +170,25 @@ export class Query<
       .then((response) => {
         const isResponseObject = typeof response === 'object';
 
+        const isGql = isGqlQueryConfig(this._queryConfig);
+
+        let responseData: unknown | null = null;
+        if (isGql && isResponseObject && 'data' in response.data) {
+          responseData = deepFreeze(
+            (response.data as Record<string, unknown>)['data'] as Record<
+              string,
+              unknown
+            >
+          );
+        } else if (isResponseObject && 'data' in response) {
+          responseData = deepFreeze(response.data as Record<string, unknown>);
+        } else {
+          responseData = deepFreeze(response);
+        }
+
         this._state$.next({
           type: QueryStateType.Success,
-          response: (isResponseObject
-            ? deepFreeze(response.data as Record<string, unknown>)
-            : response) as Response,
+          response: responseData as Response,
           meta: deepFreeze({ ...meta, expiresAt: response.expiresInTimestamp }),
         });
       })
