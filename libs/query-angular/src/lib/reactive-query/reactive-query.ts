@@ -11,6 +11,10 @@ import {
   updateQueryString,
 } from './reactive-query.utils';
 
+// TODO: Add support for fields that reset other fields when they change.
+// TODO: Keeping all fields required is a bit of a pain. (e.g. for fields that never change). Maybe make them optional?
+// TODO: Add support for hiding fields from the url.
+// TODO: Add support for graphql esque pagination? (usually using something like `skip`, `limit` aka pageSize and `total`). See https://www.contentful.com/blog/2021/04/23/paginating-contentful-blogposts-with-nextjs-graphql-api/
 export const createReactiveQuery = <
   J extends AnyQueryCreator,
   F extends ReactiveQueryFieldsOf<J>
