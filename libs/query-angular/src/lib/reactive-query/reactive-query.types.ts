@@ -46,24 +46,28 @@ export type MayWithQueryParams<T extends AnyQueryCreator> = StripUndefined<
 > extends WithQueryParams
   ? {
       queryParams: ReactiveQueryFieldsOfFields<
-        QueryCreatorArgs<T>['queryParams']
+        StripUndefined<QueryCreatorArgs<T>['queryParams']>
       >;
     }
   : EmptyObject;
+
 export type MayWithPathParams<T extends AnyQueryCreator> = StripUndefined<
   QueryCreatorArgs<T>
 > extends WithPathParams
   ? {
       pathParams: ReactiveQueryFieldsOfFields<
-        QueryCreatorArgs<T>['pathParams']
+        StripUndefined<QueryCreatorArgs<T>['pathParams']>
       >;
     }
   : EmptyObject;
+
 export type MayWithVariables<T extends AnyQueryCreator> = StripUndefined<
   QueryCreatorArgs<T>
 > extends WithVariables
   ? {
-      variables: ReactiveQueryFieldsOfFields<QueryCreatorArgs<T>['variables']>;
+      variables: ReactiveQueryFieldsOfFields<
+        StripUndefined<QueryCreatorArgs<T>>['variables']
+      >;
     }
   : EmptyObject;
 
