@@ -1,6 +1,10 @@
-import { FormControl } from '@angular/forms';
-import { PathParams, QueryParams } from '@tomtomb/query-core';
-import { BaseArguments, EmptyObject } from '../query';
+import { FormControl, FormGroup } from '@angular/forms';
+import {
+  EmptyObject,
+  WithPathParams,
+  WithQueryParams,
+  WithVariables,
+} from '../query';
 import { AnyQueryCreator, QueryCreatorArgs } from '../query-client';
 
 export interface ReactiveQueryField<T = unknown> {
@@ -25,36 +29,89 @@ export interface ReactiveQueryField<T = unknown> {
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   deserialize?: (val: any) => unknown;
-
-  /**
-   * Determines how the field's value is used in the query.
-   * @default 'query'
-   */
-  type?: 'path' | 'query' | 'variable';
 }
 
 export type FieldControlsOf<F extends Record<string, ReactiveQueryField>> = {
   [Property in keyof F]: F[Property]['control'];
 };
 
-export type FieldDefinitions<T extends AnyQueryCreator> =
-  WithFieldsFromPathParams<QueryCreatorArgs<T>> &
-    WithFieldsFromQueryParams<QueryCreatorArgs<T>>;
-
-export type WithFieldsFromPathParams<T extends BaseArguments | undefined> =
-  T extends {
-    pathParams: PathParams;
-  }
-    ? T['pathParams']
-    : EmptyObject;
-
-export type WithFieldsFromQueryParams<T extends BaseArguments | undefined> =
-  T extends {
-    queryParams: QueryParams;
-  }
-    ? T['queryParams']
-    : EmptyObject;
-
-export type ReactiveQueryFieldsOf<T extends AnyQueryCreator> = {
-  [K in keyof FieldDefinitions<T>]: ReactiveQueryField<FieldDefinitions<T>[K]>;
+export type ReactiveQueryFieldsOfFields<T extends Record<string, unknown>> = {
+  [K in keyof T]: ReactiveQueryField<T[K]>;
 };
+
+export type MayWithQueryParams<T extends AnyQueryCreator> =
+  QueryCreatorArgs<T> extends WithQueryParams
+    ? {
+        queryParams: ReactiveQueryFieldsOfFields<
+          QueryCreatorArgs<T>['queryParams']
+        >;
+      }
+    : EmptyObject;
+export type MayWithPathParams<T extends AnyQueryCreator> =
+  QueryCreatorArgs<T> extends WithPathParams
+    ? {
+        pathParams: ReactiveQueryFieldsOfFields<
+          QueryCreatorArgs<T>['pathParams']
+        >;
+      }
+    : EmptyObject;
+export type MayWithVariables<T extends AnyQueryCreator> =
+  QueryCreatorArgs<T> extends WithVariables
+    ? {
+        variables: ReactiveQueryFieldsOfFields<
+          QueryCreatorArgs<T>['variables']
+        >;
+      }
+    : EmptyObject;
+
+export type ReactiveQueryFieldsOf<T extends AnyQueryCreator> =
+  MayWithQueryParams<T> & MayWithPathParams<T> & MayWithVariables<T>;
+
+export type ReactiveQueryFields = {
+  queryParams?: ReactiveQuerySubFields;
+  pathParams?: ReactiveQuerySubFields;
+  variables?: ReactiveQuerySubFields;
+};
+
+export type ReactiveQuerySubFields = Record<
+  string,
+  ReactiveQueryField<unknown>
+>;
+
+export type MayWithQueryParamsFormGroup<T extends ReactiveQueryFields> =
+  T extends {
+    queryParams: Record<string, ReactiveQueryField>;
+  }
+    ? {
+        queryParams: FormGroup<{
+          [K in keyof T['queryParams']]: T['queryParams'][K]['control'];
+        }>;
+      }
+    : Record<string, never>;
+
+export type MayWithPathParamsFormGroup<T extends ReactiveQueryFields> =
+  T extends {
+    pathParams: Record<string, ReactiveQueryField>;
+  }
+    ? {
+        pathParams: FormGroup<{
+          [K in keyof T['pathParams']]: T['pathParams'][K]['control'];
+        }>;
+      }
+    : Record<string, never>;
+
+export type MayWithVariablesFormGroup<T extends ReactiveQueryFields> =
+  T extends {
+    variables: Record<string, ReactiveQueryField>;
+  }
+    ? {
+        variables: FormGroup<{
+          [K in keyof T['variables']]: T['variables'][K]['control'];
+        }>;
+      }
+    : Record<string, never>;
+
+export type ReactiveFormGroupsOf<T extends ReactiveQueryFields> =
+  MayWithQueryParamsFormGroup<T> &
+    MayWithPathParamsFormGroup<T> &
+    MayWithVariablesFormGroup<T>;

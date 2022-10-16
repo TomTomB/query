@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   QueryClient,
   filterSuccess,
@@ -8,8 +9,8 @@ import {
   filterFailure,
   QueryType,
   createReactiveQuery,
-  CustomHeaderAuthProvider,
   gql,
+  ReactiveQueryFieldsOf,
 } from '@tomtomb/query-angular';
 import { def } from '@tomtomb/query-core';
 import { Subject, takeUntil, tap } from 'rxjs';
@@ -80,6 +81,14 @@ const getLaunches = gqlClient.gqlQuery({
   // },
 });
 
+// const q = createReactiveQuery({ query: getLaunches, fields: { limit: { control: new FormControl(10),type: 'variable'  } }  })
+
+// q.changes.subscribe(params => {
+
+//   getLaunches.prepare({ ...params }).execute().subscribe(console.log)
+
+// })
+
 getLaunches.prepare().execute().state$.subscribe(console.log);
 
 @Component({
@@ -92,6 +101,9 @@ export class AppComponent implements OnInit, OnDestroy {
   getPosts$ = getPost.behaviorSubject();
 
   private _destroy$ = new Subject();
+
+  private _router = inject(Router);
+  private _activatedRoute = inject(ActivatedRoute);
 
   ngOnInit(): void {
     const query = getPost
@@ -132,20 +144,37 @@ export class AppComponent implements OnInit, OnDestroy {
       )
       .subscribe();
 
-    const { form, changes } = createReactiveQuery({
-      query: getPost,
-      fields: {
+    const fields: ReactiveQueryFieldsOf<typeof getPost> = {
+      pathParams: {
         id: {
           control: new FormControl<number>(1),
-          isPathParam: true,
           debounce: 3000,
         },
       },
-    });
+    };
 
-    changes.pipe(takeUntil(this._destroy$)).subscribe((preparedQuery) => {
-      this.getPosts$.next(preparedQuery.execute());
-    });
+    // This set timeout is needed since the activated route is not yet initialized.
+    // This is a hack and only needed for the sandbox app.
+    setTimeout(() => {
+      const { form, changes } = createReactiveQuery({
+        query: getPost,
+        fields,
+        activatedRoute: this._activatedRoute,
+        router: this._router,
+      });
+
+      changes.pipe(takeUntil(this._destroy$)).subscribe((args) => {
+        this.getPosts$.next(
+          getPost
+            .prepare({ pathParams: { id: args.pathParams.id ?? 1 } })
+            .execute()
+        );
+      });
+
+      setTimeout(() => {
+        form.controls.pathParams.controls.id.setValue(21);
+      }, 2500);
+    }, 500);
   }
 
   ngOnDestroy(): void {

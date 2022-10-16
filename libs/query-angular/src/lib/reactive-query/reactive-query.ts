@@ -1,12 +1,12 @@
 import { Router, ActivatedRoute } from '@angular/router';
-import { combineLatest, map, Observable, tap } from 'rxjs';
+import { combineLatest, map, tap } from 'rxjs';
 import { AnyQueryCreator } from '../query-client';
 import { ReactiveQueryFieldsOf } from './reactive-query.types';
 import {
   buildReactiveQueryFieldValueChangeObservables,
   buildReactiveQueryForm,
   buildReactiveQueryFormDefaults,
-  buildReactiveQueryParams,
+  buildReactiveArgs,
   initialPatchReactiveQueryFormFromUrlState,
   updateQueryString,
 } from './reactive-query.utils';
@@ -17,13 +17,13 @@ export const createReactiveQuery = <
 >(options: {
   fields: F;
   query: J;
-  headers?: Record<string, string>;
   router?: Router;
   activatedRoute?: ActivatedRoute;
 }) => {
-  const { fields, query, router, activatedRoute, headers } = options;
+  const { fields, router, activatedRoute } = options;
 
   const form = buildReactiveQueryForm(fields);
+
   const formDefaults = buildReactiveQueryFormDefaults(form, fields);
 
   if (router && activatedRoute) {
@@ -38,16 +38,14 @@ export const createReactiveQuery = <
     buildReactiveQueryFieldValueChangeObservables(fields, form);
 
   const changes = combineLatest(fieldValueChangeObservables).pipe(
-    map(() => buildReactiveQueryParams(fields, form)),
+    map(() => buildReactiveArgs(fields, form)),
     tap((params) => {
       if (router) {
         updateQueryString(params, formDefaults, router);
       }
     }),
-    map(({ pathParams, queryParams, variables }) =>
-      query.prepare({ queryParams, pathParams, variables, headers })
-    )
-  ) as Observable<ReturnType<J['prepare']>>;
+    map((data) => data as ReturnType<typeof form['getRawValue']>)
+  );
 
   return {
     form,

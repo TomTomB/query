@@ -76,15 +76,30 @@ export type GqlQueryConfigWithoutMethod<
   Arguments extends BaseArguments | undefined
 > = Omit<GqlQueryConfig<Route, Response, Arguments>, 'method'>;
 
-export interface BaseArguments extends WithHeaders {
-  pathParams?: PathParams;
-  queryParams?: QueryParams;
-  body?: unknown;
-  variables?: Record<string, unknown>;
-}
+export type BaseArguments = WithHeaders &
+  WithVariables &
+  WithBody &
+  WithQueryParams &
+  WithPathParams;
 
 export interface WithHeaders {
   headers?: Record<string, string>;
+}
+
+export interface WithVariables {
+  variables?: Record<string, unknown>;
+}
+
+export interface WithBody {
+  body?: unknown;
+}
+
+export interface WithQueryParams {
+  queryParams?: QueryParams;
+}
+
+export interface WithPathParams {
+  pathParams?: PathParams;
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
