@@ -1,5 +1,11 @@
 # @tomtomb/query-angular
 
+## 0.7.1
+
+### Patch Changes
+
+- [`c378c80`](https://github.com/TomTomB/query/commit/c378c80b3a0a79ad21e89ff07b0146d5c956a295) Thanks [@TomTomB](https://github.com/TomTomB)! - Fix reactive query typings getting lost if parts of args are undefined
+
 ## 0.7.0
 
 ### Minor Changes
