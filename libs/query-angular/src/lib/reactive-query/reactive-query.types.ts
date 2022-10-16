@@ -31,6 +31,8 @@ export interface ReactiveQueryField<T = unknown> {
   deserialize?: (val: any) => unknown;
 }
 
+export type StripUndefined<T> = T extends undefined ? never : T;
+
 export type FieldControlsOf<F extends Record<string, ReactiveQueryField>> = {
   [Property in keyof F]: F[Property]['control'];
 };
@@ -39,30 +41,31 @@ export type ReactiveQueryFieldsOfFields<T extends Record<string, unknown>> = {
   [K in keyof T]: ReactiveQueryField<T[K]>;
 };
 
-export type MayWithQueryParams<T extends AnyQueryCreator> =
-  QueryCreatorArgs<T> extends WithQueryParams
-    ? {
-        queryParams: ReactiveQueryFieldsOfFields<
-          QueryCreatorArgs<T>['queryParams']
-        >;
-      }
-    : EmptyObject;
-export type MayWithPathParams<T extends AnyQueryCreator> =
-  QueryCreatorArgs<T> extends WithPathParams
-    ? {
-        pathParams: ReactiveQueryFieldsOfFields<
-          QueryCreatorArgs<T>['pathParams']
-        >;
-      }
-    : EmptyObject;
-export type MayWithVariables<T extends AnyQueryCreator> =
-  QueryCreatorArgs<T> extends WithVariables
-    ? {
-        variables: ReactiveQueryFieldsOfFields<
-          QueryCreatorArgs<T>['variables']
-        >;
-      }
-    : EmptyObject;
+export type MayWithQueryParams<T extends AnyQueryCreator> = StripUndefined<
+  QueryCreatorArgs<T>
+> extends WithQueryParams
+  ? {
+      queryParams: ReactiveQueryFieldsOfFields<
+        QueryCreatorArgs<T>['queryParams']
+      >;
+    }
+  : EmptyObject;
+export type MayWithPathParams<T extends AnyQueryCreator> = StripUndefined<
+  QueryCreatorArgs<T>
+> extends WithPathParams
+  ? {
+      pathParams: ReactiveQueryFieldsOfFields<
+        QueryCreatorArgs<T>['pathParams']
+      >;
+    }
+  : EmptyObject;
+export type MayWithVariables<T extends AnyQueryCreator> = StripUndefined<
+  QueryCreatorArgs<T>
+> extends WithVariables
+  ? {
+      variables: ReactiveQueryFieldsOfFields<QueryCreatorArgs<T>['variables']>;
+    }
+  : EmptyObject;
 
 export type ReactiveQueryFieldsOf<T extends AnyQueryCreator> =
   MayWithQueryParams<T> & MayWithPathParams<T> & MayWithVariables<T>;
