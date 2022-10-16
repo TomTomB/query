@@ -27,9 +27,10 @@ export interface ReactiveQueryField<T = unknown> {
   deserialize?: (val: any) => unknown;
 
   /**
-   * Determines if the field should be used as a path parameter instead of a query parameter.
+   * Determines how the field's value is used in the query.
+   * @default 'query'
    */
-  isPathParam?: boolean;
+  type?: 'path' | 'query' | 'variable';
 }
 
 export type FieldControlsOf<F extends Record<string, ReactiveQueryField>> = {
