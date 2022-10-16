@@ -1,5 +1,11 @@
 # @tomtomb/query-angular
 
+## 0.6.3
+
+### Patch Changes
+
+- [`484ff40`](https://github.com/TomTomB/query/commit/484ff40607883fe4d44b12adc202d3981ada2ff4) Thanks [@TomTomB](https://github.com/TomTomB)! - Support gqp in reactive queries
+
 ## 0.6.2
 
 ### Patch Changes
