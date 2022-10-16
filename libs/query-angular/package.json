@@ -1,6 +1,6 @@
 {
   "name": "@tomtomb/query-angular",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "peerDependencies": {
     "@angular/common": "^13.2.0 || ^14.0.0",
     "@angular/core": "^13.2.0 || ^14.0.0"
