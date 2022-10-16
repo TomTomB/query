@@ -1,5 +1,11 @@
 # @tomtomb/query-angular
 
+## 0.7.3
+
+### Patch Changes
+
+- [`c59a4be`](https://github.com/TomTomB/query/commit/c59a4be26dcb7ab784c3c37866b05747a29f6481) Thanks [@TomTomB](https://github.com/TomTomB)! - Fix reactive query types. Finally
+
 ## 0.7.2
 
 ### Patch Changes
