@@ -1,5 +1,11 @@
 # @tomtomb/query-angular
 
+## 0.7.0
+
+### Minor Changes
+
+- [`b4d82a6`](https://github.com/TomTomB/query/commit/b4d82a6f4477050253927993d304fc0126abcdcb) Thanks [@TomTomB](https://github.com/TomTomB)! - Rework reactive queries to be more flexible
+
 ## 0.6.3
 
 ### Patch Changes
