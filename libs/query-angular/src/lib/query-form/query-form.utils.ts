@@ -8,7 +8,7 @@ export const transformToString = (value: unknown) => {
 
 export const transformToStringArray = (value: unknown) => {
   if (Array.isArray(value)) {
-    return value.map(transformToString).filter(Boolean);
+    return value.map(transformToString).filter(Boolean) as string[];
   } else if (typeof value === 'string') {
     return [transformToString(value)] as string[];
   }

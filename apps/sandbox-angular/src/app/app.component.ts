@@ -40,7 +40,7 @@ const getPost = restClient.get({
   types: {
     args: def<{
       pathParams: { id: number };
-      queryParams: { status: Array<'upcoming' | 'ready' | 'done'> };
+      queryParams: { status: string[] };
     }>(),
     response: def<Post>(),
   },
@@ -115,9 +115,9 @@ export class AppComponent implements OnInit, OnDestroy {
       debounce: 3000,
       queryParamTransformFn: transformToNumber,
     }),
-    status: new QueryField<Array<'upcoming' | 'ready' | 'done'>>({
+    status: new QueryField({
       control: new FormControl(['upcoming', 'ready']),
-      queryParamTransformFn: transformToStringArray as any,
+      queryParamTransformFn: transformToStringArray,
     }),
   });
 
@@ -129,8 +129,6 @@ export class AppComponent implements OnInit, OnDestroy {
         .observe()
         .pipe(takeUntil(this._destroy$))
         .subscribe((value) => {
-          console.log('NEW VAL', value);
-
           this.getPosts$.next(
             getPost
               .prepare({
@@ -141,7 +139,10 @@ export class AppComponent implements OnInit, OnDestroy {
           );
         });
 
-      this.queryForm.updateFormOnUrlQueryParamsChange().subscribe();
+      this.queryForm
+        .updateFormOnUrlQueryParamsChange()
+        .pipe(takeUntil(this._destroy$))
+        .subscribe();
     }, 1);
 
     const query = getPost
