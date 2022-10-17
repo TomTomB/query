@@ -8,9 +8,11 @@ import {
   takeUntilResponse,
   filterFailure,
   QueryType,
-  createReactiveQuery,
   gql,
-  ReactiveQueryFieldsOf,
+  QueryForm,
+  QueryField,
+  transformToNumber,
+  transformToStringArray,
 } from '@tomtomb/query-angular';
 import { def } from '@tomtomb/query-core';
 import { Subject, takeUntil, tap } from 'rxjs';
@@ -36,7 +38,10 @@ const getPost = restClient.get({
   route: (p) => `/posts/${p.id}`,
   // secure: true,
   types: {
-    args: def<{ pathParams: { id: number } }>(),
+    args: def<{
+      pathParams: { id: number };
+      queryParams: { status: Array<'upcoming' | 'ready' | 'done'> };
+    }>(),
     response: def<Post>(),
   },
 });
@@ -89,7 +94,7 @@ const getLaunches = gqlClient.gqlQuery({
 
 // })
 
-getLaunches.prepare().execute().state$.subscribe(console.log);
+// getLaunches.prepare().execute().state$.subscribe(console.log);
 
 @Component({
   selector: 'tomtomb-root',
@@ -103,12 +108,50 @@ export class AppComponent implements OnInit, OnDestroy {
   private _destroy$ = new Subject();
 
   private _router = inject(Router);
-  private _activatedRoute = inject(ActivatedRoute);
+
+  queryForm = new QueryForm({
+    id: new QueryField({
+      control: new FormControl(1),
+      debounce: 3000,
+      queryParamTransformFn: transformToNumber,
+    }),
+    status: new QueryField<Array<'upcoming' | 'ready' | 'done'>>({
+      control: new FormControl(['upcoming', 'ready']),
+      queryParamTransformFn: transformToStringArray as any,
+    }),
+  });
 
   ngOnInit(): void {
+    setTimeout(() => {
+      this.queryForm.setFormValueFromUrlQueryParams();
+
+      this.queryForm
+        .observe()
+        .pipe(takeUntil(this._destroy$))
+        .subscribe((value) => {
+          console.log('NEW VAL', value);
+
+          this.getPosts$.next(
+            getPost
+              .prepare({
+                pathParams: { id: value.id ?? 1 },
+                queryParams: { status: value.status ?? [] },
+              })
+              .execute()
+          );
+        });
+
+      this.queryForm.updateFormOnUrlQueryParamsChange().subscribe();
+    }, 1);
+
     const query = getPost
       ?.prepare({
-        pathParams: { id: 1 },
+        pathParams: {
+          id: 1,
+        },
+        queryParams: {
+          status: ['upcoming', 'ready'],
+        },
       })
       .execute();
     // .poll({ interval: 10000, takeUntil: this._destroy$ });
@@ -121,6 +164,9 @@ export class AppComponent implements OnInit, OnDestroy {
         .clone()
         .prepare({
           pathParams: { id: 4 },
+          queryParams: {
+            status: ['upcoming', 'ready'],
+          },
         })
         .execute();
       // .poll({ interval: 10000, takeUntil: this._destroy$ });
@@ -144,37 +190,21 @@ export class AppComponent implements OnInit, OnDestroy {
       )
       .subscribe();
 
-    const fields: ReactiveQueryFieldsOf<typeof getPost> = {
-      pathParams: {
-        id: {
-          control: new FormControl<number>(1),
-          debounce: 3000,
-        },
-      },
-    };
+    // setTimeout(() => {
+    //   this.queryForm.form.controls.id.setValue(21);
+    //   this.queryForm.form.controls.status.setValue(['upcoming', 'done']);
+    // }, 2500);
 
-    // This set timeout is needed since the activated route is not yet initialized.
-    // This is a hack and only needed for the sandbox app.
     setTimeout(() => {
-      const { form, changes } = createReactiveQuery({
-        query: getPost,
-        fields,
-        activatedRoute: this._activatedRoute,
-        router: this._router,
-      });
+      this.queryForm.form.controls.status.setValue(['upcoming']);
+    }, 5000);
 
-      changes.pipe(takeUntil(this._destroy$)).subscribe((args) => {
-        this.getPosts$.next(
-          getPost
-            .prepare({ pathParams: { id: args.pathParams.id ?? 1 } })
-            .execute()
-        );
+    setTimeout(() => {
+      this._router.navigate([], {
+        queryParams: { id: 8 },
+        queryParamsHandling: 'merge',
       });
-
-      setTimeout(() => {
-        form.controls.pathParams.controls.id.setValue(21);
-      }, 2500);
-    }, 500);
+    }, 2500);
   }
 
   ngOnDestroy(): void {
