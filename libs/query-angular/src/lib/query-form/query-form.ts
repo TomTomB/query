@@ -7,11 +7,16 @@ import {
   debounceTime,
   distinctUntilChanged,
   map,
+  Observable,
   startWith,
   take,
   tap,
 } from 'rxjs';
-import { QueryFormGroup, QueryFieldOptions } from './query-form.types';
+import {
+  QueryFormGroup,
+  QueryFieldOptions,
+  QueryFormValue,
+} from './query-form.types';
 
 export class QueryField<T> {
   changes$ = this._setupChangesObservable();
@@ -75,7 +80,9 @@ export class QueryForm<T extends Record<string, QueryField<any>>> {
           this._syncViaUrlQueryParams(values);
         }
       })
-    );
+
+      // This type cast is needed since ng-packagr will break the type inference otherwise.
+    ) as Observable<QueryFormValue<T>>;
   }
 
   setFormValueFromUrlQueryParams() {
