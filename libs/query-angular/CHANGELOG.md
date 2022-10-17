@@ -1,5 +1,11 @@
 # @tomtomb/query-angular
 
+## 0.8.2
+
+### Patch Changes
+
+- [`26efd30`](https://github.com/TomTomB/query/commit/26efd303041c11c8654469bd47457cee2ab17282) Thanks [@TomTomB](https://github.com/TomTomB)! - fix types
+
 ## 0.8.1
 
 ### Patch Changes
