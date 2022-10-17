@@ -1,5 +1,11 @@
 # @tomtomb/query-angular
 
+## 0.8.1
+
+### Patch Changes
+
+- [`39ea0bf`](https://github.com/TomTomB/query/commit/39ea0bf169ca72dc4fda7d3648979dc1c0bd2fc0) Thanks [@TomTomB](https://github.com/TomTomB)! - Fix transformToStringArray return type
+
 ## 0.8.0
 
 ### Minor Changes
