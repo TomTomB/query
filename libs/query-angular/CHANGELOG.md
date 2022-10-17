@@ -1,5 +1,11 @@
 # @tomtomb/query-angular
 
+## 0.8.0
+
+### Minor Changes
+
+- [`4b13d7a`](https://github.com/TomTomB/query/commit/4b13d7a31a66d26b2f5bbce6298a51b3f41eadc2) Thanks [@TomTomB](https://github.com/TomTomB)! - Replace reactive queries in favor of query form
+
 ## 0.7.3
 
 ### Patch Changes
