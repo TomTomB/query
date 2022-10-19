@@ -1,5 +1,11 @@
 # @tomtomb/query-angular
 
+## 0.9.0
+
+### Minor Changes
+
+- [`40397db`](https://github.com/TomTomB/query/commit/40397db1d633a46e4572ac02b92773ad522a3e53) Thanks [@TomTomB](https://github.com/TomTomB)! - Add option to transform query reponse to someting else
+
 ## 0.8.2
 
 ### Patch Changes
