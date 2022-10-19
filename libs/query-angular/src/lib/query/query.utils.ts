@@ -10,18 +10,21 @@ import {
   Prepared,
   QueryState,
   QueryStateData,
+  QueryStateRawData,
   QueryStateType,
   RouteType,
   Success,
 } from './query.types';
 
 export function filterSuccess() {
-  return function <T extends QueryState, Response extends QueryStateData<T>>(
-    source: Observable<T>
-  ) {
+  return function <
+    T extends QueryState,
+    Response extends QueryStateData<T>,
+    RawResponse extends QueryStateRawData<T>
+  >(source: Observable<T>) {
     return source.pipe(
       filter((value) => isQueryStateSuccess(value))
-    ) as Observable<Success<Response>>;
+    ) as Observable<Success<Response, RawResponse>>;
   };
 }
 

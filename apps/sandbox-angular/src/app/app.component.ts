@@ -179,7 +179,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     query.state$.subscribe((state) => {
       if (state.type === QueryStateType.Success) {
-        console.log(state.response);
+        console.log(state);
       }
     });
 

@@ -54,7 +54,7 @@ export class Query<
   private _pollingSubscription: Subscription | null = null;
 
   private readonly _state$: BehaviorSubject<
-    QueryState<ComputedResponseType<ResponseTransformer, Response>>
+    QueryState<ComputedResponseType<ResponseTransformer, Response>, Response>
   >;
 
   private get _nextId() {
@@ -92,7 +92,7 @@ export class Query<
     private _args: Arguments | undefined
   ) {
     this._state$ = new BehaviorSubject<
-      QueryState<ComputedResponseType<ResponseTransformer, Response>>
+      QueryState<ComputedResponseType<ResponseTransformer, Response>, Response>
     >({
       type: QueryStateType.Prepared,
       meta: { id: this._currentId },
@@ -207,13 +207,16 @@ export class Query<
 
         const transformedResponse = this._queryConfig.responseTransformer
           ? this._queryConfig.responseTransformer(responseData)
-          : (responseData as Response);
+          : responseData;
 
         this._state$.next({
           type: QueryStateType.Success,
           response: deepFreeze(
             transformedResponse as Record<string, unknown>
           ) as ComputedResponse,
+          rawResponse: deepFreeze(
+            responseData as Record<string, unknown>
+          ) as Response,
           meta: deepFreeze({ ...meta, expiresAt: response.expiresInTimestamp }),
         });
       })

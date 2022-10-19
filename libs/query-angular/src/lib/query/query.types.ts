@@ -154,9 +154,10 @@ export interface Prepared {
   readonly meta: QueryStateMeta;
 }
 
-export interface Success<T = unknown> {
+export interface Success<Response = unknown, RawResponse = unknown> {
   readonly type: QueryStateType.Success;
-  readonly response: T;
+  readonly response: Response;
+  readonly rawResponse: RawResponse;
   readonly meta: QueryStateSuccessMeta;
 }
 
@@ -184,15 +185,19 @@ export interface QueryStateSuccessMeta extends QueryStateMeta {
   readonly expiresAt: number | null;
 }
 
-export type QueryState<Data = unknown> =
+export type QueryState<Response = unknown, RawResponse = unknown> =
   | Loading
-  | Success<Data>
+  | Success<Response, RawResponse>
   | Failure
   | Cancelled
   | Prepared;
 
 export type QueryStateData<T extends QueryState = QueryState> =
-  T extends Success<infer X> ? X : never;
+  T extends Success<infer Response> ? Response : never;
+
+export type QueryStateRawData<T extends QueryState = QueryState> =
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  T extends Success<infer Response, infer RawResponse> ? RawResponse : never;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyQuery = Query<any, any, any, any, any>;

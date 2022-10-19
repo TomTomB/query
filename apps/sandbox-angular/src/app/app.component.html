@@ -4,7 +4,7 @@
 
 <h3>Query directive</h3>
 
-<ng-container *query="getPosts as p; loading as l; error as e">
+<ng-container *query="getPosts as p; loading as l; error as e; raw as r">
   <p>Loading</p>
   <pre>{{ l | json }}</pre>
 
@@ -12,14 +12,19 @@
   <pre>{{ e | json }}</pre>
 
   <p>Response</p>
-  <pre style="height: 92px">{{ p | json }}</pre>
+  <pre>{{ p | json }}</pre>
+
+  <p>Response Raw</p>
+  <pre>{{ r | json }}</pre>
 </ng-container>
 
 <hr />
 
 <h3>Query directive (with cache)</h3>
 
-<ng-container *query="getPosts as p; loading as l; error as e; cache: true">
+<ng-container
+  *query="getPosts as p; loading as l; error as e; raw as r; cache: true"
+>
   <p>Loading</p>
   <pre>{{ l | json }}</pre>
 
@@ -27,14 +32,19 @@
   <pre>{{ e | json }}</pre>
 
   <p>Response</p>
-  <pre style="height: 92px">{{ p | json }}</pre>
+  <pre>{{ p | json }}</pre>
+
+  <p>Response Raw</p>
+  <pre>{{ r | json }}</pre>
 </ng-container>
 
 <hr />
 
 <h3>Query directive (async source)</h3>
 
-<ng-container *query="getPosts$ | async as p; loading as l; error as e">
+<ng-container
+  *query="getPosts$ | async as p; loading as l; error as e; raw as r"
+>
   <p>Loading</p>
   <pre>{{ l | json }}</pre>
 
@@ -42,7 +52,10 @@
   <pre>{{ e | json }}</pre>
 
   <p>Response</p>
-  <pre style="height: 92px">{{ p | json }}</pre>
+  <pre>{{ p | json }}</pre>
+
+  <p>Response Raw</p>
+  <pre>{{ r | json }}</pre>
 </ng-container>
 
 <hr />
