@@ -13,6 +13,7 @@ import {
   QueryField,
   transformToNumber,
   transformToStringArray,
+  QueryStateType,
 } from '@tomtomb/query-angular';
 import { def } from '@tomtomb/query-core';
 import { Subject, takeUntil, tap } from 'rxjs';
@@ -37,6 +38,7 @@ const restClient = new QueryClient({
 const getPost = restClient.get({
   route: (p) => `/posts/${p.id}`,
   // secure: true,
+  responseTransformer: (data) => data.body,
   types: {
     args: def<{
       pathParams: { id: number };
@@ -80,10 +82,10 @@ const QUERY = gql`
 
 const getLaunches = gqlClient.gqlQuery({
   query: QUERY,
-  // types: {
-  //   response: def<any>(),
-  //   args: def<{ variables: { limit: number } }>(),
-  // },
+  types: {
+    // response: def<any>(),
+    // args: def<{ variables: { limit: number } }>(),
+  },
 });
 
 // const q = createReactiveQuery({ query: getLaunches, fields: { limit: { control: new FormControl(10),type: 'variable'  } }  })
@@ -174,6 +176,12 @@ export class AppComponent implements OnInit, OnDestroy {
 
       this.getPosts$.next(query2);
     }, 2500);
+
+    query.state$.subscribe((state) => {
+      if (state.type === QueryStateType.Success) {
+        console.log(state.response);
+      }
+    });
 
     query.state$
       .pipe(

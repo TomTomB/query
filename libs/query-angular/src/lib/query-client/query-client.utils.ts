@@ -12,7 +12,7 @@ export const shouldCacheQuery = (method: Method) => {
 
 export const buildGqlCacheKey = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  config: GqlQueryConfig<any, any, any>,
+  config: GqlQueryConfig<any, any, any, any>,
   args: BaseArguments | undefined
 ) => {
   const { query } = config;

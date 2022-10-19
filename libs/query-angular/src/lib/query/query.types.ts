@@ -5,12 +5,14 @@ import {
   PathParams,
 } from '@tomtomb/query-core';
 import { Observable } from 'rxjs';
+import { ResponseTransformerType } from '../query-client';
 import { Query } from './query';
 
 export interface QueryConfig<
   Route extends RouteType<Arguments>,
   Response,
-  Arguments extends BaseArguments | undefined
+  Arguments extends BaseArguments | undefined,
+  ResponseTransformer extends ResponseTransformerType<Response> | undefined
 > {
   /**
    * The http method to use for the query.
@@ -27,6 +29,12 @@ export interface QueryConfig<
    * The query **will throw** if the query client's auth provider is unset.
    */
   secure?: boolean;
+
+  /**
+   * The response transformer to use for the query.
+   * A function that transforms the response to the desired type.
+   */
+  responseTransformer?: ResponseTransformer;
 
   /**
    * Object containing the query's type information.
@@ -52,12 +60,14 @@ export interface QueryConfig<
 export interface GqlQueryConfig<
   Route extends RouteType<Arguments> | undefined,
   Response,
-  Arguments extends BaseArguments | undefined
+  Arguments extends BaseArguments | undefined,
+  ResponseTransformer extends ResponseTransformerType<Response> | undefined
 > {
   method: Method;
   query: string;
   route?: Route;
   secure?: boolean;
+  responseTransformer?: ResponseTransformer;
   types?: {
     response?: Response;
     args?: Arguments;
@@ -67,14 +77,22 @@ export interface GqlQueryConfig<
 export type QueryConfigWithoutMethod<
   Route extends RouteType<Arguments>,
   Response,
-  Arguments extends BaseArguments | undefined
-> = Omit<QueryConfig<Route, Response, Arguments>, 'method'>;
+  Arguments extends BaseArguments | undefined,
+  ResponseTransformer extends ResponseTransformerType<Response> | undefined
+> = Omit<
+  QueryConfig<Route, Response, Arguments, ResponseTransformer>,
+  'method'
+>;
 
 export type GqlQueryConfigWithoutMethod<
   Route extends RouteType<Arguments>,
   Response,
-  Arguments extends BaseArguments | undefined
-> = Omit<GqlQueryConfig<Route, Response, Arguments>, 'method'>;
+  Arguments extends BaseArguments | undefined,
+  ResponseTransformer extends ResponseTransformerType<Response> | undefined
+> = Omit<
+  GqlQueryConfig<Route, Response, Arguments, ResponseTransformer>,
+  'method'
+>;
 
 export type BaseArguments = WithHeaders &
   WithVariables &
@@ -177,7 +195,7 @@ export type QueryStateData<T extends QueryState = QueryState> =
   T extends Success<infer X> ? X : never;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyQuery = Query<any, any, any, any>;
+export type AnyQuery = Query<any, any, any, any, any>;
 
 export type QueryType<
   T extends {

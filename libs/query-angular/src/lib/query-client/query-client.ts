@@ -12,7 +12,12 @@ import {
   RouteType,
 } from '../query';
 import { QueryStore } from '../query-store';
-import { QueryClientConfig, QueryCreator } from './query-client.types';
+import {
+  DefaultResponseTransformer,
+  QueryClientConfig,
+  QueryCreator,
+  ResponseTransformerType,
+} from './query-client.types';
 import { buildGqlCacheKey, shouldCacheQuery } from './query-client.utils';
 
 export class QueryClient {
@@ -38,11 +43,17 @@ export class QueryClient {
   get = <
     Route extends RouteType<Arguments>,
     Response,
-    Arguments extends BaseArguments | undefined
+    Arguments extends BaseArguments | undefined,
+    ResponseTransformer extends ResponseTransformerType<Response> = DefaultResponseTransformer<Response>
   >(
-    queryConfig: QueryConfigWithoutMethod<Route, Response, Arguments>
+    queryConfig: QueryConfigWithoutMethod<
+      Route,
+      Response,
+      Arguments,
+      ResponseTransformer
+    >
   ) =>
-    this.fetch<Route, Response, Arguments, 'GET'>({
+    this.fetch<Route, Response, Arguments, 'GET', ResponseTransformer>({
       ...queryConfig,
       method: 'GET',
     });
@@ -50,11 +61,17 @@ export class QueryClient {
   post = <
     Route extends RouteType<Arguments>,
     Response,
-    Arguments extends BaseArguments | undefined
+    Arguments extends BaseArguments | undefined,
+    ResponseTransformer extends ResponseTransformerType<Response> = DefaultResponseTransformer<Response>
   >(
-    queryConfig: QueryConfigWithoutMethod<Route, Response, Arguments>
+    queryConfig: QueryConfigWithoutMethod<
+      Route,
+      Response,
+      Arguments,
+      ResponseTransformer
+    >
   ) =>
-    this.fetch<Route, Response, Arguments, 'POST'>({
+    this.fetch<Route, Response, Arguments, 'POST', ResponseTransformer>({
       ...queryConfig,
       method: 'POST',
     });
@@ -62,11 +79,17 @@ export class QueryClient {
   put = <
     Route extends RouteType<Arguments>,
     Response,
-    Arguments extends BaseArguments | undefined
+    Arguments extends BaseArguments | undefined,
+    ResponseTransformer extends ResponseTransformerType<Response> = DefaultResponseTransformer<Response>
   >(
-    queryConfig: QueryConfigWithoutMethod<Route, Response, Arguments>
+    queryConfig: QueryConfigWithoutMethod<
+      Route,
+      Response,
+      Arguments,
+      ResponseTransformer
+    >
   ) =>
-    this.fetch<Route, Response, Arguments, 'PUT'>({
+    this.fetch<Route, Response, Arguments, 'PUT', ResponseTransformer>({
       ...queryConfig,
       method: 'PUT',
     });
@@ -74,11 +97,17 @@ export class QueryClient {
   patch = <
     Route extends RouteType<Arguments>,
     Response,
-    Arguments extends BaseArguments | undefined
+    Arguments extends BaseArguments | undefined,
+    ResponseTransformer extends ResponseTransformerType<Response> = DefaultResponseTransformer<Response>
   >(
-    queryConfig: QueryConfigWithoutMethod<Route, Response, Arguments>
+    queryConfig: QueryConfigWithoutMethod<
+      Route,
+      Response,
+      Arguments,
+      ResponseTransformer
+    >
   ) =>
-    this.fetch<Route, Response, Arguments, 'PATCH'>({
+    this.fetch<Route, Response, Arguments, 'PATCH', ResponseTransformer>({
       ...queryConfig,
       method: 'PATCH',
     });
@@ -86,11 +115,17 @@ export class QueryClient {
   delete = <
     Route extends RouteType<Arguments>,
     Response,
-    Arguments extends BaseArguments | undefined
+    Arguments extends BaseArguments | undefined,
+    ResponseTransformer extends ResponseTransformerType<Response> = DefaultResponseTransformer<Response>
   >(
-    queryConfig: QueryConfigWithoutMethod<Route, Response, Arguments>
+    queryConfig: QueryConfigWithoutMethod<
+      Route,
+      Response,
+      Arguments,
+      ResponseTransformer
+    >
   ) =>
-    this.fetch<Route, Response, Arguments, 'DELETE'>({
+    this.fetch<Route, Response, Arguments, 'DELETE', ResponseTransformer>({
       ...queryConfig,
       method: 'DELETE',
     });
@@ -98,11 +133,17 @@ export class QueryClient {
   gqlQuery = <
     Route extends RouteType<Arguments>,
     Response,
-    Arguments extends BaseArguments | undefined
+    Arguments extends BaseArguments | undefined,
+    ResponseTransformer extends ResponseTransformerType<Response> = DefaultResponseTransformer<Response>
   >(
-    queryConfig: GqlQueryConfigWithoutMethod<Route, Response, Arguments>
+    queryConfig: GqlQueryConfigWithoutMethod<
+      Route,
+      Response,
+      Arguments,
+      ResponseTransformer
+    >
   ) =>
-    this.fetch<Route, Response, Arguments, 'GQL_QUERY'>({
+    this.fetch<Route, Response, Arguments, 'GQL_QUERY', ResponseTransformer>({
       ...queryConfig,
       method: 'GQL_QUERY',
     });
@@ -110,11 +151,17 @@ export class QueryClient {
   gqlMutate = <
     Route extends RouteType<Arguments>,
     Response,
-    Arguments extends BaseArguments | undefined
+    Arguments extends BaseArguments | undefined,
+    ResponseTransformer extends ResponseTransformerType<Response> = DefaultResponseTransformer<Response>
   >(
-    queryConfig: GqlQueryConfigWithoutMethod<Route, Response, Arguments>
+    queryConfig: GqlQueryConfigWithoutMethod<
+      Route,
+      Response,
+      Arguments,
+      ResponseTransformer
+    >
   ) =>
-    this.fetch<Route, Response, Arguments, 'GQL_MUTATE'>({
+    this.fetch<Route, Response, Arguments, 'GQL_MUTATE', ResponseTransformer>({
       ...queryConfig,
       method: 'GQL_MUTATE',
     });
@@ -123,12 +170,13 @@ export class QueryClient {
     Route extends RouteType<Arguments>,
     Response,
     Arguments extends BaseArguments | undefined,
-    Method extends MethodType
+    Method extends MethodType,
+    ResponseTransformer extends ResponseTransformerType<Response> = DefaultResponseTransformer<Response>
   >(
     queryConfig:
-      | QueryConfig<Route, Response, Arguments>
-      | GqlQueryConfig<Route, Response, Arguments>
-  ): QueryCreator<Arguments, Method, Response, Route> => {
+      | QueryConfig<Route, Response, Arguments, ResponseTransformer>
+      | GqlQueryConfig<Route, Response, Arguments, ResponseTransformer>
+  ): QueryCreator<Arguments, Method, Response, Route, ResponseTransformer> => {
     const prepare = (args?: Arguments) => {
       const route = buildRoute({
         base: this._clientConfig.baseRoute,
@@ -145,16 +193,23 @@ export class QueryClient {
         const existingQuery = this._store.get(cacheKey);
 
         if (existingQuery) {
-          return existingQuery as Query<Response, Arguments, Route, Method>;
+          return existingQuery as Query<
+            Response,
+            Arguments,
+            Route,
+            Method,
+            ResponseTransformer
+          >;
         }
       }
 
-      const query = new Query<Response, Arguments, Route, Method>(
-        this,
-        queryConfig,
-        route,
-        args
-      );
+      const query = new Query<
+        Response,
+        Arguments,
+        Route,
+        Method,
+        ResponseTransformer
+      >(this, queryConfig, route, args);
 
       if (shouldCacheQuery(queryConfig.method)) {
         this._store.add(cacheKey, query);
@@ -170,7 +225,13 @@ export class QueryClient {
     return {
       prepare,
       behaviorSubject,
-    } as unknown as QueryCreator<Arguments, Method, Response, Route>;
+    } as unknown as QueryCreator<
+      Arguments,
+      Method,
+      Response,
+      Route,
+      ResponseTransformer
+    >;
   };
 
   setAuthProvider = (authProvider: AuthProvider) => {

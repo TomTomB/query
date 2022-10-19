@@ -1,5 +1,6 @@
 import { RequestHeaders } from '@tomtomb/query-core';
 import { filter, Observable, takeWhile } from 'rxjs';
+import { ResponseTransformerType } from '../query-client';
 import {
   BaseArguments,
   Cancelled,
@@ -71,10 +72,16 @@ export const mergeHeaders = (
 export const isGqlQueryConfig = <
   Response,
   Arguments extends BaseArguments | undefined,
-  Route extends RouteType<Arguments> | undefined
+  Route extends RouteType<Arguments> | undefined,
+  ResponseTransformer extends ResponseTransformerType<Response> | undefined
 >(
   config: unknown
-): config is GqlQueryConfig<Route, Response, Arguments> => {
+): config is GqlQueryConfig<
+  Route,
+  Response,
+  Arguments,
+  ResponseTransformer
+> => {
   if (!config || typeof config !== 'object' || Array.isArray(config)) {
     return false;
   }

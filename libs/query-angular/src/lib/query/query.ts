@@ -10,7 +10,11 @@ import {
 } from '@tomtomb/query-core';
 import { Subscription, BehaviorSubject, interval, takeUntil } from 'rxjs';
 import { transformGql } from '../gql';
-import { QueryClient } from '../query-client';
+import {
+  DefaultResponseTransformer,
+  QueryClient,
+  ResponseTransformerType,
+} from '../query-client';
 import {
   QueryState,
   QueryStateType,
@@ -29,17 +33,29 @@ import {
   isGqlQueryConfig,
 } from './query.utils';
 
+type NonUndefinable<T> = T extends undefined ? never : T;
+
+type ComputedResponseType<
+  ResponseTransformer extends ResponseTransformerType<Response> | undefined,
+  Response
+> = ResponseTransformer extends undefined
+  ? Response
+  : ReturnType<NonUndefinable<ResponseTransformer>>;
+
 export class Query<
   Response,
   Arguments extends BaseArguments | undefined,
   Route extends RouteType<Arguments>,
-  Method extends MethodType
+  Method extends MethodType,
+  ResponseTransformer extends ResponseTransformerType<Response> = DefaultResponseTransformer<Response>
 > {
   private _currentId = 0;
   private _abortController = new AbortController();
   private _pollingSubscription: Subscription | null = null;
 
-  private readonly _state$: BehaviorSubject<QueryState<Response>>;
+  private readonly _state$: BehaviorSubject<
+    QueryState<ComputedResponseType<ResponseTransformer, Response>>
+  >;
 
   private get _nextId() {
     return this._currentId++;
@@ -70,24 +86,32 @@ export class Query<
   constructor(
     private _client: QueryClient,
     private _queryConfig:
-      | QueryConfig<Route, Response, Arguments>
-      | GqlQueryConfig<Route, Response, Arguments>,
+      | QueryConfig<Route, Response, Arguments, ResponseTransformer>
+      | GqlQueryConfig<Route, Response, Arguments, ResponseTransformer>,
     private _route: Route,
     private _args: Arguments | undefined
   ) {
-    this._state$ = new BehaviorSubject<QueryState<Response>>({
+    this._state$ = new BehaviorSubject<
+      QueryState<ComputedResponseType<ResponseTransformer, Response>>
+    >({
       type: QueryStateType.Prepared,
       meta: { id: this._currentId },
     });
   }
 
   clone() {
-    return this._client.fetch<Route, Response, Arguments, Method>(
-      this._queryConfig
-    );
+    return this._client.fetch<
+      Route,
+      Response,
+      Arguments,
+      Method,
+      ResponseTransformer
+    >(this._queryConfig);
   }
 
-  execute(options?: RunQueryOptions) {
+  execute<
+    ComputedResponse extends ComputedResponseType<ResponseTransformer, Response>
+  >(options?: RunQueryOptions) {
     if (
       !this.isExpired &&
       !options?.skipCache &&
@@ -172,23 +196,24 @@ export class Query<
 
         const isGql = isGqlQueryConfig(this._queryConfig);
 
-        let responseData: unknown | null = null;
+        let responseData: Response | null = null;
         if (isGql && isResponseObject && 'data' in response.data) {
-          responseData = deepFreeze(
-            (response.data as Record<string, unknown>)['data'] as Record<
-              string,
-              unknown
-            >
-          );
-        } else if (isResponseObject && 'data' in response) {
-          responseData = deepFreeze(response.data as Record<string, unknown>);
+          responseData = (response.data as Record<string, unknown>)[
+            'data'
+          ] as Response;
         } else {
-          responseData = deepFreeze(response);
+          responseData = response.data as Response;
         }
+
+        const transformedResponse = this._queryConfig.responseTransformer
+          ? this._queryConfig.responseTransformer(responseData)
+          : (responseData as Response);
 
         this._state$.next({
           type: QueryStateType.Success,
-          response: responseData as Response,
+          response: deepFreeze(
+            transformedResponse as Record<string, unknown>
+          ) as ComputedResponse,
           meta: deepFreeze({ ...meta, expiresAt: response.expiresInTimestamp }),
         });
       })
