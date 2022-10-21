@@ -59,3 +59,23 @@
 </ng-container>
 
 <hr />
+
+<!-- <ng-container
+  *infinityQuery="
+    getPosts as data;
+    loading as l;
+    error as e;
+    nextPage as next;
+    reset as reset;
+    config: myInfinityQueryConfig
+  "
+>
+  <ul>
+    <li *ngFor="let item of data">{{ item }}</li>
+  </ul>
+
+  <button manualInfinityQueryTrigger>Load more</button>
+
+  <button (click)="nextPage()">Next page</button>
+  <button (click)="reset()">Reset</button>
+</ng-container> -->

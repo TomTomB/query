@@ -14,6 +14,7 @@ import {
   transformToNumber,
   transformToStringArray,
   QueryStateType,
+  InfiniteScrollQuery,
 } from '@tomtomb/query-angular';
 import { def } from '@tomtomb/query-core';
 import { Subject, takeUntil, tap } from 'rxjs';
@@ -98,6 +99,14 @@ const getLaunches = gqlClient.gqlQuery({
 
 // getLaunches.prepare().execute().state$.subscribe(console.log);
 
+// myInfinityQueryConfig = {
+//   responseArrayExtractor: (res) => res.split(' '),
+//   defaultArgs: {
+//     pathParams: { id: 1 },
+//     queryParams: { status: [] },
+//   },
+// }
+
 @Component({
   selector: 'tomtomb-root',
   templateUrl: './app.component.html',
@@ -124,6 +133,31 @@ export class AppComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
+    const infiniteScroll = new InfiniteScrollQuery(getPost, {
+      responseArrayExtractor: (res) => res.split(' '),
+      defaultArgs: {
+        pathParams: { id: 1 },
+        queryParams: { status: [] },
+      },
+    });
+    infiniteScroll.nextPage();
+
+    setTimeout(() => {
+      infiniteScroll.nextPage();
+    }, 2500);
+
+    infiniteScroll.data$.subscribe((data) => {
+      console.log(data);
+
+      if (data.length > 30) {
+        infiniteScroll.reset({
+          defaultArgs: { pathParams: { id: 2 }, queryParams: { status: [] } },
+        });
+
+        infiniteScroll.nextPage();
+      }
+    });
+
     setTimeout(() => {
       this.queryForm.setFormValueFromUrlQueryParams();
 

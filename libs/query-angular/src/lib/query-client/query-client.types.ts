@@ -79,3 +79,7 @@ export type ResponseTransformerType<Response> = (response: Response) => unknown;
 export type DefaultResponseTransformer<Response> = (
   response: Response
 ) => Response;
+
+export type QueryCreatorReturnType<T extends AnyQueryCreator> = ReturnType<
+  T['prepare']
+>;
