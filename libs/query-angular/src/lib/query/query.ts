@@ -33,15 +33,6 @@ import {
   isGqlQueryConfig,
 } from './query.utils';
 
-type NonUndefinable<T> = T extends undefined ? never : T;
-
-type ComputedResponseType<
-  ResponseTransformer extends ResponseTransformerType<Response> | undefined,
-  Response
-> = ResponseTransformer extends undefined
-  ? Response
-  : ReturnType<NonUndefinable<ResponseTransformer>>;
-
 export class Query<
   Response,
   Arguments extends BaseArguments | undefined,
@@ -54,7 +45,7 @@ export class Query<
   private _pollingSubscription: Subscription | null = null;
 
   private readonly _state$: BehaviorSubject<
-    QueryState<ComputedResponseType<ResponseTransformer, Response>, Response>
+    QueryState<ReturnType<ResponseTransformer>, Response>
   >;
 
   private get _nextId() {
@@ -92,7 +83,7 @@ export class Query<
     private _args: Arguments | undefined
   ) {
     this._state$ = new BehaviorSubject<
-      QueryState<ComputedResponseType<ResponseTransformer, Response>, Response>
+      QueryState<ReturnType<ResponseTransformer>, Response>
     >({
       type: QueryStateType.Prepared,
       meta: { id: this._currentId },
@@ -109,9 +100,9 @@ export class Query<
     >(this._queryConfig);
   }
 
-  execute<
-    ComputedResponse extends ComputedResponseType<ResponseTransformer, Response>
-  >(options?: RunQueryOptions) {
+  execute<ComputedResponse extends ReturnType<ResponseTransformer>>(
+    options?: RunQueryOptions
+  ) {
     if (
       !this.isExpired &&
       !options?.skipCache &&
