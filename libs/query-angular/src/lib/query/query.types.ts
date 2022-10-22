@@ -213,3 +213,11 @@ export type QueryType<
   T['prepare'] extends (args: any) => infer R
   ? R
   : never;
+
+export type QueryResponseType<Q extends AnyQuery | null> = Q extends AnyQuery
+  ? QueryStateData<Q['state']> | null
+  : null;
+
+export type QueryRawResponseType<Q extends AnyQuery | null> = Q extends AnyQuery
+  ? QueryStateRawData<Q['state']> | null
+  : null;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { filterSuccess, QueryStateData, takeUntilResponse } from '../query';
 import {
@@ -5,50 +6,19 @@ import {
   QueryCreatorArgs,
   QueryCreatorReturnType,
 } from '../query-client';
+import { InfinityQueryConfig, PageParamLocation } from './infinity-query.types';
 
-type PageParamLocation = 'path' | 'query' | 'body' | 'header' | 'variable';
-
-interface InfiniteScrollQueryConfig<
+export class InfinityQuery<
   QueryCreator extends AnyQueryCreator,
   Query extends QueryCreatorReturnType<QueryCreator>,
-  Response extends QueryStateData<Query['state']>
-> {
-  /**
-   * The location of paging params in request.
-   *
-   * @default "query"
-   */
-  pageParamLocation?: PageParamLocation;
-
-  /**
-   * Used as page param name.
-   *
-   * @default "page"
-   */
-  pageParamName?: string;
-
-  /**
-   * The args that will be merged with the page arg.
-   */
-  defaultArgs?: QueryCreatorArgs<QueryCreator>;
-
-  /**
-   * A function that returns the data array from the response.
-   */
-  responseArrayExtractor: (response: Response) => unknown[];
-}
-
-export class InfiniteScrollQuery<
-  QueryCreator extends AnyQueryCreator,
-  Query extends QueryCreatorReturnType<QueryCreator>,
-  Response extends QueryStateData<Query['state']>,
-  Config extends InfiniteScrollQueryConfig<QueryCreator, Query, Response>,
-  ResponseData extends ReturnType<Config['responseArrayExtractor']>
+  Args extends QueryCreatorArgs<QueryCreator>,
+  QueryResponse extends QueryStateData<Query['state']>,
+  InfinityResponse extends unknown[]
 > {
   private readonly _currentPage$ = new BehaviorSubject<number | null>(null);
   private readonly _currentQuery$ = new BehaviorSubject<Query | null>(null);
-  private readonly _data$ = new BehaviorSubject<ResponseData>(
-    [] as ResponseData
+  private readonly _data$ = new BehaviorSubject<InfinityResponse>(
+    [] as any as InfinityResponse
   );
 
   private _subscriptions: Subscription[] = [];
@@ -77,27 +47,39 @@ export class InfiniteScrollQuery<
     return this._data$.getValue();
   }
 
-  constructor(private _query: QueryCreator, private _config: Config) {}
+  constructor(
+    private _config: InfinityQueryConfig<
+      QueryCreator,
+      Args,
+      QueryResponse,
+      InfinityResponse
+    >
+  ) {}
 
   nextPage() {
     const newPage = (this._currentPage$.value ?? 0) + 1;
     const args = this._prepareArgs(this._config, newPage);
 
-    const query = this._query.prepare(args).execute() as Query;
+    const query = this._config.queryCreator.prepare(args).execute() as Query;
     this._handleNewQuery(query);
 
     this._currentPage$.next(newPage);
     this._currentQuery$.next(query);
   }
 
-  reset(newConfig?: Omit<Config, 'responseArrayExtractor'>) {
+  reset(
+    newConfig?: Omit<
+      InfinityQueryConfig<QueryCreator, Args, QueryResponse, InfinityResponse>,
+      'responseArrayExtractor' | 'queryCreator' | 'responseArrayType'
+    >
+  ) {
     this.destroy();
 
     this._config = { ...this._config, ...(newConfig ?? {}) };
 
     this._currentPage$.next(null);
     this._currentQuery$.next(null);
-    this._data$.next([] as ResponseData);
+    this._data$.next([] as any as InfinityResponse);
   }
 
   destroy() {
@@ -111,7 +93,10 @@ export class InfiniteScrollQuery<
       .subscribe({
         next: (state) => {
           const newData = this._config?.responseArrayExtractor(state.response);
-          this._data$.next([...this._data$.value, ...newData] as ResponseData);
+          this._data$.next([
+            ...this._data$.value,
+            ...newData,
+          ] as InfinityResponse);
         },
         complete: () => {
           this._subscriptions = this._subscriptions.filter(
@@ -124,7 +109,12 @@ export class InfiniteScrollQuery<
   }
 
   private _prepareArgs(
-    config: InfiniteScrollQueryConfig<QueryCreator, Query, Response>,
+    config: InfinityQueryConfig<
+      QueryCreator,
+      Args,
+      QueryResponse,
+      InfinityResponse
+    >,
     page: number
   ) {
     const pageParamLocation = this._getPageParamLocation(

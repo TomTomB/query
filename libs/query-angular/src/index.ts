@@ -1,6 +1,6 @@
 export * from './lib/auth';
 export * from './lib/gql';
-export * from './lib/infinite-scroll-query';
+export * from './lib/infinite-query';
 export * from './lib/query';
 export * from './lib/query-client';
 export * from './lib/query-store';

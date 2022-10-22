@@ -16,22 +16,14 @@ import {
   isQueryStateLoading,
   isQueryStateSuccess,
   QueryState,
-  QueryStateData,
-  QueryStateRawData,
+  QueryResponseType,
+  QueryRawResponseType,
 } from '../query';
 
-type QueryValue<Q extends AnyQuery | null> = Q extends AnyQuery
-  ? QueryStateData<Q['state']> | null
-  : null;
-
-type QueryRawValue<Q extends AnyQuery | null> = Q extends AnyQuery
-  ? QueryStateRawData<Q['state']> | null
-  : null;
-
 interface QueryContext<Q extends AnyQuery | null> {
-  $implicit: QueryValue<Q>;
-  query: QueryValue<Q>;
-  raw: QueryRawValue<Q>;
+  $implicit: QueryResponseType<Q>;
+  query: QueryResponseType<Q>;
+  raw: QueryRawResponseType<Q>;
   loading: boolean;
   error: RequestError<unknown> | null;
 }
@@ -48,9 +40,9 @@ export class QueryDirective<Q extends AnyQuery | null>
   private _subscription: Subscription | null = null;
 
   private readonly _viewContext: QueryContext<Q> = {
-    $implicit: null as QueryValue<Q>,
-    query: null as QueryValue<Q>,
-    raw: null as QueryRawValue<Q>,
+    $implicit: null as QueryResponseType<Q>,
+    query: null as QueryResponseType<Q>,
+    raw: null as QueryRawResponseType<Q>,
     loading: false,
     error: null,
   };
@@ -120,13 +112,13 @@ export class QueryDirective<Q extends AnyQuery | null>
     }
 
     if (isQueryStateSuccess(state)) {
-      this._viewContext.query = state.response as QueryValue<Q>;
-      this._viewContext.$implicit = state.response as QueryValue<Q>;
-      this._viewContext.raw = state.rawResponse as QueryRawValue<Q>;
+      this._viewContext.query = state.response as QueryResponseType<Q>;
+      this._viewContext.$implicit = state.response as QueryResponseType<Q>;
+      this._viewContext.raw = state.rawResponse as QueryRawResponseType<Q>;
     } else if (!this.cache) {
-      this._viewContext.query = null as QueryValue<Q>;
-      this._viewContext.$implicit = null as QueryValue<Q>;
-      this._viewContext.raw = null as QueryRawValue<Q>;
+      this._viewContext.query = null as QueryResponseType<Q>;
+      this._viewContext.$implicit = null as QueryResponseType<Q>;
+      this._viewContext.raw = null as QueryRawResponseType<Q>;
     }
 
     if (isQueryStateFailure(state)) {

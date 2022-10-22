@@ -42,20 +42,25 @@ export function takeUntilResponse() {
   };
 }
 
-export const isQueryStateLoading = (state: QueryState): state is Loading =>
-  state.type === QueryStateType.Loading;
+export const isQueryStateLoading = (
+  state: QueryState | null | undefined
+): state is Loading => state?.type === QueryStateType.Loading;
 
-export const isQueryStateSuccess = (state: QueryState): state is Success =>
-  state.type === QueryStateType.Success;
+export const isQueryStateSuccess = (
+  state: QueryState | null | undefined
+): state is Success => state?.type === QueryStateType.Success;
 
-export const isQueryStateFailure = (state: QueryState): state is Failure =>
-  state.type === QueryStateType.Failure;
+export const isQueryStateFailure = (
+  state: QueryState | null | undefined
+): state is Failure => state?.type === QueryStateType.Failure;
 
-export const isQueryStateCancelled = (state: QueryState): state is Cancelled =>
-  state.type === QueryStateType.Cancelled;
+export const isQueryStateCancelled = (
+  state: QueryState | null | undefined
+): state is Cancelled => state?.type === QueryStateType.Cancelled;
 
-export const isQueryStatePrepared = (state: QueryState): state is Prepared =>
-  state.type === QueryStateType.Prepared;
+export const isQueryStatePrepared = (
+  state: QueryState | null | undefined
+): state is Prepared => state?.type === QueryStateType.Prepared;
 
 export const mergeHeaders = (
   ...headers: Array<RequestHeaders | null | undefined>

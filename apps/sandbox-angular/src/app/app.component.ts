@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import {
   QueryClient,
   filterSuccess,
@@ -14,7 +14,8 @@ import {
   transformToNumber,
   transformToStringArray,
   QueryStateType,
-  InfiniteScrollQuery,
+  InfinityQuery,
+  createInfinityQueryConfig,
 } from '@tomtomb/query-angular';
 import { def } from '@tomtomb/query-core';
 import { Subject, takeUntil, tap } from 'rxjs';
@@ -99,14 +100,6 @@ const getLaunches = gqlClient.gqlQuery({
 
 // getLaunches.prepare().execute().state$.subscribe(console.log);
 
-// myInfinityQueryConfig = {
-//   responseArrayExtractor: (res) => res.split(' '),
-//   defaultArgs: {
-//     pathParams: { id: 1 },
-//     queryParams: { status: [] },
-//   },
-// }
-
 @Component({
   selector: 'tomtomb-root',
   templateUrl: './app.component.html',
@@ -115,6 +108,23 @@ const getLaunches = gqlClient.gqlQuery({
 export class AppComponent implements OnInit, OnDestroy {
   getPosts!: QueryType<typeof getPost>;
   getPosts$ = getPost.behaviorSubject();
+
+  getPost = getPost;
+
+  infinityQueryConfig = createInfinityQueryConfig({
+    queryCreator: getPost,
+    pageParamLocation: 'path',
+    pageParamName: 'id',
+    responseArrayType: def<Post[]>(),
+    responseArrayExtractor: (res) =>
+      [
+        { body: res, id: 1, title: 'test', userId: 1 },
+        { body: res, id: 1, title: 'test', userId: 1 },
+        { body: res, id: 1, title: 'test', userId: 1 },
+        { body: res, id: 1, title: 'test', userId: 1 },
+        { body: res, id: 1, title: 'test', userId: 1 },
+      ] as Post[],
+  });
 
   private _destroy$ = new Subject();
 
@@ -133,30 +143,32 @@ export class AppComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
-    const infiniteScroll = new InfiniteScrollQuery(getPost, {
-      responseArrayExtractor: (res) => res.split(' '),
-      defaultArgs: {
-        pathParams: { id: 1 },
-        queryParams: { status: [] },
-      },
-    });
-    infiniteScroll.nextPage();
+    // const infiniteScroll = new InfinityQuery({
+    //   queryCreator: getPost,
+    //   responseArrayExtractor: (res) => res.split(' '),
+    //   responseArrayType: def<string[]>(),
+    //   defaultArgs: {
+    //     pathParams: { id: 1 },
+    //     queryParams: { status: [] },
+    //   },
+    // });
+    // infiniteScroll.nextPage();
 
-    setTimeout(() => {
-      infiniteScroll.nextPage();
-    }, 2500);
+    // setTimeout(() => {
+    //   infiniteScroll.nextPage();
+    // }, 2500);
 
-    infiniteScroll.data$.subscribe((data) => {
-      console.log(data);
+    // infiniteScroll.data$.subscribe((data) => {
+    //   console.log(data);
 
-      if (data.length > 30) {
-        infiniteScroll.reset({
-          defaultArgs: { pathParams: { id: 2 }, queryParams: { status: [] } },
-        });
+    //   if (data.length > 30) {
+    //     infiniteScroll.reset({
+    //       defaultArgs: { pathParams: { id: 2 }, queryParams: { status: [] } },
+    //     });
 
-        infiniteScroll.nextPage();
-      }
-    });
+    //     infiniteScroll.nextPage();
+    //   }
+    // });
 
     setTimeout(() => {
       this.queryForm.setFormValueFromUrlQueryParams();

@@ -1,13 +1,23 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { QueryDirective } from '@tomtomb/query-angular';
+import {
+  InfinityQueryDirective,
+  InfinityQueryTriggerDirective,
+  QueryDirective,
+} from '@tomtomb/query-angular';
 
 import { AppComponent } from './app.component';
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, QueryDirective, RouterModule.forRoot([])],
+  imports: [
+    BrowserModule,
+    QueryDirective,
+    InfinityQueryDirective,
+    InfinityQueryTriggerDirective,
+    RouterModule.forRoot([]),
+  ],
   providers: [],
   bootstrap: [AppComponent],
 })
