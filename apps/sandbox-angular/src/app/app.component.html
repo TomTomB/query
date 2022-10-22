@@ -60,16 +60,46 @@
 
 <hr />
 
+<h3>Infinity query directive</h3>
+
 <ng-container
-  *infinityQuery="infinityQueryConfig as foo; loading as l; error as e"
+  *infinityQuery="
+    infinityQueryConfig as data;
+    loading as l;
+    error as e;
+    isFirstLoad as fl;
+    canLoadMore as clm;
+    currentPage as cp;
+    totalPages as tp;
+    itemsPerPage as ipp
+  "
 >
-  <pre> {{ l | json }} </pre>
-  <pre> {{ e | json }} </pre>
+  <p>Loading</p>
+  <pre>{{ l | json }}</pre>
 
-  <ul *ngIf="foo">
-    <li *ngFor="let item of foo">{{ item.title }}</li>
-  </ul>
+  <p>Error</p>
+  <pre>{{ e | json }}</pre>
 
-  <button infinityQueryTrigger>Load more</button>
+  <p>Is first load</p>
+  <pre>{{ fl | json }}</pre>
+
+  <p>Can load more</p>
+  <pre>{{ clm | json }}</pre>
+
+  <p>Current page</p>
+  <pre>{{ cp | json }}</pre>
+
+  <p>Total pages</p>
+  <pre>{{ tp | json }}</pre>
+
+  <p>Items per page</p>
+  <pre>{{ ipp | json }}</pre>
+
+  <p>Response</p>
+  <pre>{{ data | json }}</pre>
+
+  <button *ngIf="!fl && clm" infinityQueryTrigger>Load more</button>
   <!-- <infinity-query-trigger></infinity-query-trigger> -->
 </ng-container>
+
+<hr />

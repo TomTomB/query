@@ -29,6 +29,12 @@ interface InfinityQueryContext<
   infinityQuery: Q['responseArrayType'] | null;
   loading: boolean;
   error: RequestError<unknown> | null;
+
+  isFirstLoad: boolean;
+  canLoadMore: boolean;
+  currentPage: number | null;
+  totalPages: number | null;
+  itemsPerPage: number | null;
 }
 
 export const INFINITY_QUERY_TOKEN = new InjectionToken<
@@ -52,6 +58,12 @@ export class InfinityQueryDirective<
     infinityQuery: null,
     loading: false,
     error: null,
+
+    isFirstLoad: false,
+    canLoadMore: false,
+    currentPage: null,
+    totalPages: null,
+    itemsPerPage: null,
   };
   private _infinityQueryInstance: ReturnType<
     typeof this._setupInfinityQuery
@@ -117,22 +129,32 @@ export class InfinityQueryDirective<
       .pipe(
         switchMap((q) => q?.state$ ?? of(null)),
         tap((state) => {
+          this._viewContext.currentPage = instance.currentPage;
+
           if (isQueryStateLoading(state)) {
             this._viewContext.loading = true;
             this._viewContext.error = null;
+            this._viewContext.isFirstLoad = this.context.infinityQuery === null;
           } else if (isQueryStateFailure(state)) {
             this._viewContext.loading = false;
             this._viewContext.error = state.error;
-
+            this._viewContext.isFirstLoad = false;
             this._errorHandler.handleError(state.error);
           } else if (isQueryStateSuccess(state)) {
             this._viewContext.loading = false;
             this._viewContext.error = null;
+            this._viewContext.isFirstLoad = false;
           } else {
             this._viewContext.loading = false;
             this._viewContext.error = null;
             this._viewContext.infinityQuery = null;
             this._viewContext.$implicit = null;
+
+            this._viewContext.isFirstLoad = false;
+            this._viewContext.canLoadMore = false;
+            this._viewContext.currentPage = null;
+            this._viewContext.itemsPerPage = null;
+            this._viewContext.totalPages = null;
           }
 
           this._cdr.markForCheck();
@@ -144,12 +166,8 @@ export class InfinityQueryDirective<
     instance.data$
       .pipe(
         tap((data) => {
-          this._viewContext.infinityQuery = data as
-            | Q['responseArrayType']
-            | null;
-          this._viewContext.$implicit = data as Q['responseArrayType'] | null;
-
-          console.log('DATAAAA', data);
+          this._viewContext.infinityQuery = this._viewContext.$implicit =
+            data as Q['responseArrayType'] | null;
 
           this._cdr.markForCheck();
         }),
