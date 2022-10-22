@@ -21,7 +21,11 @@ export const isAbortRequestError = (error: unknown): error is RequestError =>
 
 export const buildRoute = (options: {
   base: string;
-  route: ((args: Record<string, unknown>) => string) | string;
+  route:
+    | ((args: Record<string, unknown>) => string)
+    | string
+    | null
+    | undefined;
   pathParams?: Record<string, unknown>;
   queryParams?: QueryParams;
 }) => {
@@ -38,10 +42,10 @@ export const buildRoute = (options: {
 
     route = options.route(options.pathParams);
   } else {
-    route = options.route;
+    route = options.route ?? null;
   }
 
-  if (!route.startsWith('/')) {
+  if (route && !route.startsWith('/')) {
     throw invalidRouteError(route);
   }
 
@@ -49,11 +53,11 @@ export const buildRoute = (options: {
     const queryString = buildQueryString(options.queryParams);
 
     if (queryString) {
-      route = `${route}?${queryString}`;
+      route = route ? `${route}?${queryString}` : `/?${queryString}`;
     }
   }
 
-  return `${options.base}${route}`;
+  return `${options.base}${route ?? ''}`;
 };
 
 export const buildQueryString = (params: QueryParams) => {

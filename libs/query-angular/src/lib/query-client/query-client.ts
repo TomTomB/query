@@ -180,7 +180,7 @@ export class QueryClient {
     const prepare = (args?: Arguments) => {
       const route = buildRoute({
         base: this._clientConfig.baseRoute,
-        route: queryConfig.route ?? '/',
+        route: queryConfig.route,
         pathParams: (args as BaseArguments)?.pathParams,
         queryParams: (args as BaseArguments)?.queryParams,
       }) as Route;
