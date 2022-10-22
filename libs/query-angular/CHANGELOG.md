@@ -1,5 +1,11 @@
 # @tomtomb/query-angular
 
+## 0.10.0
+
+### Minor Changes
+
+- [`ce7adf6`](https://github.com/TomTomB/query/commit/ce7adf6bec1e0d8a3acc6fb44ac521fa39092127) Thanks [@TomTomB](https://github.com/TomTomB)! - Add infinity query api for infinity scrolling uis
+
 ## 0.9.0
 
 ### Minor Changes
