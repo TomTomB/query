@@ -16,6 +16,8 @@ export class InfinityQuery<
   InfinityResponse extends unknown[]
 > {
   private readonly _currentPage$ = new BehaviorSubject<number | null>(null);
+  private readonly _totalPages$ = new BehaviorSubject<number | null>(null);
+  private readonly _itemsPerPage$ = new BehaviorSubject<number | null>(null);
   private readonly _currentQuery$ = new BehaviorSubject<Query | null>(null);
   private readonly _data$ = new BehaviorSubject<InfinityResponse>(
     [] as any as InfinityResponse
@@ -29,6 +31,22 @@ export class InfinityQuery<
 
   get currentPage() {
     return this._currentPage$.getValue();
+  }
+
+  get totalPages$() {
+    return this._totalPages$.asObservable();
+  }
+
+  get totalPages() {
+    return this._totalPages$.getValue();
+  }
+
+  get itemsPerPage$() {
+    return this._itemsPerPage$.asObservable();
+  }
+
+  get itemsPerPage() {
+    return this._itemsPerPage$.getValue();
   }
 
   get currentQuery$() {
@@ -73,7 +91,7 @@ export class InfinityQuery<
       'responseArrayExtractor' | 'queryCreator' | 'responseArrayType'
     >
   ) {
-    this.destroy();
+    this._destroy();
 
     this._config = { ...this._config, ...(newConfig ?? {}) };
 
@@ -82,7 +100,7 @@ export class InfinityQuery<
     this._data$.next([] as any as InfinityResponse);
   }
 
-  destroy() {
+  _destroy() {
     this._subscriptions.forEach((sub) => sub.unsubscribe());
     this._subscriptions = [];
   }
@@ -97,6 +115,18 @@ export class InfinityQuery<
             ...this._data$.value,
             ...newData,
           ] as InfinityResponse);
+
+          const totalPages =
+            this._config.totalPagesExtractor?.(state.response) ??
+            state.response?.totalPages ??
+            null;
+
+          const itemsPerPage =
+            this._config.itemsPerPageExtractor?.(state.response) ??
+            newData.length;
+
+          this._totalPages$.next(totalPages);
+          this._itemsPerPage$.next(itemsPerPage);
         },
         complete: () => {
           this._subscriptions = this._subscriptions.filter(

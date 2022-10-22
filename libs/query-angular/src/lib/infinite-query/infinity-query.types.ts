@@ -34,6 +34,20 @@ export interface InfinityQueryConfig<
   pageParamName?: string;
 
   /**
+   * The property in the response that contains the total page count.
+   *
+   * @default "totalPages"
+   */
+  totalPagesExtractor?: (response: QueryResponse) => number;
+
+  /**
+   * The property in the response that contains the count of items per page.
+   *
+   * @default "itemsPerPage"
+   */
+  itemsPerPageExtractor?: (response: QueryResponse) => number;
+
+  /**
    * The args that will be merged with the page arg.
    */
   defaultArgs?: Arguments;

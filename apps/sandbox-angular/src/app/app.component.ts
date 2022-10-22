@@ -124,6 +124,8 @@ export class AppComponent implements OnInit, OnDestroy {
         { body: res, id: 1, title: 'test', userId: 1 },
         { body: res, id: 1, title: 'test', userId: 1 },
       ] as Post[],
+    itemsPerPageExtractor: (res) => 5,
+    totalPagesExtractor: (res) => 10,
   });
 
   private _destroy$ = new Subject();

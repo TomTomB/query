@@ -120,6 +120,7 @@ export class InfinityQueryDirective<
   ngOnDestroy(): void {
     this._destroy$.next(true);
     this._destroy$.unsubscribe();
+    this.instance?._destroy();
   }
 
   private _setupInfinityQuery(config: Q) {
@@ -130,6 +131,13 @@ export class InfinityQueryDirective<
         switchMap((q) => q?.state$ ?? of(null)),
         tap((state) => {
           this._viewContext.currentPage = instance.currentPage;
+          this._viewContext.totalPages = instance.totalPages;
+          this._viewContext.itemsPerPage = instance.itemsPerPage;
+          this._viewContext.canLoadMore =
+            (instance.totalPages &&
+              instance.currentPage &&
+              instance.totalPages > instance.currentPage) ||
+            false;
 
           if (isQueryStateLoading(state)) {
             this._viewContext.loading = true;
