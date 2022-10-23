@@ -25,8 +25,8 @@ import { AnyQueryCreator } from '../query-client';
 interface InfinityQueryContext<
   Q extends InfinityQueryConfig<AnyQueryCreator, BaseArguments, any, unknown[]>
 > {
-  $implicit: Q['responseArrayType'] | null;
-  infinityQuery: Q['responseArrayType'] | null;
+  $implicit: Q['response']['arrayType'] | null;
+  infinityQuery: Q['response']['arrayType'] | null;
   loading: boolean;
   error: RequestError<unknown> | null;
 
@@ -179,7 +179,7 @@ export class InfinityQueryDirective<
       .pipe(
         tap((data) => {
           this._viewContext.infinityQuery = this._viewContext.$implicit =
-            data as Q['responseArrayType'] | null;
+            data as Q['response']['arrayType'] | null;
 
           this._cdr.markForCheck();
         }),

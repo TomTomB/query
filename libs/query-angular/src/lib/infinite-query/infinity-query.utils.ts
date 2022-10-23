@@ -24,6 +24,7 @@ export const createInfinityQueryConfig = <
   >
 ) => config;
 
-export const skipPaginationPageParamCalculator = (limit: number) => {
-  return ({ page }: PageParamCalculatorOptions) => limit * (page - 1);
-};
+export const skipPaginationPageParamCalculator = ({
+  page,
+  itemsPerPage,
+}: PageParamCalculatorOptions) => itemsPerPage * (page - 1);

@@ -41,7 +41,7 @@ const restClient = new QueryClient({
 const getPost = restClient.get({
   route: (p) => `/posts/${p.id}`,
   // secure: true,
-  responseTransformer: (data) => data.body,
+  // responseTransformer: (data) => data.body,
   types: {
     args: def<{
       pathParams: { id: number };
@@ -110,26 +110,28 @@ export class AppComponent implements OnInit, OnDestroy {
   getPosts!: QueryType<typeof getPost>;
   getPosts$ = getPost.behaviorSubject();
 
-  getPost = getPost;
-
   infinityQueryConfig = createInfinityQueryConfig({
     queryCreator: getPost,
-    pageParamLocation: 'path',
-    pageParamName: 'id',
-    // pageParamCalculator: skipPaginationPageParamCalculator(5),
-    responseArrayType: def<Post[]>(),
-    // reverseResponse: true,
-    // appendItemsTo: 'start',
-    responseArrayExtractor: (res) =>
-      [
-        { body: res, id: 1, title: 'test', userId: 1 },
-        { body: res, id: 2, title: 'test', userId: 1 },
-        { body: res, id: 3, title: 'test', userId: 1 },
-        { body: res, id: 4, title: 'test', userId: 1 },
-        { body: res, id: 5, title: 'test', userId: 1 },
-      ] as Post[],
-    itemsPerPageExtractor: (res) => 5,
-    totalPagesExtractor: (res) => 10,
+
+    pageParam: {
+      location: 'path',
+      key: 'id',
+      // valueCalculator: skipPaginationPageParamCalculator,
+    },
+
+    limitParam: {
+      location: 'query',
+      key: 'limit',
+      value: 5,
+    },
+
+    response: {
+      arrayType: def<Post[]>(),
+      valueExtractor: (res) => new Array(5).fill(res) as Post[],
+      totalPagesExtractor: (res) => 10,
+      // appendItemsTo: 'start',
+      // reverse: true,
+    },
   });
 
   private _destroy$ = new Subject();
@@ -149,30 +151,33 @@ export class AppComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
-    // const infiniteScroll = new InfinityQuery({
+    // const infinityQuery = new InfinityQuery({
     //   queryCreator: getPost,
-    //   responseArrayExtractor: (res) => res.split(' '),
-    //   responseArrayType: def<string[]>(),
     //   defaultArgs: {
     //     pathParams: { id: 1 },
-    //     queryParams: { status: [] },
+    //     queryParams: { status: [''] },
+    //   },
+
+    //   response: {
+    //     arrayType: def<Post[]>(),
+    //     valueExtractor: (res) => new Array(5).fill(res) as Post[],
     //   },
     // });
-    // infiniteScroll.nextPage();
+    // infinityQuery.nextPage();
 
     // setTimeout(() => {
-    //   infiniteScroll.nextPage();
+    //   infinityQuery.nextPage();
     // }, 2500);
 
-    // infiniteScroll.data$.subscribe((data) => {
+    // infinityQuery.data$.subscribe((data) => {
     //   console.log(data);
 
     //   if (data.length > 30) {
-    //     infiniteScroll.reset({
-    //       defaultArgs: { pathParams: { id: 2 }, queryParams: { status: [] } },
+    //     infinityQuery.reset({
+    //       defaultArgs: { pathParams: { id: 2 }, queryParams: { status: [''] } },
     //     });
 
-    //     infiniteScroll.nextPage();
+    //     infinityQuery.nextPage();
     //   }
     // });
 
