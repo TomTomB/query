@@ -1,5 +1,11 @@
 # @tomtomb/query-angular
 
+## 0.11.0
+
+### Minor Changes
+
+- [`1a2c6ec`](https://github.com/TomTomB/query/commit/1a2c6ec1c2bdd6f725ccd02d6696e14adeebc466) Thanks [@TomTomB](https://github.com/TomTomB)! - Add additional config options to infinity query
+
 ## 0.10.0
 
 ### Minor Changes
