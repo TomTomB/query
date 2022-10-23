@@ -1,5 +1,11 @@
 # @tomtomb/query-angular
 
+## 0.11.1
+
+### Patch Changes
+
+- [`d99c7dc`](https://github.com/TomTomB/query/commit/d99c7dc406e2e4149f1fd6b54626c50388a6525a) Thanks [@TomTomB](https://github.com/TomTomB)! - Expose items per page num in total pages extractor
+
 ## 0.11.0
 
 ### Minor Changes
