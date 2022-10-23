@@ -16,6 +16,7 @@ import {
   QueryStateType,
   InfinityQuery,
   createInfinityQueryConfig,
+  skipPaginationPageParamCalculator,
 } from '@tomtomb/query-angular';
 import { def } from '@tomtomb/query-core';
 import { Subject, takeUntil, tap } from 'rxjs';
@@ -115,14 +116,17 @@ export class AppComponent implements OnInit, OnDestroy {
     queryCreator: getPost,
     pageParamLocation: 'path',
     pageParamName: 'id',
+    // pageParamCalculator: skipPaginationPageParamCalculator(5),
     responseArrayType: def<Post[]>(),
+    // reverseResponse: true,
+    // appendItemsTo: 'start',
     responseArrayExtractor: (res) =>
       [
         { body: res, id: 1, title: 'test', userId: 1 },
-        { body: res, id: 1, title: 'test', userId: 1 },
-        { body: res, id: 1, title: 'test', userId: 1 },
-        { body: res, id: 1, title: 'test', userId: 1 },
-        { body: res, id: 1, title: 'test', userId: 1 },
+        { body: res, id: 2, title: 'test', userId: 1 },
+        { body: res, id: 3, title: 'test', userId: 1 },
+        { body: res, id: 4, title: 'test', userId: 1 },
+        { body: res, id: 5, title: 'test', userId: 1 },
       ] as Post[],
     itemsPerPageExtractor: (res) => 5,
     totalPagesExtractor: (res) => 10,

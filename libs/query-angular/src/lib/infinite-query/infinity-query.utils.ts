@@ -4,7 +4,10 @@ import {
   QueryCreatorArgs,
   QueryCreatorReturnType,
 } from '../query-client';
-import { InfinityQueryConfig } from './infinity-query.types';
+import {
+  InfinityQueryConfig,
+  PageParamCalculatorOptions,
+} from './infinity-query.types';
 
 export const createInfinityQueryConfig = <
   QueryCreator extends AnyQueryCreator,
@@ -20,3 +23,7 @@ export const createInfinityQueryConfig = <
     InfinityResponse
   >
 ) => config;
+
+export const skipPaginationPageParamCalculator = (limit: number) => {
+  return ({ page }: PageParamCalculatorOptions) => limit * (page - 1);
+};

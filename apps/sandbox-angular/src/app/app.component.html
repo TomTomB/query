@@ -70,6 +70,7 @@
     isFirstLoad as fl;
     canLoadMore as clm;
     currentPage as cp;
+    currentCalculatedPage as ccp;
     totalPages as tp;
     itemsPerPage as ipp
   "
@@ -89,6 +90,9 @@
   <p>Current page</p>
   <pre>{{ cp | json }}</pre>
 
+  <p>Current calculated page</p>
+  <pre>{{ ccp | json }}</pre>
+
   <p>Total pages</p>
   <pre>{{ tp | json }}</pre>
 
@@ -99,7 +103,9 @@
   <pre>{{ data | json }}</pre>
 
   <button *ngIf="!fl && clm" infinityQueryTrigger>Load more</button>
+  <!-- Manuel mode -->
   <!-- <infinity-query-trigger></infinity-query-trigger> -->
+  <!-- Auto mode -->
 </ng-container>
 
 <hr />

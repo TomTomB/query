@@ -16,6 +16,9 @@ export class InfinityQuery<
   InfinityResponse extends unknown[]
 > {
   private readonly _currentPage$ = new BehaviorSubject<number | null>(null);
+  private readonly _currentCalculatedPage$ = new BehaviorSubject<number | null>(
+    null
+  );
   private readonly _totalPages$ = new BehaviorSubject<number | null>(null);
   private readonly _itemsPerPage$ = new BehaviorSubject<number | null>(null);
   private readonly _currentQuery$ = new BehaviorSubject<Query | null>(null);
@@ -31,6 +34,14 @@ export class InfinityQuery<
 
   get currentPage() {
     return this._currentPage$.getValue();
+  }
+
+  get currentCalculatedPage$() {
+    return this._currentCalculatedPage$.asObservable();
+  }
+
+  get currentCalculatedPage() {
+    return this._currentCalculatedPage$.getValue();
   }
 
   get totalPages$() {
@@ -76,12 +87,20 @@ export class InfinityQuery<
 
   nextPage() {
     const newPage = (this._currentPage$.value ?? 0) + 1;
-    const args = this._prepareArgs(this._config, newPage);
+    const calculatedPage =
+      this._config?.pageParamCalculator?.({
+        page: newPage,
+        totalPages: this.totalPages,
+        itemsPerPage: this.itemsPerPage,
+      }) ?? newPage;
+
+    const args = this._prepareArgs(this._config, calculatedPage);
 
     const query = this._config.queryCreator.prepare(args).execute() as Query;
     this._handleNewQuery(query);
 
     this._currentPage$.next(newPage);
+    this._currentCalculatedPage$.next(calculatedPage);
     this._currentQuery$.next(query);
   }
 
@@ -96,7 +115,11 @@ export class InfinityQuery<
     this._config = { ...this._config, ...(newConfig ?? {}) };
 
     this._currentPage$.next(null);
+    this._currentCalculatedPage$.next(null);
+    this._totalPages$.next(null);
+    this._itemsPerPage$.next(null);
     this._currentQuery$.next(null);
+
     this._data$.next([] as any as InfinityResponse);
   }
 
@@ -110,11 +133,19 @@ export class InfinityQuery<
       .pipe(takeUntilResponse(), filterSuccess())
       .subscribe({
         next: (state) => {
-          const newData = this._config?.responseArrayExtractor(state.response);
-          this._data$.next([
-            ...this._data$.value,
-            ...newData,
-          ] as InfinityResponse);
+          let newData = this._config?.responseArrayExtractor(state.response);
+
+          if (this._config.reverseResponse) {
+            newData = [...newData].reverse() as InfinityResponse;
+          }
+
+          if (this._config.appendItemsTo === 'start') {
+            newData = [...newData, ...this.data] as InfinityResponse;
+          } else {
+            newData = [...this.data, ...newData] as InfinityResponse;
+          }
+
+          this._data$.next(newData);
 
           const totalPages =
             this._config.totalPagesExtractor?.(state.response) ??

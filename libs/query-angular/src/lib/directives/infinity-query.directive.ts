@@ -33,6 +33,7 @@ interface InfinityQueryContext<
   isFirstLoad: boolean;
   canLoadMore: boolean;
   currentPage: number | null;
+  currentCalculatedPage: number | null;
   totalPages: number | null;
   itemsPerPage: number | null;
 }
@@ -62,6 +63,7 @@ export class InfinityQueryDirective<
     isFirstLoad: false,
     canLoadMore: false,
     currentPage: null,
+    currentCalculatedPage: null,
     totalPages: null,
     itemsPerPage: null,
   };
@@ -138,6 +140,8 @@ export class InfinityQueryDirective<
               instance.currentPage &&
               instance.totalPages > instance.currentPage) ||
             false;
+          this._viewContext.currentCalculatedPage =
+            instance.currentCalculatedPage;
 
           if (isQueryStateLoading(state)) {
             this._viewContext.loading = true;
