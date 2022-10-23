@@ -153,7 +153,10 @@ export class InfinityQuery<
           this._data$.next(newData);
 
           const totalPages =
-            this._config.response.totalPagesExtractor?.(state.response) ??
+            this._config.response.totalPagesExtractor?.({
+              response: state.response,
+              itemsPerPage: this.itemsPerPage,
+            }) ??
             state.response?.totalPages ??
             null;
 

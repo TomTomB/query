@@ -16,6 +16,11 @@ export interface PageParamCalculatorOptions {
   itemsPerPage: number;
 }
 
+export interface TotalPagesExtractorOptions<QueryResponse> {
+  response: QueryResponse;
+  itemsPerPage: number;
+}
+
 export interface InfinityQueryConfig<
   QueryCreator extends AnyQueryCreator,
   Arguments extends BaseArguments,
@@ -108,6 +113,8 @@ export interface InfinityQueryConfig<
      *
      * @default "totalPages"
      */
-    totalPagesExtractor?: (response: QueryResponse) => number;
+    totalPagesExtractor?: (
+      data: TotalPagesExtractorOptions<QueryResponse>
+    ) => number;
   };
 }
