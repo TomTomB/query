@@ -43,7 +43,7 @@ importers:
       jest-environment-jsdom: 28.1.3
       jest-fetch-mock: 3.0.3
       jest-preset-angular: 12.2.2
-      ng-packagr: 14.2.1
+      ng-packagr: 14.2.2
       nx: 15.0.0
       postcss: 8.4.18
       postcss-import: 15.0.0
@@ -70,7 +70,7 @@ importers:
       tslib: 2.4.0
       zone.js: 0.11.8
     devDependencies:
-      '@angular-devkit/build-angular': 14.2.6_w2qsz23kks6npgvuj7xjpngpaq
+      '@angular-devkit/build-angular': 14.2.6_2p4t337htggnx5fdyzxkf5tkz4
       '@angular-eslint/eslint-plugin': 14.1.2_z4bbprzjrhnsfa24uvmcbu7f5q
       '@angular-eslint/eslint-plugin-template': 14.1.2_z4bbprzjrhnsfa24uvmcbu7f5q
       '@angular-eslint/template-parser': 14.1.2_z4bbprzjrhnsfa24uvmcbu7f5q
@@ -99,7 +99,7 @@ importers:
       jest-environment-jsdom: 28.1.3
       jest-fetch-mock: 3.0.3
       jest-preset-angular: 12.2.2_oqgywhk5qtk4pwx5g4i4drhdby
-      ng-packagr: 14.2.1_o4jx5o652qr4nhnrfwikswfqhq
+      ng-packagr: 14.2.2_o4jx5o652qr4nhnrfwikswfqhq
       nx: 15.0.0
       postcss: 8.4.18
       postcss-import: 15.0.0_postcss@8.4.18
@@ -141,7 +141,7 @@ packages:
       - chokidar
     dev: true
 
-  /@angular-devkit/build-angular/14.2.6_w2qsz23kks6npgvuj7xjpngpaq:
+  /@angular-devkit/build-angular/14.2.6_2p4t337htggnx5fdyzxkf5tkz4:
     resolution: {integrity: sha512-XtaUwb3aZ8S0vl0y9bmbdFOH0KQCQ778twFH+ZfHW2BcPYtQz2Cy2rcVKXBQ850RyC0GxgMPfco6OGQndPpizg==}
     engines: {node: ^14.15.0 || >=16.10.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
@@ -203,7 +203,7 @@ packages:
       loader-utils: 3.2.0
       mini-css-extract-plugin: 2.6.1_webpack@5.74.0
       minimatch: 5.1.0
-      ng-packagr: 14.2.1_o4jx5o652qr4nhnrfwikswfqhq
+      ng-packagr: 14.2.2_o4jx5o652qr4nhnrfwikswfqhq
       open: 8.4.0
       ora: 5.4.1
       parse5-html-rewriting-stream: 6.0.1
@@ -4552,17 +4552,6 @@ packages:
     resolution: {integrity: sha512-9o5UecI3GhkpM6DrXr69PblIuWxPKk9Y0jHBRhdocZ2y7YECBFCsHm79Pr3OyR2AvjhDkabFJaDJMYRazHgsow==}
     dev: true
 
-  /browserslist/4.21.3:
-    resolution: {integrity: sha512-898rgRXLAyRkM1GryrrBHGkqA5hlpkV5MhtZwg9QXeiyLUYs2k00Un05aX5l2/yJIOObYKOpS2JNo8nJDE7fWQ==}
-    engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
-    hasBin: true
-    dependencies:
-      caniuse-lite: 1.0.30001377
-      electron-to-chromium: 1.4.221
-      node-releases: 2.0.6
-      update-browserslist-db: 1.0.5_browserslist@4.21.3
-    dev: true
-
   /browserslist/4.21.4:
     resolution: {integrity: sha512-CBHJJdDmgjl3daYjN5Cp5kbTf1mUhZoS+beLklHIvkOWscs83YAhLlF3Wsh/lciQYAcbBJgTOD44VtG31ZM4Hw==}
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
@@ -4681,10 +4670,6 @@ packages:
       lodash.memoize: 4.1.2
       lodash.uniq: 4.5.0
     dev: false
-
-  /caniuse-lite/1.0.30001377:
-    resolution: {integrity: sha512-I5XeHI1x/mRSGl96LFOaSk528LA/yZG3m3iQgImGujjO8gotd/DL8QaI1R1h1dg5ATeI2jqPblMpKq4Tr5iKfQ==}
-    dev: true
 
   /caniuse-lite/1.0.30001412:
     resolution: {integrity: sha512-+TeEIee1gS5bYOiuf+PS/kp2mrXic37Hl66VY6EAfxasIk5fELTktK2oOezYed12H8w7jt3s512PpulQidPjwA==}
@@ -5617,10 +5602,6 @@ packages:
     hasBin: true
     dependencies:
       jake: 10.8.5
-
-  /electron-to-chromium/1.4.221:
-    resolution: {integrity: sha512-aWg2mYhpxZ6Q6Xvyk7B2ziBca4YqrCDlXzmcD7wuRs65pVEVkMT1u2ifdjpAQais2O2o0rW964ZWWWYRlAL/kw==}
-    dev: true
 
   /electron-to-chromium/1.4.264:
     resolution: {integrity: sha512-AZ6ZRkucHOQT8wke50MktxtmcWZr67kE17X/nAXFf62NIdMdgY6xfsaJD5Szoy84lnkuPWH+4tTNE3s2+bPCiw==}
@@ -7666,7 +7647,7 @@ packages:
       jest: ^28.0.0
       typescript: '>=4.3'
     dependencies:
-      '@angular-devkit/build-angular': 14.2.6_w2qsz23kks6npgvuj7xjpngpaq
+      '@angular-devkit/build-angular': 14.2.6_2p4t337htggnx5fdyzxkf5tkz4
       '@angular/compiler-cli': 14.2.6_berdmfrv6b33c2wuoyy6wmwhva
       '@angular/core': 14.2.6_rxjs@7.5.7+zone.js@0.11.8
       '@angular/platform-browser-dynamic': 14.2.6_674mqxjl43jlt7lejrsufwimue
@@ -8625,8 +8606,8 @@ packages:
   /neo-async/2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
-  /ng-packagr/14.2.1_o4jx5o652qr4nhnrfwikswfqhq:
-    resolution: {integrity: sha512-o2t/a+DdhUEbXXPbR70LZcU4WcSf7wnddCiQcc3k0HrTQjxWspv0qFUdba3+0ft0dVetaywa6lc+98g/SZEKcQ==}
+  /ng-packagr/14.2.2_o4jx5o652qr4nhnrfwikswfqhq:
+    resolution: {integrity: sha512-AqwHcMM6x+JkCHT++IsbulnTdyoXcC2Cr4tbPamuieacc77+fFbB195hdcqEFwsKX5410cymx/ZUyHird9rxlg==}
     engines: {node: ^14.15.0 || >=16.10.0}
     hasBin: true
     peerDependencies:
@@ -8639,7 +8620,7 @@ packages:
       '@rollup/plugin-node-resolve': 13.1.3_rollup@2.70.1
       ajv: 8.11.0
       ansi-colors: 4.1.3
-      browserslist: 4.21.3
+      browserslist: 4.21.4
       cacache: 16.1.2
       chokidar: 3.5.3
       commander: 9.4.0
@@ -8648,7 +8629,7 @@ packages:
       find-cache-dir: 3.3.2
       glob: 8.0.3
       injection-js: 2.4.0
-      jsonc-parser: 3.1.0
+      jsonc-parser: 3.2.0
       less: 4.1.3
       ora: 5.4.1
       postcss: 8.4.18
@@ -11875,17 +11856,6 @@ packages:
   /untildify/4.0.0:
     resolution: {integrity: sha512-KK8xQ1mkzZeg9inewmFVDNkg3l5LUhoq9kN6iWYB/CC9YMG8HA+c1Q8HwDe6dEX7kErrEVNVBO3fWsVq5iDgtw==}
     engines: {node: '>=8'}
-
-  /update-browserslist-db/1.0.5_browserslist@4.21.3:
-    resolution: {integrity: sha512-dteFFpCyvuDdr9S/ff1ISkKt/9YZxKjI9WlRR99c180GaztJtRa/fn18FdxGVKVsnPY7/a/FDN68mcvUmP4U7Q==}
-    hasBin: true
-    peerDependencies:
-      browserslist: '>= 4.21.0'
-    dependencies:
-      browserslist: 4.21.3
-      escalade: 3.1.1
-      picocolors: 1.0.0
-    dev: true
 
   /update-browserslist-db/1.0.9_browserslist@4.21.4:
     resolution: {integrity: sha512-/xsqn21EGVdXI3EXSum1Yckj3ZVZugqyOZQ/CxYPBD/R+ko9NSUScf8tFF4dOKY+2pvSSJA/S+5B8s4Zr4kyvg==}
