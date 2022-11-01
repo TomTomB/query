@@ -47,6 +47,11 @@ export class BearerAuthProvider implements AuthProvider {
 
   private _setupRefresh(config: BearerRefreshConfig) {
     const bearer = decryptBearer(this._token);
+
+    if (!bearer) {
+      return;
+    }
+
     const expiresInPropertyName = config.expiresInPropertyName || 'exp';
     const expiresIn = bearer[expiresInPropertyName] as number | undefined;
     const fiveMinutes = 5 * 60 * 1000;

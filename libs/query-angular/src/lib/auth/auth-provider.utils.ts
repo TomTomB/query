@@ -18,7 +18,9 @@ export const isCustomHeaderAuthProvider = (
 ): authProvider is CustomHeaderAuthProvider =>
   authProvider instanceof CustomHeaderAuthProvider;
 
-export const decryptBearer = (token: string) => {
+export const decryptBearer = <Result = Record<string, unknown>>(
+  token: string
+) => {
   try {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -29,8 +31,10 @@ export const decryptBearer = (token: string) => {
         .join('')
     );
 
-    return JSON.parse(jsonPayload);
+    return JSON.parse(jsonPayload) as Result;
   } catch (error) {
-    throw new Error(`Invalid bearer token: ${token}`);
+    console.error(`Invalid bearer token: ${token}`, error);
+
+    return null;
   }
 };
