@@ -1,5 +1,11 @@
 # @tomtomb/query-angular
 
+## 0.11.2
+
+### Patch Changes
+
+- [`5a1aa39`](https://github.com/TomTomB/query/commit/5a1aa39c13bb76497b7db5973b8ddce7fcdc59f6) Thanks [@TomTomB](https://github.com/TomTomB)! - Make decryptBearer generic and dont throw
+
 ## 0.11.1
 
 ### Patch Changes
