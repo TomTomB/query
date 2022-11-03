@@ -28,7 +28,7 @@ importers:
       '@nrwl/jest': 15.0.0
       '@nrwl/js': 15.0.0
       '@nrwl/linter': 15.0.0
-      '@nrwl/nx-cloud': 14.7.0
+      '@nrwl/nx-cloud': 15.0.2
       '@nrwl/workspace': 15.0.0
       '@types/jest': 28.1.8
       '@types/node': 17.0.31
@@ -84,7 +84,7 @@ importers:
       '@nrwl/jest': 15.0.0_rkuahrughmfi6ypps5xpwjyihi
       '@nrwl/js': 15.0.0_ff22yqnlx6oapi3owux2o2lilu
       '@nrwl/linter': 15.0.0_5gnxtrb6v2kh55uvriy6jivjje
-      '@nrwl/nx-cloud': 14.7.0
+      '@nrwl/nx-cloud': 15.0.2
       '@nrwl/workspace': 15.0.0_yobkt7mpxl3qvmmdjdwsgz7tnq
       '@types/jest': 28.1.8
       '@types/node': 17.0.31
@@ -3040,8 +3040,8 @@ packages:
       - typescript
     dev: false
 
-  /@nrwl/nx-cloud/14.7.0:
-    resolution: {integrity: sha512-sEGK5Ire5DC2liIsT89qR6SzZa46uinmWEAMz8ocMuu7nIMnwV9m15qajxhmYKasYsq9vTeT+x7BlZ4fnxPrNg==}
+  /@nrwl/nx-cloud/15.0.2:
+    resolution: {integrity: sha512-DaTASuXmGyQHMxJuK6y3f7fs+Q0qQCfYDIDVGK9muNwN/QItLeWdRNltLQxbrBeS112kQTu2FPsr0DmRD60+0A==}
     hasBin: true
     dependencies:
       axios: 0.21.4
@@ -4293,7 +4293,7 @@ packages:
   /axios/0.21.4:
     resolution: {integrity: sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==}
     dependencies:
-      follow-redirects: 1.14.9
+      follow-redirects: 1.15.2
     transitivePeerDependencies:
       - debug
     dev: true
@@ -6380,16 +6380,6 @@ packages:
 
   /flatted/3.2.5:
     resolution: {integrity: sha512-WIWGi2L3DyTUvUrwRKgGi9TwxQMUEqPOPQBVi71R96jZXJdFskXEmf54BoZaS1kknGODoIGASGEzBUYdyMCBJg==}
-
-  /follow-redirects/1.14.9:
-    resolution: {integrity: sha512-MQDfihBQYMcyy5dhRDJUHcw7lb2Pv/TuE6xP1vyraLukNDHKbDxDNaOE3NbCAdKQApno+GPRyo1YAp89yCjK4w==}
-    engines: {node: '>=4.0'}
-    peerDependencies:
-      debug: '*'
-    peerDependenciesMeta:
-      debug:
-        optional: true
-    dev: true
 
   /follow-redirects/1.15.2:
     resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
